@@ -273,20 +273,23 @@ function Splash({onEnter,onLogin,startMode="splash"}){
     if(phone.length!==10){setErr("Valid 10-digit number required");return;}
     setErr("");
     try {
-      if(!window.recaptchaVerifier) {
-        const div = document.createElement("div");
-        div.id = "recaptcha-container";
-        document.body.appendChild(div);
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "invisible" });
-        await window.recaptchaVerifier.render();
-      }
-      const result = await signInWithPhoneNumber(auth, "+91" + phone, window.recaptchaVerifier);
+      if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
+      const old=document.getElementById("recaptcha-container");
+      if(old) old.remove();
+      const div=document.createElement("div");
+      div.id="recaptcha-container";
+      document.body.appendChild(div);
+      auth.settings.appVerificationDisabledForTesting = false;
+      window.recaptchaVerifier=new RecaptchaVerifier(auth,"recaptcha-container",{size:"invisible",callback:()=>{},"expired-callback":()=>{}});
+      await window.recaptchaVerifier.render();
+      const result=await signInWithPhoneNumber(auth,"+91"+phone,window.recaptchaVerifier);
       setConfirmResult(result);
       setMode("otp");
       setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
     } catch(e) {
-      setErr("Failed to send OTP. Try again.");
-      if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
+      console.error("OTP Error:",e);
+      setErr("Error: "+e.code+" - "+e.message);
+      if(window.recaptchaVerifier){window.recaptchaVerifier.clear();window.recaptchaVerifier=null;}
     }
   };
   const handleDigit=(val,i)=>{
