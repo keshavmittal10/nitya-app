@@ -1,5 +1,18 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&display=swap');
@@ -254,10 +267,23 @@ function Splash({onEnter,onLogin,startMode="splash"}){
   const [verifying,setVerifying]=useState(false);
   const refs=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
 
-  const sendOtp=()=>{
+  const [confirmResult, setConfirmResult] = useState(null);
+
+  const sendOtp=async()=>{
     if(phone.length!==10){setErr("Valid 10-digit number required");return;}
-    setErr("");setMode("otp");
-    setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
+    setErr("");
+    try {
+      if(!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "invisible" });
+      }
+      const result = await signInWithPhoneNumber(auth, "+91" + phone, window.recaptchaVerifier);
+      setConfirmResult(result);
+      setMode("otp");
+      setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
+    } catch(e) {
+      setErr("Failed to send OTP. Try again.");
+      if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
+    }
   };
   const handleDigit=(val,i)=>{
     const d=val.replace(/\D/g,"").slice(-1);
@@ -270,10 +296,18 @@ function Splash({onEnter,onLogin,startMode="splash"}){
       const n=[...otp];n[i-1]="";setOtp(n);
     }
   };
-  const verify=()=>{
+  const verify=async()=>{
     if(otp.join("").length!==6){setErr("Enter 6-digit OTP");return;}
+    if(!confirmResult){setErr("Please request OTP first");return;}
     setVerifying(true);
-    setTimeout(()=>{setVerifying(false);onLogin(phone);},1400);
+    try {
+      await confirmResult.confirm(otp.join(""));
+      setVerifying(false);
+      onLogin(phone);
+    } catch(e) {
+      setVerifying(false);
+      setErr("Invalid OTP. Please try again.");
+    }
   };
 
   return(
