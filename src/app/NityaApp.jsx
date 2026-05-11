@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,6 +14,15 @@ const firebaseConfig = {
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
+const db = getFirestore(app);
+
+async function saveUser(uid, data) {
+  await setDoc(doc(db, "users", uid), data, { merge: true });
+}
+async function loadUser(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? snap.data() : null;
+}
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&display=swap');
@@ -1287,7 +1297,7 @@ function NameScreen({onDone}){
 }
 
 /* ── PROFILE ── */
-function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName}){
+function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName,onSignOut}){
   const [name,setName]=useState(userName||"Seeker");
   useEffect(()=>{if(userName)setName(userName);},[userName]);
   const [editName,setEditName]=useState(false);
@@ -1589,7 +1599,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
 
         {/* Sign out */}
         <div style={{padding:"14px 16px 0"}}>
-          <button style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
+          <button onClick={onSignOut} style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
         </div>
 
         <div style={{height:16}}/>
@@ -1601,39 +1611,158 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
 
 /* ── ROOT ── */
 export default function App(){
-  const [screen,setScreen]=useState("splash");
+  const [screen,setScreen]=useState("loading");
   const [favorites,setFavorites]=useState([]);
   const [karma,setKarma]=useState(0);
   const [user,setUser]=useState(null);
   const [userName,setUserName]=useState("");
-  // Badge-driving stats — lifted to root so Profile can read them
-  const [tapasyaDays,setTapasyaDays]=useState(0);      // consecutive daily sadhana days
-  const [shlokaCount,setShlokaCount]=useState(0);      // total shlokas read
-  const [mantaDays,setMantaDays]=useState(0);          // days of 108-day mantra completed
-  const [nightPrayerDays,setNightPrayerDays]=useState(0); // consecutive evening prayer days
-  const [bhaktDays,setBhaktDays]=useState(0);          // total regular completion days
-  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false}); // persists across nav
+  const [tapasyaDays,setTapasyaDays]=useState(0);
+  const [shlokaCount,setShlokaCount]=useState(0);
+  const [mantaDays,setMantaDays]=useState(0);
+  const [nightPrayerDays,setNightPrayerDays]=useState(0);
+  const [bhaktDays,setBhaktDays]=useState(0);
+  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false});
+
+  const today = new Date().toDateString();
+
+  // Save all state to Firestore
+  const persist = async(uid, patch) => {
+    try { await saveUser(uid, patch); } catch(e) { console.error("Save error",e); }
+  };
+
+  // Wrapped setters that also save to Firestore
+  const setKarmaSave = (v) => {
+    setKarma(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {karma:next});
+      return next;
+    });
+  };
+  const setMantaDaysSave = (v) => {
+    setMantaDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {mantaDays:next});
+      return next;
+    });
+  };
+  const setTapasyaDaysSave = (v) => {
+    setTapasyaDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {tapasyaDays:next});
+      return next;
+    });
+  };
+  const setShlokaCountSave = (v) => {
+    setShlokaCount(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {shlokaCount:next});
+      return next;
+    });
+  };
+  const setBhaktDaysSave = (v) => {
+    setBhaktDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {bhaktDays:next});
+      return next;
+    });
+  };
+  const setTasksDoneSave = (v) => {
+    const next = typeof v==="function" ? v(tasksDone) : v;
+    setTasksDone(next);
+    if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:today});
+  };
+  const setUserNameSave = (n) => {
+    setUserName(n);
+    if(user?.uid) persist(user.uid, {userName:n});
+  };
+
+  // Listen to Firebase auth state — this is what keeps user logged in
+  useEffect(()=>{
+    const unsub = onAuthStateChanged(auth, async(firebaseUser)=>{
+      if(firebaseUser){
+        // User is logged in — load their data from Firestore
+        setUser({uid:firebaseUser.uid, phone:firebaseUser.phoneNumber});
+        try {
+          const data = await loadUser(firebaseUser.uid);
+          if(data){
+            if(data.userName){ setUserName(data.userName); }
+            if(data.karma !== undefined){ setKarma(data.karma); }
+            if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
+            if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
+            if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
+            if(data.bhaktDays !== undefined){ setBhaktDays(data.bhaktDays); }
+            if(data.favorites){ setFavorites(data.favorites); }
+            // Reset daily tasks if it's a new day
+            if(data.lastTaskDate !== today){
+              setTasksDone({shlok:false, aarti:false});
+              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false}, lastTaskDate:today});
+            } else if(data.tasksDone){
+              setTasksDone(data.tasksDone);
+            }
+            // Go to home if they have a name, else name screen
+            setScreen(data.userName ? "home" : "name");
+          } else {
+            // New user — go to name screen
+            setScreen("name");
+          }
+        } catch(e){
+          console.error("Load error",e);
+          setScreen("name");
+        }
+      } else {
+        // Not logged in
+        setUser(null);
+        setScreen("splash");
+      }
+    });
+    return ()=>unsub();
+  },[]);
+
+  // Save favorites when they change
+  useEffect(()=>{
+    if(user?.uid) persist(user.uid, {favorites});
+  },[favorites]);
+
+  const handleSignOut = () => {
+    auth.signOut();
+    setUser(null);
+    setUserName("");
+    setKarma(0);
+    setTapasyaDays(0);
+    setShlokaCount(0);
+    setMantaDays(0);
+    setBhaktDays(0);
+    setTasksDone({shlok:false,aarti:false});
+    setScreen("splash");
+  };
+
+  if(screen==="loading") return(
+    <div style={{width:"100vw",height:"100dvh",background:"linear-gradient(175deg,#1E0C00,#2C1400,#1A0A00)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16}}>
+      <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:52,color:"rgba(255,200,80,.8)",animation:"pulse 2s infinite"}}>ॐ</div>
+      <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,200,80,.4)"}}>Loading...</div>
+    </div>
+  );
 
   return(
     <>
       <style>{css}</style>
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{setUser({phone});setScreen("name");}}/>}
+          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen}/>}
-          {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarma} user={user} onGoLogin={()=>setScreen("login")}
-            tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDays}
-            shlokaCount={shlokaCount} setShlokaCount={setShlokaCount}
-            bhaktDays={bhaktDays} setBhaktDays={setBhaktDays}
-            tasksDone={tasksDone} setTasksDone={setTasksDone}/>}
-          {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarma}
-            mantaDays={mantaDays} setMantaDays={setMantaDays} user={user}/>}
+          {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
+            tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
+            shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
+            bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
+          {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
+            mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
             mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
-            userName={userName} setUserName={setUserName}/>}
-          {screen==="name" && <NameScreen onDone={(n)=>{setUserName(n);setScreen("home");}}/>}
+            userName={userName} setUserName={setUserNameSave} onSignOut={handleSignOut}/>}
+          {screen==="name" && <NameScreen onDone={(n)=>{setUserNameSave(n);setScreen("home");}}/>}
         </div>
       </div>
     </>
