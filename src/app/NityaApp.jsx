@@ -281,7 +281,7 @@ function Splash({onEnter,onLogin,startMode="splash"}){
       setMode("otp");
       setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
     } catch(e) {
-      setErr("Failed to send OTP. Try again.");
+      console.error("OTP Error:", e); setErr("Failed to send OTP: " + e.message);
       if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
     }
   };
