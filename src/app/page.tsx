@@ -8,5 +8,9 @@ export default function Page() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
-  return <NityaApp />;
+  return (
+    <div style={{ width: "100vw", height: "100dvh", overflow: "hidden" }}>
+      <NityaApp />
+    </div>
+  );
 }
