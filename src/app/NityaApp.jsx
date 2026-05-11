@@ -1545,8 +1545,8 @@ export default function App(){
   return(
     <>
       <style>{css}</style>
-      <div style={{minHeight:"100vh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px 20px"}}>
-        <div style={{width:360,height:780,borderRadius:48,overflow:"hidden",position:"relative",flexShrink:0,boxShadow:"0 0 0 1.5px rgba(255,200,80,.15),0 50px 120px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,230,150,.12)",display:"flex",flexDirection:"column"}}>
+      <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{setUser({phone});setScreen("home");}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen}/>}
