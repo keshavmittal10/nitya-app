@@ -1107,18 +1107,12 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
   const daysDone=mantaDays;
 
   const toggleMantra=()=>{
-    setMantaDone(p=>{
-      const next=!p;
-      if(next){
-        if(setMantaDays)setMantaDays(d=>d+1);
-        if(setKarma)setKarma(k=>k+20);
-        if(!user) showToast("🔐 Sign in to save your progress!");
-      } else {
-        if(setMantaDays)setMantaDays(d=>Math.max(0,d-1));
-        if(setKarma)setKarma(k=>Math.max(0,k-20));
-      }
-      return next;
-    });
+    if(mantaDone) return; // already done today, no untoggle
+    setMantaDone(true);
+    if(setMantaDays)setMantaDays(d=>d+1);
+    if(setKarma)setKarma(k=>k+20);
+    showToast("✅ Day "+(mantaDays+1)+" complete! +20 Karma");
+    if(!user) showToast("🔐 Sign in to save your progress!");
   };
 
   const pct=Math.round((daysDone/108)*100);
@@ -1257,9 +1251,45 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
     </div>
   );
 }
+
+/* ── NAME SCREEN ── */
+function NameScreen({onDone}){
+  const [name,setName]=useState("");
+  const [err,setErr]=useState("");
+  return(
+    <div style={{width:"100%",height:"100%",background:"linear-gradient(175deg,#1E0C00 0%,#2C1400 45%,#1A0A00 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden",padding:"0 28px"}}>
+      <div style={{position:"absolute",top:-40,left:"50%",width:300,height:300,background:"radial-gradient(circle,rgba(255,120,0,.18) 0%,transparent 68%)",borderRadius:"50%",animation:"glowBreath 5s ease-in-out infinite alternate",transform:"translateX(-50%)",pointerEvents:"none"}}/>
+      <div style={{width:"100%",animation:"fadeUp .6s ease both"}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <div style={{fontSize:52,marginBottom:12}}>🙏</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,190,80,.4)",marginBottom:8}}>Welcome to Nitya</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:700,color:"#FFF0D0",marginBottom:6}}>What's your name?</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"rgba(255,200,100,.5)"}}>आपका नाम क्या है?</div>
+        </div>
+        <input
+          value={name}
+          onChange={e=>{setName(e.target.value);setErr("");}}
+          onKeyDown={e=>e.key==="Enter"&&name.trim()&&onDone(name.trim())}
+          placeholder="Enter your name"
+          style={{width:"100%",background:"rgba(255,255,255,.08)",border:`1.5px solid ${err?"rgba(255,100,80,.4)":"rgba(255,165,0,.2)"}`,borderRadius:16,padding:"16px",fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:700,color:"white",outline:"none",marginBottom:10,textAlign:"center",letterSpacing:1}}
+        />
+        {err&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:11,color:"#FCA5A5",textAlign:"center",marginBottom:10}}>{err}</div>}
+        <button
+          onClick={()=>{if(!name.trim()){setErr("Please enter your name");return;}onDone(name.trim());}}
+          style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"16px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 6px 24px rgba(180,80,0,.45)",position:"relative",overflow:"hidden"}}
+        >
+          <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"shimmer 3s ease-in-out infinite"}}/>
+          Begin My Journey →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── PROFILE ── */
-function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0}){
-  const [name,setName]=useState("Ramesh Ji");
+function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName}){
+  const [name,setName]=useState(userName||"Seeker");
+  useEffect(()=>{if(userName)setName(userName);},[userName]);
   const [editName,setEditName]=useState(false);
   const [notif,setNotif]=useState(true);
 
@@ -1356,7 +1386,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
           <div style={{width:62,height:62,borderRadius:"50%",background:"linear-gradient(135deg,#FF9800,#E65100)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,border:"3px solid rgba(255,255,255,.2)",flexShrink:0,boxShadow:"0 4px 14px rgba(255,100,0,.3)"}}>🧘</div>
           <div style={{flex:1,minWidth:0}}>
             {editName
-              ?<input value={name} onChange={e=>setName(e.target.value)} onBlur={()=>setEditName(false)} autoFocus
+              ?<input value={name} onChange={e=>setName(e.target.value)} onBlur={()=>{setEditName(false);if(setUserName)setUserName(name);}} autoFocus
                   style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"white",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,200,80,.4)",outline:"none",width:"100%"}}/>
               :<div style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"white",cursor:"pointer",display:"flex",alignItems:"center",gap:6}} onClick={()=>setEditName(true)}>
                 {name}<span style={{fontSize:13,opacity:.55}}>✏️</span>
@@ -1575,6 +1605,7 @@ export default function App(){
   const [favorites,setFavorites]=useState([]);
   const [karma,setKarma]=useState(0);
   const [user,setUser]=useState(null);
+  const [userName,setUserName]=useState("");
   // Badge-driving stats — lifted to root so Profile can read them
   const [tapasyaDays,setTapasyaDays]=useState(0);      // consecutive daily sadhana days
   const [shlokaCount,setShlokaCount]=useState(0);      // total shlokas read
@@ -1588,7 +1619,7 @@ export default function App(){
       <style>{css}</style>
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{setUser({phone});setScreen("home");}}/>}
+          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{setUser({phone});setScreen("name");}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarma} user={user} onGoLogin={()=>setScreen("login")}
@@ -1600,7 +1631,9 @@ export default function App(){
             mantaDays={mantaDays} setMantaDays={setMantaDays} user={user}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
-            mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}/>}
+            mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
+            userName={userName} setUserName={setUserName}/>}
+          {screen==="name" && <NameScreen onDone={(n)=>{setUserName(n);setScreen("home");}}/>}
         </div>
       </div>
     </>
