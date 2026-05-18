@@ -726,7 +726,7 @@ const FULL_DAYS=[
    color:"#60A5FA",bg:"linear-gradient(170deg,#EFF6FF 0%,#DBEAFE 55%,#BFDBFE 100%)",
    heroBg:"linear-gradient(135deg,#1E3A5F,#1E40AF,#1D4ED8)",glow:"rgba(96,165,250,.2)",
    image:"/shiva.png",imageBg:"linear-gradient(170deg,#EDF5FF 0%,#D6EAFF 50%,#C2DEFF 100%)",
-   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना शिव तक पहुँची।\nभोलेनाथ का आशीर्वाद सदा तुम्हारे साथ है।",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशिव का आशीर्वाद\nतुम्हारे साथ है।",
    tathastuSender:"— महादेव शिव",
    tathastuBg:"linear-gradient(170deg,#EDF5FF 0%,#C8DFFF 55%,#A8CBFF 100%)",
    verses:[
@@ -888,25 +888,41 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
             </div>
           );})}
         </div>
-        {/* Complete Aarti Button */}
+        {/* Today's Aarti card — same style as Sadhana page */}
         <div style={{padding:"16px 16px 0"}}>
-          {tasksDone.aarti
-            ?<div style={{borderRadius:22,padding:"16px 20px",background:"rgba(96,165,250,.08)",border:"1.5px solid rgba(96,165,250,.22)",display:"flex",alignItems:"center",justifyContent:"center",gap:10,cursor:"pointer"}} onClick={()=>setTathastu(true)}>
-              <span style={{fontSize:20}}>✅</span>
-              <div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:"#60A5FA",letterSpacing:.5}}>आरती सम्पन्न · Aarti Complete</div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:600,color:"rgba(96,165,250,.6)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>Tap to see blessing again</div>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.1)"}}>
+            <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"#FFF0E8",border:`1.5px solid ${day.color}33`}}>{day.icon}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#5A3A18"}}>Today's Aarti</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#B0977A",marginTop:2}}>{day.deity} · {day.name}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:4,marginTop:4,background:`${day.color}18`,border:`1px solid ${day.color}33`,borderRadius:10,padding:"2px 8px"}}>
+                  <span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:day.color}}>{day.hi||day.sub}</span>
+                </div>
               </div>
+              {/* Toggle button */}
+              <button onClick={tasksDone.aarti ? ()=>setTathastu(true) : completeAarti}
+                style={{width:38,height:38,borderRadius:"50%",flexShrink:0,border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+                  background:tasksDone.aarti?`linear-gradient(135deg,#FFD700,#FF8C00)`:"white",
+                  boxShadow:tasksDone.aarti?"0 4px 14px rgba(255,180,0,.45)":"inset 0 0 0 2.5px rgba(200,140,40,.3)",
+                  transition:"all .25s"}}>
+                {tasksDone.aarti
+                  ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  :<div style={{width:14,height:14,borderRadius:"50%",border:"2.5px solid rgba(200,140,40,.35)"}}/>
+                }
+              </button>
             </div>
-            :<button onClick={completeAarti} style={{width:"100%",background:`linear-gradient(135deg,${day.color},${day.color}BB)`,border:"none",borderRadius:22,padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:12,boxShadow:`0 8px 28px ${day.color}44`,position:"relative",overflow:"hidden"}}>
-              <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)",animation:"shimmer 2.5s ease-in-out infinite"}}/>
-              <span style={{fontSize:22}}>🙏</span>
-              <div style={{textAlign:"left"}}>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,color:"white",letterSpacing:.5}}>आरती पूर्ण हुई</div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:600,color:"rgba(255,255,255,.7)",letterSpacing:1.5,textTransform:"uppercase",marginTop:2}}>Tap to complete · +30 Karma</div>
-              </div>
-            </button>
-          }
+            {/* Bottom bar */}
+            <div style={{height:3,background:`${day.color}18`}}>
+              <div style={{height:"100%",width:tasksDone.aarti?"100%":"0%",background:`linear-gradient(90deg,${day.color},${day.color}88)`,transition:"width .6s ease"}}/>
+            </div>
+            <div style={{padding:"6px 16px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:tasksDone.aarti?"#C47010":"rgba(196,160,64,.5)"}}>
+                {tasksDone.aarti?"✓ +30 XP EARNED · Tap to see blessing":"Tap ✓ to complete · +30 XP"}
+              </span>
+              {!tasksDone.aarti&&<span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:.5,textTransform:"uppercase",color:day.color}}>+30 Karma</span>}
+            </div>
+          </div>
         </div>
         <div style={{height:24}}/>
       </div>
@@ -946,14 +962,13 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               )}
 
               {/* Message box */}
-              <div style={{width:"100%",background:"rgba(255,255,255,.65)",backdropFilter:"blur(20px)",borderRadius:24,padding:"20px 20px",border:"1.5px solid rgba(96,165,250,.2)",boxShadow:"0 4px 24px rgba(96,165,250,.12)",animation:"fadeUp .6s .2s ease both"}}>
-                {/* Quote marks */}
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:48,color:"rgba(96,165,250,.2)",lineHeight:.8,marginBottom:4}}>"</div>
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:600,color:"#1E3A5F",lineHeight:1.9,whiteSpace:"pre-line",marginBottom:12}}>
+              <div style={{width:"100%",background:"rgba(255,255,255,.65)",backdropFilter:"blur(20px)",borderRadius:24,padding:"22px 22px 18px",border:"1.5px solid rgba(96,165,250,.2)",boxShadow:"0 4px 24px rgba(96,165,250,.12)",animation:"fadeUp .6s .2s ease both"}}>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"#1E3A5F",lineHeight:1.9,whiteSpace:"pre-line",textAlign:"center",marginBottom:16}}>
                   {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
                 </div>
+                <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.25),transparent)",marginBottom:14}}/>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(30,58,95,.45)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(30,58,95,.4)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
                   <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.2)",borderRadius:20,padding:"4px 12px"}}>
                     <span style={{fontSize:12}}>✨</span>
                     <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"#1E40AF",letterSpacing:.5}}>+30 Karma</span>
