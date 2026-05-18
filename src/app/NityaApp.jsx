@@ -807,7 +807,7 @@ function Prarthana({onNav}){
   const todayIdx=new Date().getDay();
   const [sel,setSel]=useState(todayIdx);
   const day=FULL_DAYS[sel];
-  const pick=(i)=>{setSel(i);};
+  const pick=(i)=>{if(i===todayIdx)setSel(i);};
   return(
     <div style={{width:"100%",height:"100%",background:day.bg,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",transition:"background .5s ease"}}>
       <div style={{position:"absolute",top:-80,left:"50%",transform:"translateX(-50%)",width:320,height:320,background:`radial-gradient(circle,${day.glow} 0%,transparent 65%)`,borderRadius:"50%",pointerEvents:"none",zIndex:0,animation:"breathe 6s ease-in-out infinite",transition:"background .5s ease"}}/>
@@ -820,7 +820,7 @@ function Prarthana({onNav}){
       <div style={{padding:"12px 16px 0",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.55)",borderRadius:22,padding:"5px",backdropFilter:"blur(16px)",border:`1px solid ${day.color}25`,boxShadow:`0 4px 18px ${day.color}14`}}>
           {FULL_DAYS.map((d,i)=>{const on=i===sel;const isToday=i===todayIdx;return(
-            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative"}}>
+            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:i===todayIdx?"pointer":"default",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative",opacity:i===todayIdx?1:0.3,pointerEvents:i===todayIdx?"auto":"none"}}>
               {isToday&&!on&&<div style={{position:"absolute",top:4,left:"50%",transform:"translateX(6px)",width:5,height:5,borderRadius:"50%",background:d.color,boxShadow:`0 0 5px ${d.color}88`}}/>}
               <span style={{fontSize:on?16:13,lineHeight:1,transition:"font-size .2s"}}>{d.icon}</span>
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:7.5,fontWeight:on?800:600,letterSpacing:.5,textTransform:"uppercase",lineHeight:1,color:on?"white":`${d.color}88`}}>{d.short}</span>
@@ -1110,8 +1110,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
 }
 
 /* ── ANUSHTHAN ── */
-function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
-  const [mantaDone,setMantaDone]=useState(false);
+function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone=false,setMantaDone}){
   const [toast,setToast]=useState("");
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
   const daysDone=mantaDays;
@@ -1622,6 +1621,7 @@ export default function App(){
   const [nightPrayerDays,setNightPrayerDays]=useState(0);
   const [bhaktDays,setBhaktDays]=useState(0);
   const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false});
+  const [mantaDone,setMantaDone]=useState(false);
 
   const today = new Date().toDateString();
 
@@ -1644,6 +1644,10 @@ export default function App(){
       if(user?.uid) persist(user.uid, {mantaDays:next});
       return next;
     });
+  };
+  const setMantaDoneSave = (v) => {
+    setMantaDone(v);
+    if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:today});
   };
   const setTapasyaDaysSave = (v) => {
     setTapasyaDays(prev => {
@@ -1690,12 +1694,16 @@ export default function App(){
             if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
             if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
             if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
+            // Reset mantaDone if it's a new day
+            if(data.mantaDoneDate === today && data.mantaDone){ setMantaDone(true); }
+            else { setMantaDone(false); }
             if(data.bhaktDays !== undefined){ setBhaktDays(data.bhaktDays); }
             if(data.favorites){ setFavorites(data.favorites); }
             // Reset daily tasks if it's a new day
             if(data.lastTaskDate !== today){
               setTasksDone({shlok:false, aarti:false});
-              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false}, lastTaskDate:today});
+              setMantaDone(false);
+              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false}, lastTaskDate:today, mantaDone:false, mantaDoneDate:today});
             } else if(data.tasksDone){
               setTasksDone(data.tasksDone);
             }
@@ -1731,6 +1739,7 @@ export default function App(){
     setTapasyaDays(0);
     setShlokaCount(0);
     setMantaDays(0);
+    setMantaDone(false);
     setBhaktDays(0);
     setTasksDone({shlok:false,aarti:false});
     setScreen("splash");
@@ -1757,7 +1766,8 @@ export default function App(){
             bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
             tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
-            mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}/>}
+            mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
+            mantaDone={mantaDone} setMantaDone={setMantaDoneSave}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
             mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
