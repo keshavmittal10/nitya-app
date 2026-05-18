@@ -725,6 +725,10 @@ const FULL_DAYS=[
   {id:1,short:"Mon",full:"Monday",deity:"Lord Shiva",icon:"🔱",name:"शिव जी की आरती",sub:"शिव उपासना · सोमवार",
    color:"#60A5FA",bg:"linear-gradient(170deg,#EFF6FF 0%,#DBEAFE 55%,#BFDBFE 100%)",
    heroBg:"linear-gradient(135deg,#1E3A5F,#1E40AF,#1D4ED8)",glow:"rgba(96,165,250,.2)",
+   image:"/shiva.png",imageBg:"linear-gradient(170deg,#EDF5FF 0%,#D6EAFF 50%,#C2DEFF 100%)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना शिव तक पहुँची।\nभोलेनाथ का आशीर्वाद सदा तुम्हारे साथ है।",
+   tathastuSender:"— महादेव शिव",
+   tathastuBg:"linear-gradient(170deg,#EDF5FF 0%,#C8DFFF 55%,#A8CBFF 100%)",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय शिव ओंकारा, प्रभु जय शिव ओंकारा।\nब्रह्मा विष्णु सदाशिव, अर्धांगी धारा॥",c:"#60A5FA"},
      {label:"पद २",text:"एकानन चतुरानन पंचानन राजे।\nहंसासन गरुड़ासन वृषवाहन साजे॥",c:"#818CF8"},
@@ -803,11 +807,23 @@ const FULL_DAYS=[
    ]},
 ];
 
-function Prarthana({onNav}){
+function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays}){
   const todayIdx=new Date().getDay();
   const [sel,setSel]=useState(todayIdx);
+  const [tathastu,setTathastu]=useState(false);
+  const [toast,setToast]=useState("");
   const day=FULL_DAYS[sel];
   const pick=(i)=>{if(i===todayIdx)setSel(i);};
+  const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
+
+  const completeAarti=()=>{
+    if(tasksDone.aarti) return;
+    if(setTasksDone) setTasksDone({...tasksDone,aarti:true});
+    if(setKarma) setKarma(k=>k+30);
+    if(setBhaktDays) setBhaktDays(d=>d+1);
+    setTathastu(true);
+  };
+
   return(
     <div style={{width:"100%",height:"100%",background:day.bg,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",transition:"background .5s ease"}}>
       <div style={{position:"absolute",top:-80,left:"50%",transform:"translateX(-50%)",width:320,height:320,background:`radial-gradient(circle,${day.glow} 0%,transparent 65%)`,borderRadius:"50%",pointerEvents:"none",zIndex:0,animation:"breathe 6s ease-in-out infinite",transition:"background .5s ease"}}/>
@@ -872,14 +888,95 @@ function Prarthana({onNav}){
             </div>
           );})}
         </div>
-        {/* Closing */}
-        <div style={{margin:"16px 16px 0",borderRadius:22,padding:"18px 20px",border:`1px solid ${day.color}22`,textAlign:"center",background:`${day.color}09`}}>
-          <div style={{fontSize:28,marginBottom:8}}>{day.icon}</div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:`${day.color}CC`,lineHeight:1.8}}>{day.name} सम्पन्न</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:`${day.color}55`,marginTop:5}}>जय {day.deity} 🙏</div>
+        {/* Complete Aarti Button */}
+        <div style={{padding:"16px 16px 0"}}>
+          {tasksDone.aarti
+            ?<div style={{borderRadius:22,padding:"16px 20px",background:"rgba(96,165,250,.08)",border:"1.5px solid rgba(96,165,250,.22)",display:"flex",alignItems:"center",justifyContent:"center",gap:10,cursor:"pointer"}} onClick={()=>setTathastu(true)}>
+              <span style={{fontSize:20}}>✅</span>
+              <div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:"#60A5FA",letterSpacing:.5}}>आरती सम्पन्न · Aarti Complete</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:600,color:"rgba(96,165,250,.6)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>Tap to see blessing again</div>
+              </div>
+            </div>
+            :<button onClick={completeAarti} style={{width:"100%",background:`linear-gradient(135deg,${day.color},${day.color}BB)`,border:"none",borderRadius:22,padding:"18px 20px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:12,boxShadow:`0 8px 28px ${day.color}44`,position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)",animation:"shimmer 2.5s ease-in-out infinite"}}/>
+              <span style={{fontSize:22}}>🙏</span>
+              <div style={{textAlign:"left"}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:800,color:"white",letterSpacing:.5}}>आरती पूर्ण हुई</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:600,color:"rgba(255,255,255,.7)",letterSpacing:1.5,textTransform:"uppercase",marginTop:2}}>Tap to complete · +30 Karma</div>
+              </div>
+            </button>
+          }
         </div>
-        <div style={{height:16}}/>
+        <div style={{height:24}}/>
       </div>
+
+      {/* ── TATHASTU FULLSCREEN OVERLAY ── */}
+      {tathastu&&(
+        <div style={{position:"absolute",inset:0,zIndex:50,display:"flex",flexDirection:"column",overflowY:"auto"}}
+          onClick={e=>{if(e.target===e.currentTarget)setTathastu(false);}}>
+          {/* Background matches image — soft watercolor blue/white */}
+          <div style={{flex:1,background:day.tathastuBg||"linear-gradient(170deg,#EDF5FF,#C8DFFF,#A8CBFF)",display:"flex",flexDirection:"column",alignItems:"center",position:"relative",overflow:"hidden"}}>
+
+            {/* Soft light top glow */}
+            <div style={{position:"absolute",top:-60,left:"50%",transform:"translateX(-50%)",width:300,height:300,background:"radial-gradient(circle,rgba(96,165,250,.18) 0%,transparent 68%)",borderRadius:"50%",pointerEvents:"none",animation:"breathe 6s ease-in-out infinite"}}/>
+
+            {/* Floating close */}
+            <button onClick={()=>setTathastu(false)} style={{position:"absolute",top:16,right:16,width:36,height:36,borderRadius:"50%",background:"rgba(0,0,0,.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:"rgba(0,0,0,.4)",zIndex:10}}>✕</button>
+
+            <div style={{width:"100%",padding:"48px 20px 32px",display:"flex",flexDirection:"column",alignItems:"center",gap:0}}>
+
+              {/* Floating trishul */}
+              <div style={{fontSize:52,animation:"floatUp 3s ease-in-out infinite",marginBottom:6,filter:"drop-shadow(0 4px 16px rgba(96,165,250,.5))"}}>🔱</div>
+
+              {/* TATHASTU */}
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:46,fontWeight:700,color:"#1E3A5F",letterSpacing:4,lineHeight:1,marginBottom:4,textShadow:"0 2px 20px rgba(96,165,250,.2)",animation:"fadeUp .5s ease both"}}>तथास्तु</div>
+
+              {/* So it shall be */}
+              <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:17,fontWeight:400,color:"rgba(30,58,95,.55)",letterSpacing:3,marginBottom:28}}>So it shall be</div>
+
+              {/* Divider */}
+              <div style={{width:80,height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.35),transparent)",marginBottom:28}}/>
+
+              {/* Shiva image — watercolor, matches bg */}
+              {day.image&&(
+                <div style={{width:260,height:260,borderRadius:"50%",overflow:"hidden",marginBottom:24,boxShadow:"0 8px 40px rgba(96,165,250,.25)",border:"3px solid rgba(255,255,255,.6)",flexShrink:0,animation:"fadeUp .6s .1s ease both"}}>
+                  <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}/>
+                </div>
+              )}
+
+              {/* Message box */}
+              <div style={{width:"100%",background:"rgba(255,255,255,.65)",backdropFilter:"blur(20px)",borderRadius:24,padding:"20px 20px",border:"1.5px solid rgba(96,165,250,.2)",boxShadow:"0 4px 24px rgba(96,165,250,.12)",animation:"fadeUp .6s .2s ease both"}}>
+                {/* Quote marks */}
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:48,color:"rgba(96,165,250,.2)",lineHeight:.8,marginBottom:4}}>"</div>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:600,color:"#1E3A5F",lineHeight:1.9,whiteSpace:"pre-line",marginBottom:12}}>
+                  {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
+                </div>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(30,58,95,.45)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
+                  <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.2)",borderRadius:20,padding:"4px 12px"}}>
+                    <span style={{fontSize:12}}>✨</span>
+                    <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"#1E40AF",letterSpacing:.5}}>+30 Karma</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jay Shiva */}
+              <div style={{marginTop:20,fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"rgba(30,58,95,.5)",letterSpacing:2,animation:"fadeUp .6s .3s ease both"}}>
+                🔱 जय {day.deity} 🔱
+              </div>
+
+              {/* Close button */}
+              <button onClick={()=>setTathastu(false)} style={{marginTop:20,background:"rgba(30,58,95,.08)",border:"1.5px solid rgba(30,58,95,.15)",borderRadius:18,padding:"12px 32px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(30,58,95,.6)"}}>
+                वापस जाएं · Close
+              </button>
+
+              <div style={{height:32}}/>
+            </div>
+          </div>
+        </div>
+      )}
+
       <BNav active="prarthana" onNav={onNav} dark={false}/>
     </div>
   );
@@ -1759,7 +1856,7 @@ export default function App(){
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
-          {screen==="prarthana" &&<Prarthana onNav={setScreen}/>}
+          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
