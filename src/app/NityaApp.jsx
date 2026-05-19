@@ -760,6 +760,12 @@ const FULL_DAYS=[
   {id:3,short:"Wed",full:"Wednesday",deity:"Lord Ganesha",icon:"🌺",name:"श्री गणेश आरती",sub:"गणेश उपासना · बुधवार",
    color:"#F59E0B",bg:"linear-gradient(170deg,#FFFBEB 0%,#FEF3C7 55%,#FDE68A 100%)",
    heroBg:"linear-gradient(135deg,#78350F,#92400E,#B45309)",glow:"rgba(245,158,11,.2)",
+   image:"/ganesha.png",floatIcon:"🐘",
+   tathastuBg:"linear-gradient(145deg,#221000,#3A1C00)",
+   tathastu2:"linear-gradient(135deg,#2C1400,#503000)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश जी का आशीर्वाद\nतुम्हारे साथ है।",
+   tathastuSender:"— श्री गणेश",
+   tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
      {label:"पद २",text:"एकदंत दयावंत चार भुजाधारी।\nमाथे सिंदूर सोहे मूसे की सवारी॥",c:"#FBBF24"},
@@ -771,6 +777,12 @@ const FULL_DAYS=[
   {id:4,short:"Thu",full:"Thursday",deity:"Shyam Baba",icon:"🙏",name:"श्री श्याम बाबा आरती",sub:"श्याम उपासना · गुरुवार",
    color:"#8B5CF6",bg:"linear-gradient(170deg,#F5F3FF 0%,#EDE9FE 55%,#DDD6FE 100%)",
    heroBg:"linear-gradient(135deg,#2E1065,#3B0764,#4C1D95)",glow:"rgba(139,92,246,.2)",
+   image:"/shyam.png",floatIcon:"✨",
+   tathastuBg:"linear-gradient(145deg,#0E0520,#1A0A35)",
+   tathastu2:"linear-gradient(135deg,#150830,#280F5A)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nश्याम बाबा का प्रेम\nतुम्हारे साथ है।",
+   tathastuSender:"— श्री श्याम",
+   tathastuColor:"#8B5CF6",tathastuGlow:"rgba(139,92,246,.35)",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#8B5CF6"},
      {label:"पद २",text:"रत्न सिंहासन राजत, मोर मुकुट सिर धारे।\nमोरछड़ी की शोभा, मन भक्तों के हरे॥",c:"#A78BFA"},
@@ -783,6 +795,12 @@ const FULL_DAYS=[
   {id:5,short:"Fri",full:"Friday",deity:"Goddess Lakshmi",icon:"🌸",name:"श्री लक्ष्मी जी की आरती",sub:"लक्ष्मी उपासना · शुक्रवार",
    color:"#EC4899",bg:"linear-gradient(170deg,#FDF2F8 0%,#FCE7F3 55%,#FBCFE8 100%)",
    heroBg:"linear-gradient(135deg,#831843,#9D174D,#BE185D)",glow:"rgba(236,72,153,.2)",
+   image:"/lakshmi.png",floatIcon:"🪷",
+   tathastuBg:"linear-gradient(145deg,#1E0414,#340820)",
+   tathastu2:"linear-gradient(135deg,#2A0618,#500A2C)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nमाँ लक्ष्मी की कृपा\nतुम्हारे साथ है।",
+   tathastuSender:"— माँ लक्ष्मी",
+   tathastuColor:"#EC4899",tathastuGlow:"rgba(236,72,153,.35)",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय लक्ष्मी माता, मैया जय लक्ष्मी माता।\nतुमको निसदिन सेवत, हरि विष्णु विधाता॥",c:"#EC4899"},
      {label:"पद २",text:"उमा रमा ब्रह्माणी, तुम ही जग माता।\nसूर्य चन्द्रमा ध्यावत, नारद ऋषि गाता॥",c:"#F472B6"},
@@ -797,6 +815,12 @@ const FULL_DAYS=[
   {id:6,short:"Sat",full:"Saturday",deity:"Shani Dev",icon:"⚫",name:"श्री शनि देव आरती",sub:"शनि उपासना · शनिवार",
    color:"#64748B",bg:"linear-gradient(170deg,#F8FAFC 0%,#F1F5F9 55%,#E2E8F0 100%)",
    heroBg:"linear-gradient(135deg,#0F172A,#1E293B,#334155)",glow:"rgba(100,116,139,.18)",
+   image:"/shani.png",floatIcon:"⚖️",
+   tathastuBg:"linear-gradient(145deg,#060810,#0E1220)",
+   tathastu2:"linear-gradient(135deg,#0A0C18,#141828)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशनि देव का न्याय\nतुम्हारे साथ है।",
+   tathastuSender:"— शनि देव",
+   tathastuColor:"#94A3B8",tathastuGlow:"rgba(148,163,184,.3)",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
      {label:"पद २",text:"श्याम अंग वक्र दृष्टि चतुर्भुजा धारी।\nनीलाम्बर धार नाथ गज की असवारी॥",c:"#94A3B8"},
@@ -927,82 +951,106 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
           <div onClick={tasksDone.aarti?()=>setTathastu(t=>!t):undefined}
             style={{
               borderRadius:24,overflow:"hidden",
-              border:tasksDone.aarti?"1.5px solid rgba(139,92,246,.35)":"1.5px solid rgba(180,160,220,.15)",
-              boxShadow:tasksDone.aarti?"0 8px 32px rgba(109,40,217,.18)":"none",
+              border:tasksDone.aarti?`1.5px solid ${day.tathastuColor||"#8B5CF6"}44`:"1.5px solid rgba(255,255,255,.08)",
+              boxShadow:tasksDone.aarti?`0 8px 32px ${day.tathastuGlow||"rgba(139,92,246,.18)"}`:"none",
               opacity:tasksDone.aarti?1:0.45,
               cursor:tasksDone.aarti?"pointer":"default",
               transition:"all .5s ease",
-              background:tasksDone.aarti
-                ?"linear-gradient(135deg,#1A0A30,#2D1560)"
-                :"linear-gradient(135deg,#1A0A30,#2D1560)",
+              background:day.tathastuBg||"linear-gradient(135deg,#1A0A30,#2D1560)",
               position:"relative",
             }}>
             {/* Shimmer on activate */}
             {tasksDone.aarti&&<div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)",animation:"shimmer 3s ease-in-out infinite",pointerEvents:"none"}}/>}
             {/* Top rainbow bar */}
-            <div style={{height:3,background:tasksDone.aarti?"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)":"rgba(139,92,246,.2)",backgroundSize:"200% 100%",animation:tasksDone.aarti?"gradShift 3s linear infinite":"none"}}/>
+            <div style={{height:3,background:tasksDone.aarti?`linear-gradient(90deg,${day.tathastuColor||"#8B5CF6"},rgba(255,255,255,.5),${day.tathastuColor||"#8B5CF6"})`:"rgba(255,255,255,.08)",backgroundSize:"200% 100%",animation:tasksDone.aarti?"gradShift 3s linear infinite":"none"}}/>
 
             {/* Locked state */}
             {!tasksDone.aarti&&(
-              <div style={{padding:"20px",display:"flex",alignItems:"center",gap:14}}>
-                <div style={{width:48,height:48,borderRadius:16,background:"rgba(139,92,246,.12)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>🔒</div>
+              <div style={{padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
+                <div style={{width:50,height:50,borderRadius:16,background:"rgba(255,255,255,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>🔒</div>
                 <div>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:16,fontWeight:700,color:"rgba(200,180,255,.4)",letterSpacing:2}}>तथास्तु</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(180,150,255,.3)",marginTop:3}}>Complete today's aarti to unlock</div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.25)",letterSpacing:3}}>तथास्तु</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(255,255,255,.18)",marginTop:4}}>Complete today's aarti to unlock</div>
                 </div>
               </div>
             )}
 
             {/* Unlocked — collapsed preview */}
             {tasksDone.aarti&&!tathastu&&(
-              <div style={{padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
-                <div style={{fontSize:36,animation:"floatUp 3s ease-in-out infinite",filter:"drop-shadow(0 4px 12px rgba(139,92,246,.6))"}}>🔱</div>
+              <div style={{padding:"16px 18px",display:"flex",alignItems:"center",gap:14}}>
+                <div style={{fontSize:34,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 4px 14px ${day.tathastuGlow||"rgba(255,200,80,.5)"})`}}>{day.floatIcon||"✨"}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:700,color:"#E8D5FF",letterSpacing:3,lineHeight:1}}>तथास्तु</div>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(196,181,253,.6)",letterSpacing:2,marginTop:3}}>So it shall be · Tap to open</div>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
+                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:3}}>So it shall be · Tap to open</div>
                 </div>
-                <div style={{fontSize:18,color:"rgba(196,181,253,.5)"}}>↓</div>
+                <div style={{fontSize:16,color:"rgba(255,255,255,.3)"}}>↓</div>
               </div>
             )}
 
             {/* Unlocked — expanded full blessing */}
             {tasksDone.aarti&&tathastu&&(
-              <div style={{padding:"22px 20px 26px",display:"flex",flexDirection:"column",alignItems:"center"}}>
-                {/* Floating icon */}
-                <div style={{fontSize:48,animation:"floatUp 3s ease-in-out infinite",filter:"drop-shadow(0 4px 16px rgba(139,92,246,.7))",marginBottom:8}}>🔱</div>
+              <div style={{padding:"24px 18px 28px",display:"flex",flexDirection:"column",alignItems:"center"}}>
+
+                {/* Floating deity icon */}
+                <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.floatIcon||"✨"}</div>
 
                 {/* TATHASTU */}
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:40,fontWeight:700,color:"#E8D5FF",letterSpacing:4,lineHeight:1,marginBottom:4,textShadow:"0 0 30px rgba(167,139,250,.5)"}}>तथास्तु</div>
-                <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(196,181,253,.55)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:4,lineHeight:1,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`}}>तथास्तु</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,255,255,.4)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
 
                 {/* Divider */}
-                <div style={{width:70,height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent)",marginBottom:22}}/>
+                <div style={{width:60,height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}55,transparent)`,marginBottom:22}}/>
 
-                {/* Image */}
+                {/* Image — square with curved borders, inner card feel */}
                 {day.image&&(
-                  <div style={{width:230,height:230,borderRadius:"50%",overflow:"hidden",marginBottom:22,boxShadow:"0 8px 40px rgba(139,92,246,.3)",border:"3px solid rgba(255,255,255,.15)",flexShrink:0}}>
-                    <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}/>
+                  <div style={{
+                    width:"100%",
+                    background:day.tathastu2||"rgba(255,255,255,.06)",
+                    borderRadius:24,
+                    padding:12,
+                    border:`1px solid ${day.tathastuColor||"#FFD700"}22`,
+                    boxShadow:`0 8px 32px ${day.tathastuGlow||"rgba(255,200,80,.2)"},inset 0 1px 0 rgba(255,255,255,.06)`,
+                    marginBottom:18,
+                    position:"relative",
+                    overflow:"hidden",
+                  }}>
+                    {/* Inner card glow */}
+                    <div style={{position:"absolute",top:-40,left:"50%",transform:"translateX(-50%)",width:200,height:200,background:`radial-gradient(circle,${day.tathastuGlow||"rgba(255,200,80,.15)"} 0%,transparent 70%)`,pointerEvents:"none"}}/>
+                    <div style={{
+                      borderRadius:16,
+                      overflow:"hidden",
+                      width:"100%",
+                      aspectRatio:"1/1",
+                      position:"relative",
+                      boxShadow:`0 4px 20px ${day.tathastuGlow||"rgba(255,200,80,.25)"}`,
+                    }}>
+                      <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}/>
+                    </div>
+                    {/* Deity name below image inside card */}
+                    <div style={{textAlign:"center",marginTop:10,marginBottom:2}}>
+                      <div style={{fontFamily:"'Cinzel',serif",fontSize:13,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:2}}>{day.deity}</div>
+                    </div>
                   </div>
                 )}
 
-                {/* Message */}
-                <div style={{width:"100%",background:"rgba(255,255,255,.07)",borderRadius:20,padding:"20px",border:"1px solid rgba(167,139,250,.2)",marginBottom:16}}>
-                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"#E8D5FF",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line"}}>
+                {/* Message box */}
+                <div style={{width:"100%",background:"rgba(255,255,255,.06)",borderRadius:20,padding:"18px",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,marginBottom:16}}>
+                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.9)",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line"}}>
                     {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
                   </div>
-                  <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(167,139,250,.2),transparent)",margin:"14px 0"}}/>
+                  <div style={{height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}33,transparent)`,margin:"14px 0"}}/>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:"rgba(196,181,253,.4)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
-                    <div style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(167,139,250,.15)",border:"1px solid rgba(167,139,250,.25)",borderRadius:20,padding:"3px 10px"}}>
+                    <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:"rgba(255,255,255,.3)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:4,background:`${day.tathastuColor||"#FFD700"}18`,border:`1px solid ${day.tathastuColor||"#FFD700"}33`,borderRadius:20,padding:"3px 10px"}}>
                       <span style={{fontSize:11}}>✨</span>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,color:"#C4B5FD"}}>+30 Karma</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,color:day.tathastuColor||"#FFD700"}}>+30 Karma</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Collapse button */}
+                {/* Collapse */}
                 <button onClick={e=>{e.stopPropagation();setTathastu(false);}}
-                  style={{background:"rgba(255,255,255,.08)",border:"1px solid rgba(167,139,250,.2)",borderRadius:16,padding:"10px 28px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(196,181,253,.6)"}}>
+                  style={{background:"rgba(255,255,255,.07)",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,borderRadius:16,padding:"10px 28px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,255,255,.35)"}}>
                   ↑ Collapse
                 </button>
               </div>
