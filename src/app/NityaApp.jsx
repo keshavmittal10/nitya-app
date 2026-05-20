@@ -61,7 +61,7 @@ const SHLOKAS=[
 const PRAYERS={
   0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#7C2D12,#9A3412)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
   1:{deity:"Lord Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#1E3A5F,#1E40AF)",day:"Monday",sub:"शिव उपासना · सोमवार"},
-  2:{deity:"Lord Hanuman",name:"Hanuman Chalisa",hi:"श्री हनुमान चालीसा",icon:"🐒",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
+  2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🐒",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
   3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#78350F,#92400E)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
   4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#2E1065,#4C1D95)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
   5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#831843,#9D174D)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
@@ -763,7 +763,7 @@ const FULL_DAYS=[
    image:"/ganesha.png",floatIcon:"🐘",
    tathastuBg:"linear-gradient(145deg,#221000,#3A1C00)",
    tathastu2:"linear-gradient(135deg,#2C1400,#503000)",
-   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश जी का आशीर्वाद\nतुम्हारे साथ है।",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश का आशीर्वाद\nतुम्हारे साथ है।",
    tathastuSender:"— श्री गणेश",
    tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",
    verses:[
@@ -837,7 +837,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
   const [tathastu,setTathastu]=useState(false);
   const [toast,setToast]=useState("");
   const day=FULL_DAYS[sel];
-  const pick=(i)=>{if(i===todayIdx)setSel(i);};
+  const pick=(i)=>{setSel(i);};
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
   const completeAarti=()=>{
@@ -860,7 +860,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
       <div style={{padding:"12px 16px 0",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.55)",borderRadius:22,padding:"5px",backdropFilter:"blur(16px)",border:`1px solid ${day.color}25`,boxShadow:`0 4px 18px ${day.color}14`}}>
           {FULL_DAYS.map((d,i)=>{const on=i===sel;const isToday=i===todayIdx;return(
-            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:i===todayIdx?"pointer":"default",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative",opacity:i===todayIdx?1:0.3,pointerEvents:i===todayIdx?"auto":"none"}}>
+            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative",opacity:1,pointerEvents:"auto"}}>
               {isToday&&!on&&<div style={{position:"absolute",top:4,left:"50%",transform:"translateX(6px)",width:5,height:5,borderRadius:"50%",background:d.color,boxShadow:`0 0 5px ${d.color}88`}}/>}
               <span style={{fontSize:on?16:13,lineHeight:1,transition:"font-size .2s"}}>{d.icon}</span>
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:7.5,fontWeight:on?800:600,letterSpacing:.5,textTransform:"uppercase",lineHeight:1,color:on?"white":`${d.color}88`}}>{d.short}</span>
@@ -978,7 +978,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
             {/* Unlocked — collapsed preview */}
             {tasksDone.aarti&&!tathastu&&(
               <div style={{padding:"16px 18px",display:"flex",alignItems:"center",gap:14}}>
-                <div style={{fontSize:34,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 4px 14px ${day.tathastuGlow||"rgba(255,200,80,.5)"})`}}>{day.floatIcon||"✨"}</div>
+                <div style={{fontSize:34,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 4px 14px ${day.tathastuGlow||"rgba(255,200,80,.5)"})`}}>{day.icon}</div>
                 <div style={{flex:1}}>
                   <div style={{fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
                   <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:3}}>So it shall be · Tap to open</div>
@@ -992,7 +992,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               <div style={{padding:"24px 18px 28px",display:"flex",flexDirection:"column",alignItems:"center"}}>
 
                 {/* Floating deity icon */}
-                <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.floatIcon||"✨"}</div>
+                <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.icon}</div>
 
                 {/* TATHASTU */}
                 <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:4,lineHeight:1,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`}}>तथास्तु</div>
