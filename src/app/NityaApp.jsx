@@ -904,12 +904,12 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"16px 16px 16px 20px",background:`${v.c}0D`,border:`1.5px solid ${v.c}2E`,position:"relative",overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.06)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"16px 16px 16px 20px",background:`${v.c}12`,border:`1.5px solid ${v.c}38`,position:"relative",overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.06)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
               <div style={{position:"absolute",left:0,top:0,bottom:0,width:5,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:`${v.c}77`,marginBottom:10}}>{v.label}</div>
-              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#1A0800",lineHeight:1.95}}>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:1.95}}>
                 {v.text.split("\n").map((line,li,arr)=>(
-                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:v.c,textShadow:`0 1px 12px ${v.c}33`}}>
                     {line}
                     {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}35,transparent)`,margin:"6px 0"}}/>}
                   </div>
@@ -970,21 +970,32 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
             {/* Top rainbow bar */}
             <div style={{height:3,background:tasksDone.aarti?`linear-gradient(90deg,${day.tathastuColor||"#8B5CF6"},rgba(255,255,255,.5),${day.tathastuColor||"#8B5CF6"})`:"rgba(255,255,255,.08)",backgroundSize:"200% 100%",animation:tasksDone.aarti?"gradShift 3s linear infinite":"none"}}/>
 
-            {/* Locked state */}
+            {/* Locked state — show blurred deity image with lock */}
             {!tasksDone.aarti&&(
-              <div style={{padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
-                <div style={{width:50,height:50,borderRadius:16,background:"rgba(255,255,255,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0}}>🔒</div>
-                <div>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.25)",letterSpacing:3}}>तथास्तु</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(255,255,255,.18)",marginTop:4}}>Complete today's aarti to unlock</div>
+              <div style={{padding:"16px 16px",display:"flex",alignItems:"center",gap:14}}>
+                {/* Blurred deity image preview */}
+                {day.image&&(
+                  <div style={{width:64,height:64,borderRadius:16,overflow:"hidden",flexShrink:0,position:"relative",border:"1px solid rgba(255,255,255,.1)"}}>
+                    <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",filter:"blur(4px) brightness(.5)",transform:"scale(1.1)"}}/>
+                    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>🔒</div>
+                  </div>
+                )}
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:20,fontWeight:700,color:"rgba(255,255,255,.22)",letterSpacing:3}}>तथास्तु</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(255,255,255,.15)",marginTop:4}}>Complete today's aarti to unlock</div>
                 </div>
               </div>
             )}
 
             {/* Unlocked — collapsed preview */}
             {tasksDone.aarti&&!tathastu&&(
-              <div style={{padding:"16px 18px",display:"flex",alignItems:"center",gap:14}}>
-                <div style={{fontSize:34,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 4px 14px ${day.tathastuGlow||"rgba(255,200,80,.5)"})`}}>{day.icon}</div>
+              <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:14}}>
+                {/* Deity image — glowing, unlocked */}
+                {day.image&&(
+                  <div style={{width:64,height:64,borderRadius:16,overflow:"hidden",flexShrink:0,border:`2px solid ${day.tathastuColor||"#FFD700"}55`,boxShadow:`0 4px 18px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`,animation:"floatUp 3s ease-in-out infinite"}}>
+                    <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}/>
+                  </div>
+                )}
                 <div style={{flex:1}}>
                   <div style={{fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
                   <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:3}}>So it shall be · Tap to open</div>
