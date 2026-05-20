@@ -59,12 +59,12 @@ const SHLOKAS=[
 ];
 
 const PRAYERS={
-  0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#7C2D12,#9A3412)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
-  1:{deity:"Lord Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#1E3A5F,#1E40AF)",day:"Monday",sub:"शिव उपासना · सोमवार"},
-  2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🪔",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
-  3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#78350F,#92400E)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
-  4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#2E1065,#4C1D95)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
-  5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#831843,#9D174D)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
+  0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#4A1208,#5C1E08)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
+  1:{deity:"Lord Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#0A1828,#0E2260)",day:"Monday",sub:"शिव उपासना · सोमवार"},
+  2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🪔",color:"#FB923C",g:"linear-gradient(135deg,#421408,#7A2208)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
+  3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#3C1806,#4A2006)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
+  4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#140630,#280E50)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
+  5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#420820,#520A28)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
   6:{deity:"Shani Dev",name:"Shani Dev Aarti",hi:"श्री शनि देव आरती",icon:"⚫",color:"#64748B",g:"linear-gradient(135deg,#0F172A,#334155)",day:"Saturday",sub:"शनि उपासना · शनिवार"},
 };
 
