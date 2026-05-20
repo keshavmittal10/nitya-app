@@ -912,7 +912,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>{v.label}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
                 {v.text.split("\n").map((line,li,arr)=>(
-                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:li%2===0?"#FFFBF0":"rgba(255,245,225,.82)"}}>
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:li%2===0?"#FFFFFF":"#FFE8C0"}}>
                     {line}
                     {li<arr.length-1&&<div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)",margin:"5px 0"}}/>}
                   </div>
