@@ -906,17 +906,14 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
             <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"14px 14px 14px 18px",background:`${v.c}0D`,border:`1.5px solid ${v.c}2E`,position:"relative",overflow:"hidden",boxShadow:"0 2px 10px rgba(0,0,0,.05)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
               <div style={{position:"absolute",left:0,top:0,bottom:0,width:4,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
-              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                <div style={{width:30,height:30,borderRadius:10,flexShrink:0,background:`${v.c}15`,border:`1px solid ${v.c}30`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {isFirst||isLast?<span style={{fontSize:13}}>{isFirst?"🔔":"🙏"}</span>:<span style={{fontFamily:"'Cinzel',serif",fontSize:10,fontWeight:700,color:v.c}}>{i}</span>}
-                </div>
+              <div style={{display:"flex",alignItems:"flex-start",gap:0}}>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:`${v.c}88`,marginBottom:8}}>{v.label}</div>
-                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:"#1A0800",lineHeight:1.95}}>
+                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:700,color:"#1A0800",lineHeight:2.1}}>
                     {v.text.split("\n").map((line,li,arr)=>(
-                      <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                      <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(13px,4.2vw,17px)"}}>
                         {line}
-                        {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}40,transparent)`,margin:"4px 0"}}/>}
+                        {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}40,transparent)`,margin:"5px 0"}}/>}
                       </div>
                     ))}
                   </div>
