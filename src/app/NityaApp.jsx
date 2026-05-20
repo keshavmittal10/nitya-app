@@ -904,14 +904,17 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"16px 16px 16px 20px",background:`${v.c}15`,border:`2px solid ${v.c}40`,position:"relative",overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.06)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
-              <div style={{position:"absolute",left:0,top:0,bottom:0,width:5,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:`${v.c}77`,marginBottom:10}}>{v.label}</div>
-              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:1.95}}>
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"18px 18px 18px 20px",background:v.bg||`${v.c}CC`,border:`1.5px solid ${v.c}66`,position:"relative",overflow:"hidden",boxShadow:`0 6px 20px ${v.c}33`,animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+              {/* subtle top shimmer line */}
+              <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)`,borderRadius:"22px 22px 0 0"}}/>
+              {/* inner glow */}
+              <div style={{position:"absolute",top:-30,right:-20,width:120,height:120,background:`radial-gradient(circle,${v.c}22 0%,transparent 70%)`,pointerEvents:"none"}}/>
+              <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>{v.label}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
                 {v.text.split("\n").map((line,li,arr)=>(
-                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:"#2D1200",fontWeight:800}}>
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:li%2===0?"#FFFBF0":"rgba(255,245,225,.82)"}}>
                     {line}
-                    {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}35,transparent)`,margin:"6px 0"}}/>}
+                    {li<arr.length-1&&<div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)",margin:"5px 0"}}/>}
                   </div>
                 ))}
               </div>
