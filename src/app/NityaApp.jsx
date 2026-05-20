@@ -61,7 +61,7 @@ const SHLOKAS=[
 const PRAYERS={
   0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#7C2D12,#9A3412)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
   1:{deity:"Lord Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#1E3A5F,#1E40AF)",day:"Monday",sub:"शिव उपासना · सोमवार"},
-  2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🐒",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
+  2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🪔",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
   3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#78350F,#92400E)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
   4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#2E1065,#4C1D95)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
   5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#831843,#9D174D)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
@@ -747,7 +747,7 @@ const FULL_DAYS=[
      {label:"पद ७",text:"ब्रह्मा विष्णु सदाशिव जानत अविवेका।\nप्रणवाक्षर के मध्ये ये तीनों एका॥",c:"#60A5FA"},
      {label:"आरती समापन",text:"त्रिगुणस्वामी जी की आरती जो कोई नर गावे।\nकहत शिवानन्द स्वामी सुख संपत्ति पावे॥",c:"#A78BFA"},
    ]},
-  {id:2,short:"Tue",full:"Tuesday",deity:"Lord Hanuman",icon:"🐒",name:"हनुमान जी की आरती",sub:"हनुमान उपासना · मंगलवार",
+  {id:2,short:"Tue",full:"Tuesday",deity:"Lord Hanuman",icon:"🪔",name:"हनुमान जी की आरती",sub:"हनुमान उपासना · मंगलवार",
    color:"#EF4444",bg:"linear-gradient(170deg,#FFF5F5 0%,#FFE4E4 55%,#FECACA 100%)",
    heroBg:"linear-gradient(135deg,#7F1D1D,#991B1B,#B91C1C)",glow:"rgba(239,68,68,.2)",
    image:"/hanuman.png",
@@ -904,20 +904,20 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"15px 17px 15px 21px",background:`${v.c}0D`,border:`1.5px solid ${v.c}2E`,position:"relative",overflow:"hidden",boxShadow:"0 2px 10px rgba(0,0,0,.05)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"14px 14px 14px 18px",background:`${v.c}0D`,border:`1.5px solid ${v.c}2E`,position:"relative",overflow:"hidden",boxShadow:"0 2px 10px rgba(0,0,0,.05)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
               <div style={{position:"absolute",left:0,top:0,bottom:0,width:4,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
               <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                <div style={{width:36,height:36,borderRadius:12,flexShrink:0,background:`${v.c}15`,border:`1px solid ${v.c}30`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {isFirst||isLast?<span style={{fontSize:14}}>{isFirst?"🔔":"🙏"}</span>:<span style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:700,color:v.c}}>{i}</span>}
+                <div style={{width:30,height:30,borderRadius:10,flexShrink:0,background:`${v.c}15`,border:`1px solid ${v.c}30`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  {isFirst||isLast?<span style={{fontSize:13}}>{isFirst?"🔔":"🙏"}</span>:<span style={{fontFamily:"'Cinzel',serif",fontSize:10,fontWeight:700,color:v.c}}>{i}</span>}
                 </div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:`${v.c}88`,marginBottom:8}}>{v.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:800,color:"#1A0800",lineHeight:2}}>
+                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:"#1A0800",lineHeight:1.95}}>
                     {v.text.split("\n").map((line,li,arr)=>(
-                      <span key={li}>
+                      <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
                         {line}
-                        {li<arr.length-1&&<><br/><div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}40,transparent)`,margin:"2px 0"}}/></>}
-                      </span>
+                        {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}40,transparent)`,margin:"4px 0"}}/>}
+                      </div>
                     ))}
                   </div>
                 </div>
