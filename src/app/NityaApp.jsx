@@ -904,12 +904,12 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"16px 16px 16px 20px",background:`${v.c}12`,border:`1.5px solid ${v.c}38`,position:"relative",overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.06)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"16px 16px 16px 20px",background:`${v.c}15`,border:`2px solid ${v.c}40`,position:"relative",overflow:"hidden",boxShadow:"0 2px 12px rgba(0,0,0,.06)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
               <div style={{position:"absolute",left:0,top:0,bottom:0,width:5,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:`${v.c}77`,marginBottom:10}}>{v.label}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:1.95}}>
                 {v.text.split("\n").map((line,li,arr)=>(
-                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:v.c,textShadow:`0 1px 12px ${v.c}33`}}>
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:"#2D1200",fontWeight:800}}>
                     {line}
                     {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}35,transparent)`,margin:"6px 0"}}/>}
                   </div>
