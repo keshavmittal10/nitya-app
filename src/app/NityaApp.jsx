@@ -601,11 +601,7 @@ function Home({onNav,favorites,setFavorites}){
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:tab==="hindi"?"#C47010":"#5B7AE0"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
             </div>
             {tab==="hindi"
-              ?<div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#3E1800",lineHeight:1.9}}>
-  {sl.hindi.split(/[।॥]/).filter(s=>s.trim()).map((line,i)=>(
-    <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",marginBottom:4}}>{line.trim()}{i<sl.hindi.split(/[।॥]/).filter(s=>s.trim()).length-1?"।":""}</div>
-  ))}
-</div>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"#3E1800",lineHeight:1.9}}>{sl.hindi}</p>
               :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"#2D3080",lineHeight:1.85}}>{sl.english}</p>
             }
             {/* Decorative quote mark */}
