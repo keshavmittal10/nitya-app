@@ -562,7 +562,11 @@ function Home({onNav,favorites,setFavorites}){
           <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,200,60,.12)",border:"1px solid rgba(255,200,60,.22)",borderRadius:20,padding:"4px 11px",marginBottom:14}}>
             <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,210,100,.8)"}}>🪷 {sl.grantha} · {sl.chapter}</span>
           </div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:600,color:"#FFE4A0",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line",padding:"16px 10px",background:"rgba(255,255,255,.04)",borderRadius:18,border:"1px solid rgba(255,200,60,.08)",marginBottom:14}}>{sl.sanskrit}</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#FFE4A0",lineHeight:2,padding:"16px 10px",background:"rgba(255,255,255,.04)",borderRadius:18,border:"1px solid rgba(255,200,60,.08)",marginBottom:14}}>
+  {sl.sanskrit.split("\n").map((line,i)=>(
+    <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",textAlign:"center"}}>{line}</div>
+  ))}
+</div>
           <div style={{display:"flex",alignItems:"center",gap:12,background:"rgba(0,0,0,.2)",borderRadius:18,padding:"11px 14px"}}>
             <PlayBtn playing={playing} onToggle={togglePlay} size={44} c1="#FFD700" c2="#FF8C00"/>
             <div style={{flex:1}}>
@@ -597,7 +601,11 @@ function Home({onNav,favorites,setFavorites}){
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:tab==="hindi"?"#C47010":"#5B7AE0"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
             </div>
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:"#3E1800",lineHeight:1.9}}>{sl.hindi}</p>
+              ?<div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#3E1800",lineHeight:1.9}}>
+  {sl.hindi.split(/[।॥]/).filter(s=>s.trim()).map((line,i)=>(
+    <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",marginBottom:4}}>{line.trim()}{i<sl.hindi.split(/[।॥]/).filter(s=>s.trim()).length-1?"।":""}</div>
+  ))}
+</div>
               :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"#2D3080",lineHeight:1.85}}>{sl.english}</p>
             }
             {/* Decorative quote mark */}
@@ -1378,11 +1386,10 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           {/* Mantra text */}
           <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",marginBottom:14}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.55)",marginBottom:8}}>Maha Mrityunjaya Mantra</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#E8D5FF",lineHeight:2}}>
-              ॐ त्र्यम्बकं यजामहे<br/>
-              सुगन्धिं पुष्टिवर्धनम्।<br/>
-              उर्वारुकमिव बन्धनान्<br/>
-              मृत्योर्मुक्षीय माऽमृतात्॥
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
+              {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
+                <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
+              ))}
             </div>
           </div>
 
