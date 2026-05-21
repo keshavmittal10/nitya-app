@@ -781,7 +781,7 @@ const FULL_DAYS=[
    image:"/ganesha.png",floatIcon:"🐘",
    tathastuBg:"linear-gradient(145deg,#221000,#3A1C00)",
    tathastu2:"linear-gradient(135deg,#2C1400,#503000)",
-   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश का आशीर्वाद\nतुम्हारे साथ है।",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश का आशीष\nतुम्हारे साथ है।",
    tathastuSender:"— श्री गणेश",
    tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",darkText:"#78350F",
    verses:[
