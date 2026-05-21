@@ -717,7 +717,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#2C1400,#4A2000)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nसूर्य देव का तेज\nतुम्हारे साथ है।",
    tathastuSender:"— सूर्य देव",
-   tathastuColor:"#FB923C",tathastuGlow:"rgba(251,146,60,.4)",
+   tathastuColor:"#FB923C",tathastuGlow:"rgba(251,146,60,.4)",darkText:"#9A3412",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय कश्यप नंदन, ॐ जय आदित्य देवा।\nकंचन काया किरणमय, तेज प्रभु देवा॥",c:"#F97316"},
      {label:"पद २",text:"सप्त अश्व रथ राजित, अरुण सारथी स्वामी।\nत्रिभुवन प्रकाशक तुम, जीवन के दानी॥",c:"#FB923C"},
@@ -736,7 +736,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#0C1A3A,#142850)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशिव का आशीर्वाद\nतुम्हारे साथ है।",
    tathastuSender:"— महादेव शिव",
-   tathastuColor:"#60A5FA",tathastuGlow:"rgba(96,165,250,.4)",
+   tathastuColor:"#60A5FA",tathastuGlow:"rgba(96,165,250,.4)",darkText:"#1E3A5F",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय शिव ओंकारा, प्रभु जय शिव ओंकारा।\nब्रह्मा विष्णु सदाशिव, अर्धांगी धारा॥",c:"#60A5FA"},
      {label:"पद २",text:"एकानन चतुरानन पंचानन राजे।\nहंसासन गरुड़ासन वृषवाहन साजे॥",c:"#818CF8"},
@@ -755,7 +755,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#3A0800,#5C1000)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nहनुमान जी का बल\nतुम्हारे साथ है।",
    tathastuSender:"— श्री हनुमान",
-   tathastuColor:"#F87171",tathastuGlow:"rgba(248,113,113,.4)",
+   tathastuColor:"#F87171",tathastuGlow:"rgba(248,113,113,.4)",darkText:"#7F1D1D",
    verses:[
      {label:"आरती प्रारम्भ",text:"आरती कीजै हनुमान लला की।\nदुष्ट दलन रघुनाथ कला की॥",c:"#EF4444"},
      {label:"पद २",text:"जाके बल से गिरिवर कांपे।\nरोग दोष जाके निकट न झांके॥",c:"#F97316"},
@@ -779,7 +779,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#2C1400,#503000)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश का आशीर्वाद\nतुम्हारे साथ है।",
    tathastuSender:"— श्री गणेश",
-   tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",
+   tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",darkText:"#78350F",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
      {label:"पद २",text:"एकदंत दयावंत चार भुजाधारी।\nमाथे सिंदूर सोहे मूसे की सवारी॥",c:"#FBBF24"},
@@ -796,7 +796,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#150830,#280F5A)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nश्याम बाबा का प्रेम\nतुम्हारे साथ है।",
    tathastuSender:"— श्री श्याम",
-   tathastuColor:"#8B5CF6",tathastuGlow:"rgba(139,92,246,.35)",
+   tathastuColor:"#8B5CF6",tathastuGlow:"rgba(139,92,246,.35)",darkText:"#2E1065",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#8B5CF6"},
      {label:"पद २",text:"रत्न सिंहासन राजत, मोर मुकुट सिर धारे।\nमोरछड़ी की शोभा, मन भक्तों के हरे॥",c:"#A78BFA"},
@@ -814,7 +814,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#2A0618,#500A2C)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nमाँ लक्ष्मी की कृपा\nतुम्हारे साथ है।",
    tathastuSender:"— माँ लक्ष्मी",
-   tathastuColor:"#EC4899",tathastuGlow:"rgba(236,72,153,.35)",
+   tathastuColor:"#EC4899",tathastuGlow:"rgba(236,72,153,.35)",darkText:"#831843",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय लक्ष्मी माता, मैया जय लक्ष्मी माता।\nतुमको निसदिन सेवत, हरि विष्णु विधाता॥",c:"#EC4899"},
      {label:"पद २",text:"उमा रमा ब्रह्माणी, तुम ही जग माता।\nसूर्य चन्द्रमा ध्यावत, नारद ऋषि गाता॥",c:"#F472B6"},
@@ -834,7 +834,7 @@ const FULL_DAYS=[
    tathastu2:"linear-gradient(135deg,#0A0C18,#141828)",
    tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशनि देव का न्याय\nतुम्हारे साथ है।",
    tathastuSender:"— शनि देव",
-   tathastuColor:"#94A3B8",tathastuGlow:"rgba(148,163,184,.3)",
+   tathastuColor:"#94A3B8",tathastuGlow:"rgba(148,163,184,.3)",darkText:"#0F172A",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
      {label:"पद २",text:"श्याम अंग वक्र दृष्टि चतुर्भुजा धारी।\nनीलाम्बर धार नाथ गज की असवारी॥",c:"#94A3B8"},
@@ -904,7 +904,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"18px 18px 18px 20px",background:v.bg||`${v.c}CC`,border:`1.5px solid ${v.c}66`,position:"relative",overflow:"hidden",boxShadow:`0 6px 20px ${v.c}33`,animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"18px 18px 18px 20px",background:`${v.c}15`,border:`1.5px solid ${v.c}35`,position:"relative",overflow:"hidden",boxShadow:`0 6px 20px ${v.c}33`,animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
               {/* subtle top shimmer line */}
               <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)`,borderRadius:"22px 22px 0 0"}}/>
               {/* inner glow */}
@@ -912,7 +912,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>{v.label}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
                 {v.text.split("\n").map((line,li,arr)=>(
-                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:li%2===0?v.c:v.c+"DD"}}>
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:day.darkText||v.c}}>
                     {line}
                     {li<arr.length-1&&<div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)",margin:"5px 0"}}/>}
                   </div>
