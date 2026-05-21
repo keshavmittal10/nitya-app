@@ -64,7 +64,7 @@ const PRAYERS={
   2:{deity:"Lord Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🪔",color:"#FB923C",g:"linear-gradient(135deg,#421408,#7A2208)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
   3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#3C1806,#4A2006)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
   4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#140630,#280E50)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
-  5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#420820,#520A28)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
+  5:{deity:"Maa Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#420820,#520A28)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
   6:{deity:"Shani Dev",name:"Shani Dev Aarti",hi:"श्री शनि देव आरती",icon:"⚫",color:"#64748B",g:"linear-gradient(135deg,#0F172A,#334155)",day:"Saturday",sub:"शनि उपासना · शनिवार"},
 };
 
@@ -806,7 +806,7 @@ const FULL_DAYS=[
      {label:"पद ६",text:"जो कोई प्रेम से गावे, आरती श्याम तुम्हारी।\nकृपा बरसे उस पर, मिटे विपदा सारी॥",c:"#8B5CF6"},
      {label:"आरती समापन",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#7C3AED"},
    ]},
-  {id:5,short:"Fri",full:"Friday",deity:"Goddess Lakshmi",icon:"🌸",name:"श्री लक्ष्मी जी की आरती",sub:"लक्ष्मी उपासना · शुक्रवार",
+  {id:5,short:"Fri",full:"Friday",deity:"Maa Lakshmi",icon:"🌸",name:"श्री लक्ष्मी जी की आरती",sub:"लक्ष्मी उपासना · शुक्रवार",
    color:"#EC4899",bg:"linear-gradient(170deg,#FDF2F8 0%,#FCE7F3 55%,#FBCFE8 100%)",
    heroBg:"linear-gradient(135deg,#831843,#9D174D,#BE185D)",glow:"rgba(236,72,153,.2)",
    image:"/lakshmi.png",floatIcon:"🪷",
@@ -896,8 +896,17 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:700,color:"rgba(255,255,255,.9)"}}>{day.name}</div>
           </div>
         </div>
+        {/* Instruction card */}
+        <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"14px 16px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+            <span style={{fontSize:20,flexShrink:0}}>🙏</span>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:600,color:day.darkText||"#2D1200",lineHeight:1.8}}>
+              पूरे भाव के साथ अपने शांत मन से बैठें। एक बार अपनी वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें।
+            </div>
+          </div>
+        </div>
         {/* Section label */}
-        <div style={{padding:"16px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{padding:"14px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:`${day.color}99`}}>🙏 आरती के पद</div>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:600,color:`${day.color}66`}}>{day.verses.length} पद</div>
         </div>
@@ -914,7 +923,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 {v.text.split("\n").map((line,li,arr)=>(
                   <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:day.darkText||v.c}}>
                     {line}
-                    {li<arr.length-1&&<div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)",margin:"5px 0"}}/>}
+                    {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${day.darkText||v.c}55,transparent)`,margin:"5px 0"}}/>}
                   </div>
                 ))}
               </div>
@@ -990,20 +999,19 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               </div>
             )}
 
-            {/* Unlocked — collapsed preview */}
+            {/* Unlocked — collapsed preview — square centered */}
             {tasksDone.aarti&&!tathastu&&(
-              <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:14}}>
-                {/* Deity image — glowing, unlocked */}
+              <div style={{padding:"20px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
+                {/* Deity image */}
                 {day.image&&(
-                  <div style={{width:64,height:64,borderRadius:16,overflow:"hidden",flexShrink:0,border:`2px solid ${day.tathastuColor||"#FFD700"}55`,boxShadow:`0 4px 18px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`,animation:"floatUp 3s ease-in-out infinite"}}>
+                  <div style={{width:80,height:80,borderRadius:18,overflow:"hidden",flexShrink:0,border:`2px solid ${day.tathastuColor||"#FFD700"}55`,boxShadow:`0 6px 22px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`,animation:"floatUp 3s ease-in-out infinite"}}>
                     <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}/>
                   </div>
                 )}
-                <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:22,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:3}}>So it shall be · Tap to open</div>
+                <div style={{textAlign:"center"}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:24,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
+                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:5}}>So it shall be · Tap to open ↓</div>
                 </div>
-                <div style={{fontSize:16,color:"rgba(255,255,255,.3)"}}>↓</div>
               </div>
             )}
 
