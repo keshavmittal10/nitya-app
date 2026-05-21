@@ -918,7 +918,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)`,borderRadius:"22px 22px 0 0"}}/>
               {/* inner glow */}
               <div style={{position:"absolute",top:-30,right:-20,width:120,height:120,background:`radial-gradient(circle,${v.c}22 0%,transparent 70%)`,pointerEvents:"none"}}/>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.45)",marginBottom:10}}>{v.label}</div>
+              <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:day.darkText||v.c,opacity:.7,marginBottom:10}}>{v.label}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
                 {v.text.split("\n").map((line,li,arr)=>(
                   <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:day.darkText||v.c}}>
