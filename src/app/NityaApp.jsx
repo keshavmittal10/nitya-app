@@ -849,7 +849,7 @@ const FULL_DAYS=[
    ]},
 ];
 
-function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays}){
+function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays,userName=""}){
   const todayIdx=new Date().getDay();
   const [sel,setSel]=useState(todayIdx);
   const [tathastu,setTathastu]=useState(false);
@@ -1013,7 +1013,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.icon}</div>
 
                 {/* TATHASTU */}
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:4,lineHeight:1,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`}}>तथास्तु</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:userName?34:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:userName?2:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>तथास्तु{userName?`, ${userName}`:""}</div>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,255,255,.4)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
 
                 {/* Divider */}
@@ -1054,7 +1054,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 {/* Message box */}
                 <div style={{width:"100%",background:"rgba(255,255,255,.06)",borderRadius:20,padding:"18px",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,marginBottom:16}}>
                   <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.9)",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line"}}>
-                    {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
+                    {(day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।").replace("हे भक्त",userName?`हे ${userName}`:"हे भक्त")}
                   </div>
                   <div style={{height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}33,transparent)`,margin:"14px 0"}}/>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1952,7 +1952,7 @@ export default function App(){
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
-          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave}/>}
+          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
