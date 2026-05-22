@@ -4,6 +4,41 @@ import { initializeApp, getApps } from "firebase/app";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
+
+// Simple English to Devanagari transliteration for common names
+function toDevanagari(name) {
+  if(!name) return "";
+  // If already contains Devanagari, return as is
+  if(/[ऀ-ॿ]/.test(name)) return name;
+  const map = {
+    // Common name mappings
+    "keshav":"केशव","ramesh":"रमेश","suresh":"सुरेश","mahesh":"महेश","dinesh":"दिनेश",
+    "rajesh":"राजेश","mukesh":"मुकेश","ganesh":"गणेश","naresh":"नरेश","umesh":"उमेश",
+    "priya":"प्रिया","kavita":"कविता","sunita":"सुनीता","anita":"अनीता","geeta":"गीता",
+    "sita":"सीता","rita":"रीता","rekha":"रेखा","usha":"उषा","asha":"आशा",
+    "arjun":"अर्जुन","ravi":"रवि","shiva":"शिव","krishna":"कृष्ण","ram":"राम",
+    "mohan":"मोहन","sohan":"सोहन","rohan":"रोहन","rohit":"रोहित","mohit":"मोहित",
+    "amit":"अमित","sumit":"सुमित","anil":"अनिल","sunil":"सुनील","kapil":"कपिल",
+    "vikas":"विकास","deepak":"दीपक","rakesh":"राकेश","lokesh":"लोकेश","yogesh":"योगेश",
+    "pooja":"पूजा","aarti":"आरती","archana":"अर्चना","vandana":"वंदना","radha":"राधा",
+    "meera":"मीरा","neha":"नेहा","sneha":"स्नेहा","preeti":"प्रीति","swati":"स्वाति",
+    "rahul":"राहुल","nikhil":"निखिल","akhil":"अखिल","sahil":"साहिल","sachin":"सचिन",
+    "lalit":"ललित","harish":"हरीश","girish":"गिरीश","suresh":"सुरेश","paresh":"परेश",
+    "shyam":"श्याम","ghansyam":"घनश्याम","balram":"बलराम","lakshmi":"लक्ष्मी",
+    "pankaj":"पंकज","sanjay":"संजय","vijay":"विजय","ajay":"अजय","manoj":"मनोज",
+    "pramod":"प्रमोद","vinod":"विनोद","arvind":"अरविंद","govind":"गोविंद","ravind":"रवींद्र",
+    "ashok":"अशोक","alok":"आलोक","trilok":"त्रिलोक","bhavesh":"भावेश","devesh":"देवेश",
+    "satish":"सतीश","jagdish":"जगदीश","ramakant":"रामकांत","shivkant":"शिवकांत",
+    "maya":"माया","mamta":"ममता","sarla":"सरला","kamla":"कमला","vimla":"विमला",
+    "seema":"सीमा","reema":"रीमा","heema":"हीमा","meena":"मीना","veena":"वीणा",
+    "anjali":"अंजली","shweta":"श्वेता","shruti":"श्रुति","smriti":"स्मृति","kratika":"कृतिका",
+  };
+  const lower = name.toLowerCase().trim();
+  if(map[lower]) return map[lower];
+  // Return original if not found
+  return name;
+}
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -1013,7 +1048,9 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.icon}</div>
 
                 {/* TATHASTU */}
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:userName?34:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:userName?2:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>तथास्तु{userName?`, ${userName}`:""}</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:userName?34:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:userName?2:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>
+                  तथास्तु{userName&&<span style={{fontFamily:"'Syne',sans-serif",fontWeight:800}}>, {userName}</span>}
+                </div>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,255,255,.4)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
 
                 {/* Divider */}
@@ -1054,7 +1091,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 {/* Message box */}
                 <div style={{width:"100%",background:"rgba(255,255,255,.06)",borderRadius:20,padding:"18px",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,marginBottom:16}}>
                   <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.9)",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line"}}>
-                    {(day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।").replace("हे भक्त",userName?`हे ${userName}`:"हे भक्त")}
+                    {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
                   </div>
                   <div style={{height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}33,transparent)`,margin:"14px 0"}}/>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
