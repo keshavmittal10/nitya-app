@@ -1048,9 +1048,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.icon}</div>
 
                 {/* TATHASTU */}
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:userName?34:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:userName?2:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>
-                  तथास्तु{userName&&<span style={{fontFamily:"'Syne',sans-serif",fontWeight:800}}>, {userName}</span>}
-                </div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>तथास्तु</div>
                 <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,255,255,.4)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
 
                 {/* Divider */}
@@ -1124,6 +1122,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   const TASK_DEFS=[
     {id:"shlok",icon:"🌅",bg:"#FFF3E0",title:"Morning Shlok",sub:"Bhagavad Gita · Ch.2 V.47",detail:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।",xp:50},
     {id:"aarti",icon:"🪔",bg:"#FFF0E8",title:"Today's Aarti",sub:`${todayPrayer.deity} · ${todayPrayer.hi}`,detail:todayPrayer.name,xp:30,accentColor:todayPrayer.color},
+    {id:"mantra",icon:"📿",bg:"#F5F0FF",title:"Mantra Japa",sub:"Anushthan · महामृत्युञ्जय मंत्र",detail:"ॐ त्र्यम्बकं यजामहे...",xp:20,accentColor:"#8B5CF6"},
   ];
   const tasks=TASK_DEFS.map(t=>({...t,done:!!tasksDone[t.id]}));
 
@@ -1205,15 +1204,13 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
         <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,#3D2000,#5C3200)",borderRadius:26,padding:"20px 22px",position:"relative",overflow:"hidden",boxShadow:"0 12px 36px rgba(93,50,0,.3)"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"26px 26px 0 0"}}/>
           <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:56,opacity:.14}}>🏆</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"2.5px",textTransform:"uppercase",color:"rgba(255,210,120,.6)"}}>Total Karma Points</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"2.5px",textTransform:"uppercase",color:"rgba(255,210,120,.6)"}}>Today's Karma Points</div>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:46,fontWeight:800,color:"#FFD700",lineHeight:1.05,margin:"5px 0 3px",letterSpacing:-1}}>{earned}</div>
           {(()=>{
-            const curLvl=LEVELS.find(l=>earned>=l.min&&earned<=l.max)||LEVELS[0];
-            const nxtLvl=LEVELS[LEVELS.indexOf(curLvl)+1];
-            const pct=nxtLvl?Math.min(Math.round(((earned-curLvl.min)/(nxtLvl.min-curLvl.min))*100),100):100;
+            const pct=Math.min(Math.round((earned/100)*100),100);
             return(<>
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"rgba(255,210,120,.55)"}}>
-                {earned===0?"Complete today's sadhana to earn Karma Points":nxtLvl?`${nxtLvl.min-earned} points to ${nxtLvl.label}`:"Maximum level reached 🏆"}
+                {earned===0?"Complete today's sadhana to earn Karma Points":earned>=(50+30+20)?"Today's sadhana complete! 🎉":`${(50+30+20)-earned} points to today's sadhana`}
               </div>
               <div style={{height:6,background:"rgba(255,255,255,.08)",borderRadius:10,marginTop:16,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#FFD700,#FF8C00)",borderRadius:10,transition:"width .5s ease"}}/>
