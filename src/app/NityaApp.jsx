@@ -970,13 +970,13 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
 
         {/* ── TATHASTU CARD — locked until aarti complete ── */}
         <div style={{padding:"10px 16px 0"}}>
-          <div onClick={tasksDone.aarti?()=>setTathastu(t=>!t):undefined}
+          <div
             style={{
               borderRadius:24,overflow:"hidden",
               border:tasksDone.aarti?`1.5px solid ${day.tathastuColor||"#8B5CF6"}44`:"1.5px solid rgba(255,255,255,.08)",
               boxShadow:tasksDone.aarti?`0 8px 32px ${day.tathastuGlow||"rgba(139,92,246,.18)"}`:"none",
               opacity:tasksDone.aarti?1:0.45,
-              cursor:tasksDone.aarti?"pointer":"default",
+              cursor:"default",
               transition:"all .5s ease",
               background:day.tathastuBg||"linear-gradient(135deg,#1A0A30,#2D1560)",
               position:"relative",
@@ -1003,24 +1003,10 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
               </div>
             )}
 
-            {/* Unlocked — collapsed preview — square centered */}
-            {tasksDone.aarti&&!tathastu&&(
-              <div style={{padding:"20px 16px",display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
-                {/* Deity image */}
-                {day.image&&(
-                  <div style={{width:80,height:80,borderRadius:18,overflow:"hidden",flexShrink:0,border:`2px solid ${day.tathastuColor||"#FFD700"}55`,boxShadow:`0 6px 22px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`,animation:"floatUp 3s ease-in-out infinite"}}>
-                    <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top"}}/>
-                  </div>
-                )}
-                <div style={{textAlign:"center"}}>
-                  <div style={{fontFamily:"'Cinzel',serif",fontSize:24,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:3,lineHeight:1,textShadow:`0 0 20px ${day.tathastuGlow||"rgba(255,200,80,.4)"}`}}>तथास्तु</div>
-                  <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:13,color:"rgba(255,255,255,.45)",letterSpacing:2,marginTop:5}}>So it shall be · Tap to open ↓</div>
-                </div>
-              </div>
-            )}
 
-            {/* Unlocked — expanded full blessing */}
-            {tasksDone.aarti&&tathastu&&(
+
+            {/* Unlocked — auto expanded when aarti done */}
+            {tasksDone.aarti&&(
               <div style={{padding:"24px 18px 28px",display:"flex",flexDirection:"column",alignItems:"center"}}>
 
                 {/* Floating deity icon */}
@@ -1080,11 +1066,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                   </div>
                 </div>
 
-                {/* Collapse */}
-                <button onClick={e=>{e.stopPropagation();setTathastu(false);}}
-                  style={{background:"rgba(255,255,255,.07)",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,borderRadius:16,padding:"10px 28px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,255,255,.35)"}}>
-                  ↑ Collapse
-                </button>
+
               </div>
             )}
           </div>
