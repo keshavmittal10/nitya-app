@@ -494,7 +494,7 @@ function Splash({onEnter,onLogin,startMode="splash"}){
 }
 
 /* ── HOME ── */
-function Home({onNav,favorites,setFavorites}){
+function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount}){
   const [tab,setTab]=useState("hindi");
   const [playing,setPlaying]=useState(false);
   const [mPlaying,setMPlaying]=useState(false);
@@ -641,6 +641,42 @@ function Home({onNav,favorites,setFavorites}){
             }
             {/* Decorative quote mark */}
             <div style={{position:"absolute",right:16,bottom:10,fontFamily:"serif",fontSize:52,color:tab==="hindi"?"rgba(196,112,16,.06)":"rgba(80,100,200,.06)",lineHeight:1,userSelect:"none"}}>"</div>
+          </div>
+        </div>
+
+        {/* ── AAJ KA GYAAN TOGGLE ── */}
+        <div style={{margin:"10px 16px 0"}}>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.1)"}}>
+            <div style={{padding:"13px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"#FFF3E0"}}>📖</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#5A3A18"}}>Aaj Ka Gyaan</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#B0977A",marginTop:2}}>Bhagavad Gita · Ch.2 V.47</div>
+              </div>
+              <button onClick={()=>{
+                if(tasksDone.shlok) return;
+                if(setTasksDone) setTasksDone({...tasksDone,shlok:true});
+                if(setKarma) setKarma(k=>k+50);
+                if(setShlokaCount) setShlokaCount(c=>c+1);
+              }} disabled={tasksDone.shlok}
+                style={{width:38,height:38,borderRadius:"50%",flexShrink:0,border:"none",cursor:tasksDone.shlok?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+                  background:tasksDone.shlok?"linear-gradient(135deg,#FFD700,#FF8C00)":"white",
+                  boxShadow:tasksDone.shlok?"0 4px 14px rgba(255,180,0,.45)":"inset 0 0 0 2.5px rgba(200,140,40,.3)",
+                  transition:"all .3s"}}>
+                {tasksDone.shlok
+                  ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  :<div style={{width:14,height:14,borderRadius:"50%",border:"2.5px solid rgba(200,140,40,.35)"}}/>
+                }
+              </button>
+            </div>
+            <div style={{height:3,background:"rgba(255,165,0,.1)"}}>
+              <div style={{height:"100%",width:tasksDone.shlok?"100%":"0%",background:"linear-gradient(90deg,#FFD700,#FF8C00)",transition:"width .8s ease"}}/>
+            </div>
+            <div style={{padding:"5px 16px 9px"}}>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:tasksDone.shlok?"#C47010":"rgba(196,160,64,.5)"}}>
+                {tasksDone.shlok?"✓ +50 XP EARNED · Gyaan complete":"Tap ✓ when you've read today's shlok · +50 XP"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -1126,9 +1162,12 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   ];
   const tasks=TASK_DEFS.map(t=>({...t,done:!!tasksDone[t.id]}));
 
+  // Real week tracking: use tapasyaDays modulo 7 for this week's dots
+  const weekProgress = tapasyaDays % 7;
+  const todayDotIdx = new Date().getDay()===0?6:new Date().getDay()-1; // Mon=0..Sun=6
   const days=[{l:"Mon"},{l:"Tue"},{l:"Wed"},{l:"Thu"},{l:"Fri"},{l:"Sat"},{l:"Sun"}].map((d,i)=>{
-    if(i<tapasyaDays) return {...d,s:"done"};
-    if(i===tapasyaDays) return {...d,s:"today"};
+    if(i<weekProgress) return {...d,s:"done"};
+    if(i===todayDotIdx) return {...d,s:"today"};
     return {...d,s:"up"};
   });
   const earned=tasks.filter(t=>t.done).reduce((a,t)=>a+t.xp,0);
@@ -1136,19 +1175,20 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
   const toggleTask=(id)=>{
-    const nowDone=!tasksDone[id];
-    const nextDone={...tasksDone,[id]:nowDone};
+    if(tasksDone[id]) return; // irreversible
+    const nextDone={...tasksDone,[id]:true};
     setTasksDone(nextDone);
     const taskXp=TASK_DEFS.find(t=>t.id===id)?.xp||0;
-    setKarma(k=>nowDone ? k+taskXp : k-taskXp);
-    if(id==="shlok"&&nowDone&&setShlokaCount) setShlokaCount(c=>c+1);
+    setKarma(k=>k+taskXp);
+    if(id==="shlok"&&setShlokaCount) setShlokaCount(c=>c+1);
     const allDone=TASK_DEFS.every(t=>nextDone[t.id]);
     const wasDone=TASK_DEFS.every(t=>tasksDone[t.id]);
     if(allDone&&!wasDone){
       if(setTapasyaDays) setTapasyaDays(d=>d+1);
       if(setBhaktDays) setBhaktDays(d=>d+1);
+      showToast("🎉 Sadhana Complete! +15 Streak");
     }
-    if(nowDone&&!user) showToast("🔐 Sign in to save your progress!");
+    if(!user) showToast("🔐 Sign in to save your progress!");
   };
 
   return(
@@ -1986,7 +2026,7 @@ export default function App(){
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
-          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
+          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
