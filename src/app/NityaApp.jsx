@@ -1361,12 +1361,63 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           </div>
         </div>
 
-        {/* Completion message */}
+        {/* ── KRISHNA COMPLETION CARD ── */}
         {tasks.every(t=>t.done)&&(
-          <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,#3D2000,#5C3200)",borderRadius:22,padding:"18px 20px",textAlign:"center",boxShadow:"0 8px 28px rgba(93,50,0,.25)",animation:"fadeUp .5s ease both"}}>
-            <div style={{fontSize:28,marginBottom:6}}>🎉</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#FFD700",marginBottom:4}}>Sadhana Complete!</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"rgba(255,210,120,.7)"}}>आज की साधना सम्पन्न हुई। +{earned} Karma अर्जित।</div>
+          <div style={{margin:"14px 16px 0",borderRadius:28,overflow:"hidden",boxShadow:"0 20px 60px rgba(180,80,0,.2)",animation:"fadeUp .6s ease both",position:"relative",border:"1.5px solid rgba(255,200,80,.2)"}}>
+            {/* Top shimmer bar */}
+            <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FF4500,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
+
+            {/* Image — full width */}
+            <div style={{position:"relative",width:"100%",background:"linear-gradient(135deg,#FFF8EE,#FFF0D6)"}}>
+              <img src="/krishna-bhakt.jpg" alt="Krishna" style={{width:"100%",display:"block",objectFit:"cover"}}/>
+              {/* Gradient fade at bottom of image */}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(180deg,transparent,rgba(30,10,0,.85))"}}/>
+            </div>
+
+            {/* Text section */}
+            <div style={{background:"linear-gradient(135deg,#1A0800,#2C1200)",padding:"22px 20px 26px",position:"relative",overflow:"hidden"}}>
+              {/* Ambient glow */}
+              <div style={{position:"absolute",top:-40,left:"50%",transform:"translateX(-50%)",width:200,height:200,background:"radial-gradient(circle,rgba(255,140,0,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
+              {/* OM watermark */}
+              <div style={{position:"absolute",right:-10,bottom:-20,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(255,150,30,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
+
+              {/* Sadhana complete badge */}
+              <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,215,0,.12)",border:"1px solid rgba(255,215,0,.25)",borderRadius:20,padding:"6px 16px"}}>
+                  <span style={{fontSize:14}}>🎉</span>
+                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"#FFD700"}}>Sadhana Complete · +{earned} Karma</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,180,60,.3),transparent)",marginBottom:20}}/>
+
+              {/* Main poem lines */}
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",textAlign:"center",lineHeight:2}}>
+                {[
+                  {text:"तू ही मेरा घर,",size:19,color:"#FFE4A0",weight:700},
+                  {text:"तेरा नाम ही मेरी सांस,",size:17,color:"rgba(255,220,140,.85)",weight:600},
+                  {text:"तू ही मेरा प्रिय,",size:19,color:"#FFE4A0",weight:700},
+                  {text:"तू ही मेरा हृदय।",size:17,color:"rgba(255,220,140,.85)",weight:600},
+                ].map((l,i)=>(
+                  <div key={i} style={{fontSize:l.size,color:l.color,fontWeight:l.weight,textShadow:i%2===0?"0 2px 12px rgba(255,150,30,.25)":"none"}}>{l.text}</div>
+                ))}
+
+                {/* Spacer */}
+                <div style={{height:12}}/>
+
+                {/* Closing line — bigger, bold */}
+                <div style={{background:"rgba(255,200,60,.08)",border:"1px solid rgba(255,200,60,.18)",borderRadius:16,padding:"14px 16px",margin:"0 4px"}}>
+                  <div style={{fontSize:16,color:"rgba(255,230,160,.9)",fontWeight:600,lineHeight:1.9}}>तुझी से सबसे ज़्यादा प्रेम,</div>
+                  <div style={{fontSize:18,color:"#FFD700",fontWeight:700,lineHeight:1.9,textShadow:"0 2px 16px rgba(255,180,30,.4)"}}>मेरा सबसे प्यारा सखा।</div>
+                </div>
+              </div>
+
+              {/* Attribution */}
+              <div style={{display:"flex",justifyContent:"center",marginTop:16}}>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(255,180,60,.4)",letterSpacing:2}}>— श्री कृष्ण</div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1498,6 +1549,23 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
             {mantaDone&&<span style={{fontSize:14}}>🙏</span>}
           </div>
         </div>
+
+        {/* ── SHIVA BLESSING CARD — shows after mantra done ── */}
+        {(mantaDone||tasksDone.mantra)&&(
+          <div style={{margin:"14px 16px 0",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(96,165,250,.25)",border:"1px solid rgba(167,139,250,.3)",animation:"fadeUp .6s ease both",position:"relative"}}>
+            <div style={{height:3,background:"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
+            <div style={{position:"relative",width:"100%",aspectRatio:"1/1",overflow:"hidden"}}>
+              <img src="/shiva-tathastu.png" alt="Bhagwaan Shiva" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(10,5,30,.96) 100%)"}}/>
+              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"20px 20px 24px",textAlign:"center"}}>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:700,color:"white",lineHeight:1.7,textShadow:"0 2px 16px rgba(96,165,250,.6)"}}>
+                  मैं सदैव तुम्हारे साथ हूँ।
+                </div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(167,139,250,.8)",letterSpacing:2,marginTop:6}}>— Bhagwaan Shiva</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* How to chant */}
         <div style={{margin:"10px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"14px 16px",border:"1px solid rgba(167,139,250,.12)"}}>
