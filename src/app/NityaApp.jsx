@@ -1338,16 +1338,17 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
 }
 
 /* ── ANUSHTHAN ── */
-function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone=false,setMantaDone}){
+function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone=false,setMantaDone,tasksDone={shlok:false,aarti:false,mantra:false},setTasksDone}){
   const [toast,setToast]=useState("");
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
   const daysDone=mantaDays;
 
   const toggleMantra=()=>{
-    if(mantaDone) return; // already done today, no untoggle
-    setMantaDone(true);
+    if(mantaDone) return;
+    if(setMantaDone)setMantaDone(true);
     if(setMantaDays)setMantaDays(d=>d+1);
     if(setKarma)setKarma(k=>k+20);
+    if(setTasksDone)setTasksDone({...tasksDone,mantra:true});
     showToast("✅ Day "+(mantaDays+1)+" complete! +20 Karma");
     if(!user) showToast("🔐 Sign in to save your progress!");
   };
@@ -1994,7 +1995,8 @@ export default function App(){
             tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
             mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
-            mantaDone={mantaDone} setMantaDone={setMantaDoneSave}/>}
+            mantaDone={mantaDone} setMantaDone={setMantaDoneSave}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
             mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
