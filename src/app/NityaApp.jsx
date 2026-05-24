@@ -1151,7 +1151,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
 }
 
 /* ── SADHANA ── */
-function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone,userName=""}){
+function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone,userName="",completedDates=[],addCompletedDate}){
   const today=new Date().getDay();
   const todayPrayer=PRAYERS[today]||PRAYERS[2];
 
@@ -1162,12 +1162,39 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   ];
   const tasks=TASK_DEFS.map(t=>({...t,done:!!tasksDone[t.id]}));
 
-  // Real week tracking: use tapasyaDays modulo 7 for this week's dots
-  const weekProgress = tapasyaDays % 7;
-  const todayDotIdx = new Date().getDay()===0?6:new Date().getDay()-1; // Mon=0..Sun=6
+  // Real week tracking using actual completion dates
+  const todayDate = new Date();
+  const todayDayJS = todayDate.getDay(); // 0=Sun,1=Mon..6=Sat
+  const todayDotIdx = todayDayJS===0?6:todayDayJS-1; // Mon=0..Sun=6
+
+  // Get Monday of current week
+  const getMondayOfWeek = (d) => {
+    const day = d.getDay();
+    const diff = (day===0?-6:1-day);
+    const monday = new Date(d);
+    monday.setDate(d.getDate()+diff);
+    return monday;
+  };
+  const monday = getMondayOfWeek(todayDate);
+
+  // Build 7 day slots Mon-Sun with their date strings
+  const weekDates = Array.from({length:7},(_,i)=>{
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    return d.toISOString().split("T")[0];
+  });
+
+  const todayStr = todayDate.toISOString().split("T")[0];
+  const todayAllDone = tasksDone.shlok && tasksDone.aarti && tasksDone.mantra;
+
   const days=[{l:"Mon"},{l:"Tue"},{l:"Wed"},{l:"Thu"},{l:"Fri"},{l:"Sat"},{l:"Sun"}].map((d,i)=>{
-    if(i<weekProgress) return {...d,s:"done"};
-    if(i===todayDotIdx) return {...d,s:"today"};
+    const dateStr = weekDates[i];
+    const isPast = dateStr < todayStr;
+    const isToday = dateStr === todayStr;
+    const isCompleted = completedDates.includes(dateStr) || (isToday && todayAllDone);
+    if(isCompleted) return {...d,s:"done"};
+    if(isToday) return {...d,s:"today"};
+    if(isPast) return {...d,s:"missed"};
     return {...d,s:"up"};
   });
   const earned=tasks.filter(t=>t.done).reduce((a,t)=>a+t.xp,0);
@@ -1186,6 +1213,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
     if(allDone&&!wasDone){
       if(setTapasyaDays) setTapasyaDays(d=>d+1);
       if(setBhaktDays) setBhaktDays(d=>d+1);
+      if(addCompletedDate) addCompletedDate(new Date().toISOString().split("T")[0]);
       showToast("🎉 Sadhana Complete! +15 Streak");
     }
     if(!user) showToast("🔐 Sign in to save your progress!");
@@ -1283,11 +1311,13 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
                 ?{background:"linear-gradient(135deg,#FFD700,#E8A020)",boxShadow:"0 3px 10px rgba(232,160,32,.4)",color:"white",fontSize:14}
                 :d.s==="today"
                 ?{background:"linear-gradient(135deg,#FF6B00,#CC4400)",boxShadow:"0 3px 14px rgba(255,100,0,.5)",color:"white",fontSize:14,animation:"todayPulse 2s ease-in-out infinite"}
-                :{background:"rgba(93,50,0,.07)",border:"1.5px dashed rgba(180,120,30,.25)",color:"rgba(180,120,30,.3)",fontSize:10};
+                :d.s==="missed"
+                ?{background:"rgba(93,50,0,.07)",border:"1.5px solid rgba(180,120,30,.18)",color:"rgba(180,120,30,.35)",fontSize:13}
+                :{background:"rgba(93,50,0,.04)",border:"1.5px dashed rgba(180,120,30,.15)",color:"rgba(180,120,30,.2)",fontSize:10};
               return(
                 <div key={d.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
                   <div style={{width:34,height:34,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Syne',sans-serif",fontWeight:700,...c}}>
-                    {d.s==="done"?"✓":d.s==="today"?"🔥":"·"}
+                    {d.s==="done"?"✓":d.s==="today"?"🔥":d.s==="missed"?"🌙":"·"}
                   </div>
                   <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:".5px",textTransform:"uppercase",color:"#C4A882"}}>{d.l}</span>
                 </div>
@@ -1447,11 +1477,11 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
   const pct=Math.round((daysDone/108)*100);
 
   const comingSoon=[
-    {n:"21-Day Gita Journey",     h:"गीता ज्ञान साधना",    ico:"🪷",c:"#F97316"},
-    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",ico:"🪔",c:"#EF4444"},
-    {n:"30-Day Upanishad Path",   h:"उपनिषद् ज्ञान · 30 दिन",ico:"🌿",c:"#22C55E"},
-    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",  ico:"☀️",c:"#F59E0B"},
-  ];
+  {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",    ico:"🪔",c:"#EF4444"},
+  {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",       ico:"☀️",c:"#F59E0B"},
+  {n:"21-Day Shiva Dhyan",      h:"शिव ध्यान साधना · 21 दिन", ico:"🔱",c:"#60A5FA"},
+  {n:"51-Day Lakshmi Aradhana", h:"लक्ष्मी उपासना · 51 दिन",  ico:"🌸",c:"#EC4899"},
+];
 
   return(
     <div style={{width:"100%",height:"100%",background:BG_DARK,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
@@ -1952,6 +1982,7 @@ export default function App(){
   const [user,setUser]=useState(null);
   const [userName,setUserName]=useState("");
   const [tapasyaDays,setTapasyaDays]=useState(0);
+  const [completedDates,setCompletedDates]=useState([]); // array of date strings like "2026-05-21"
   const [shlokaCount,setShlokaCount]=useState(0);
   const [mantaDays,setMantaDays]=useState(0);
   const [nightPrayerDays,setNightPrayerDays]=useState(0);
@@ -1974,6 +2005,14 @@ export default function App(){
       return next;
     });
   };
+  const addCompletedDate = (dateStr) => {
+    setCompletedDates(prev => {
+      const next = prev.includes(dateStr) ? prev : [...prev, dateStr];
+      if(user?.uid) persist(user.uid, {completedDates:next});
+      return next;
+    });
+  };
+
   const setMantaDaysSave = (v) => {
     setMantaDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
@@ -2028,6 +2067,7 @@ export default function App(){
             if(data.userName){ setUserName(data.userName); }
             if(data.karma !== undefined){ setKarma(data.karma); }
             if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
+            if(data.completedDates){ setCompletedDates(data.completedDates); }
             if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
             if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
             // Reset mantaDone if it's a new day
@@ -2076,6 +2116,7 @@ export default function App(){
     setShlokaCount(0);
     setMantaDays(0);
     setMantaDone(false);
+    setCompletedDates([]);
     setBhaktDays(0);
     setTasksDone({shlok:false,aarti:false});
     setScreen("splash");
@@ -2101,7 +2142,7 @@ export default function App(){
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
             bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
             tasksDone={tasksDone} setTasksDone={setTasksDoneSave}
-            userName={userName}/>}
+            userName={userName} completedDates={completedDates} addCompletedDate={addCompletedDate}/>}
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
             mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
             mantaDone={mantaDone} setMantaDone={setMantaDoneSave}
