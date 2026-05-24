@@ -1151,7 +1151,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
 }
 
 /* ── SADHANA ── */
-function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone}){
+function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone,userName=""}){
   const today=new Date().getDay();
   const todayPrayer=PRAYERS[today]||PRAYERS[2];
 
@@ -1395,27 +1395,27 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
               {/* Main poem lines */}
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",textAlign:"center",lineHeight:2}}>
                 {[
-                  {text:"तू ही मेरा घर,",size:19,color:"#FFE4A0",weight:700},
-                  {text:"तेरा नाम ही मेरी सांस,",size:17,color:"rgba(255,220,140,.85)",weight:600},
-                  {text:"तू ही मेरा प्रिय,",size:19,color:"#FFE4A0",weight:700},
-                  {text:"तू ही मेरा हृदय।",size:17,color:"rgba(255,220,140,.85)",weight:600},
+                  {text:"तू ही मेरा घर,",color:"#FFE4A0"},
+                  {text:"तेरा नाम ही मेरी सांस,",color:"rgba(255,220,140,.85)"},
+                  {text:"तू ही मेरा प्रिय,",color:"#FFE4A0"},
+                  {text:"तू ही मेरा हृदय।",color:"rgba(255,220,140,.85)"},
                 ].map((l,i)=>(
-                  <div key={i} style={{fontSize:l.size,color:l.color,fontWeight:l.weight,textShadow:i%2===0?"0 2px 12px rgba(255,150,30,.25)":"none"}}>{l.text}</div>
+                  <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:l.color,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>{l.text}</div>
                 ))}
 
                 {/* Spacer */}
-                <div style={{height:12}}/>
+                <div style={{height:14}}/>
 
-                {/* Closing line — bigger, bold */}
+                {/* Closing card — from user */}
                 <div style={{background:"rgba(255,200,60,.08)",border:"1px solid rgba(255,200,60,.18)",borderRadius:16,padding:"14px 16px",margin:"0 4px"}}>
-                  <div style={{fontSize:16,color:"rgba(255,230,160,.9)",fontWeight:600,lineHeight:1.9}}>तुझी से सबसे ज़्यादा प्रेम,</div>
-                  <div style={{fontSize:18,color:"#FFD700",fontWeight:700,lineHeight:1.9,textShadow:"0 2px 16px rgba(255,180,30,.4)"}}>मेरा सबसे प्यारा सखा।</div>
+                  <div style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:"rgba(255,230,160,.9)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>क्योंकि तू ही मेरा</div>
+                  <div style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:"#FFD700",textShadow:"0 2px 16px rgba(255,180,30,.4)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>सबसे प्यारा सखा।</div>
                 </div>
               </div>
 
-              {/* Attribution */}
+              {/* Attribution — from user */}
               <div style={{display:"flex",justifyContent:"center",marginTop:16}}>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(255,180,60,.4)",letterSpacing:2}}>— श्री कृष्ण</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:700,color:"rgba(255,180,60,.55)",letterSpacing:1}}>— {userName||"Your Sadhak"}</div>
               </div>
             </div>
           </div>
@@ -2100,7 +2100,8 @@ export default function App(){
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
             bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
-            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}
+            userName={userName}/>}
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
             mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
             mantaDone={mantaDone} setMantaDone={setMantaDoneSave}
