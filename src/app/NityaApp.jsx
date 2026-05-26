@@ -588,8 +588,10 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [toast,setToast]=useState("");
   const [sharePopup,setSharePopup]=useState(false);
 
-  // 21-day journey: day based on app start date (day 1 = day 1, cycles every 21)
-  const journeyDayIdx = (Math.floor((Date.now() - new Date("2026-01-01").getTime()) / 86400000) % 21);
+  // 21-day journey: starts from May 26 2026, day 1 = first day
+  const JOURNEY_START = new Date("2026-05-26").getTime();
+  const daysSinceStart = Math.max(0, Math.floor((Date.now() - JOURNEY_START) / 86400000));
+  const journeyDayIdx = daysSinceStart % 21;
   const todayLesson = GITA_JOURNEY[journeyDayIdx];
   const journeyDay = journeyDayIdx + 1;
 
@@ -680,54 +682,66 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
         {/* Section header */}
         <div style={{padding:"14px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(139,92,246,.7)",marginBottom:2}}>📖 21-Day Gita Journey</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:800,color:"#1A0A2E",letterSpacing:.5}}>Day {journeyDay} of 21</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(180,80,0,.6)",marginBottom:2}}>📖 21-Day Gita Journey</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:800,color:"#3D1800",letterSpacing:.5}}>Day {journeyDay} of 21</div>
           </div>
-          <div style={{background:"linear-gradient(135deg,#3B1095,#6D28D9)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(109,40,217,.35)"}}>
+          <div style={{background:"linear-gradient(135deg,#C47010,#E8A020)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(196,112,16,.35)"}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"white",letterSpacing:1}}>{todayLesson.theme}</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(200,180,255,.8)",marginTop:1}}>{todayLesson.hi}</div>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(255,240,200,.85)",marginTop:1}}>{todayLesson.hi}</div>
           </div>
         </div>
 
-        {/* Krishna image card — inspired by Shiva anushthan card */}
-        <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(109,40,217,.2)",border:"1px solid rgba(139,92,246,.25)",position:"relative"}}>
-          <div style={{height:3,background:"linear-gradient(90deg,#7C3AED,#A78BFA,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
+        {/* Krishna image card */}
+        <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(180,100,0,.2)",border:"1px solid rgba(255,180,60,.25)",position:"relative"}}>
+          <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FF4500,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
           <div style={{position:"relative",width:"100%"}}>
-            <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",maxHeight:320,objectPosition:"center top"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(15,5,35,.96) 100%)"}}/>
-            {/* Day theme overlay */}
-            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"20px 20px 22px",textAlign:"center"}}>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(196,181,253,.55)",marginBottom:6}}>{todayLesson.ref}</div>
-              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:1.9,marginBottom:2}}>
-                {todayLesson.sanskrit.split("\n").map((line,i)=>(
-                  <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(14px,4.8vw,19px)",color:i===0?"#E8D5FF":"rgba(200,180,255,.8)"}}>{line}</div>
-                ))}
+            <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",height:380,objectPosition:"center top"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,.08) 0%,transparent 35%,rgba(20,8,0,.92) 100%)"}}/>
+            {/* Theme overlay at bottom */}
+            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"22px 22px 26px",textAlign:"center"}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,200,60,.15)",border:"1px solid rgba(255,200,60,.3)",borderRadius:20,padding:"4px 14px",marginBottom:12}}>
+                <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,220,120,.9)"}}>Day {journeyDay} · {todayLesson.ref}</span>
               </div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:32,fontWeight:700,color:"#FFE4A0",lineHeight:1.1,textShadow:"0 2px 20px rgba(255,150,0,.4)",marginBottom:4}}>{todayLesson.theme}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(255,220,140,.8)"}}>{todayLesson.hi}</div>
             </div>
           </div>
         </div>
 
-        {/* Translation card — same as before but purple theme */}
-        <div style={{margin:"10px 16px 0",background:"rgba(15,5,35,.96)",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 20px rgba(109,40,217,.15)",border:"1px solid rgba(139,92,246,.2)"}}>
-          <div style={{display:"flex",borderBottom:"1px solid rgba(139,92,246,.15)"}}>
+        {/* Shloka card — separate below image */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#3D1C00,#5C2E00)",borderRadius:22,padding:"18px",boxShadow:"0 8px 28px rgba(80,30,0,.25)",position:"relative",overflow:"hidden",border:"1px solid rgba(255,180,60,.15)"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"22px 22px 0 0"}}/>
+          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,200,60,.12)",border:"1px solid rgba(255,200,60,.22)",borderRadius:20,padding:"3px 11px",marginBottom:12}}>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,210,100,.8)"}}>🪷 {todayLesson.ref}</span>
+          </div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
+            {todayLesson.sanskrit.split("\n").map((line,i)=>(
+              <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",color:i===0?"#FFE4A0":"rgba(255,220,140,.85)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",textAlign:"center"}}>{line}</div>
+            ))}
+          </div>
+        </div>
+
+        {/* Translation card — warm dark theme */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#2C1400,#3D2000)",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 20px rgba(80,30,0,.2)",border:"1px solid rgba(255,165,0,.18)"}}>
+          <div style={{display:"flex",borderBottom:"1px solid rgba(255,165,0,.12)"}}>
             {[{id:"hindi",label:"हिंदी",sub:"Hindi"},{id:"english",label:"English",sub:"अंग्रेज़ी"}].map(t=>{
               const on=tab===t.id;
               return(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"rgba(109,40,217,.2)":"transparent",borderBottom:on?"2.5px solid #A78BFA":"2.5px solid transparent",transition:"all .2s"}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#C4B5FD":"rgba(167,139,250,.35)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(196,181,253,.5)":"rgba(167,139,250,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"rgba(255,165,0,.1)":"transparent",borderBottom:on?"2.5px solid #F59E0B":"2.5px solid transparent",transition:"all .2s"}}>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#FCD34D":"rgba(255,200,100,.35)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(252,211,77,.5)":"rgba(255,200,100,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
                 </button>
               );
             })}
           </div>
-          <div style={{padding:"16px 18px 18px",position:"relative",minHeight:80}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(139,92,246,.15)",border:"1px solid rgba(139,92,246,.25)",borderRadius:20,padding:"3px 10px",marginBottom:10}}>
-              <div style={{width:6,height:6,borderRadius:"50%",background:"#A78BFA"}}/>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#A78BFA"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+          <div style={{padding:"16px 18px 20px",position:"relative"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,165,0,.12)",border:"1px solid rgba(255,165,0,.22)",borderRadius:20,padding:"3px 10px",marginBottom:12}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:"#F59E0B"}}/>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#F59E0B"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
             </div>
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"rgba(225,210,255,.9)",lineHeight:1.9}}>{todayLesson.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(196,181,253,.8)",lineHeight:1.85}}>{todayLesson.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"rgba(255,220,140,.95)",lineHeight:2}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(255,210,120,.85)",lineHeight:1.9}}>{todayLesson.english}</p>
             }
           </div>
         </div>
