@@ -494,22 +494,106 @@ function Splash({onEnter,onLogin,startMode="splash"}){
 }
 
 /* ── HOME ── */
+
+const GITA_JOURNEY = [
+  {day:1, theme:"Ego", hi:"अहंकार", ref:"Gita · 3.27",
+   sanskrit:"प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।\nअहङ्कारविमूढात्मा कर्ताहमिति मन्यते॥",
+   hindi:"प्रकृति के तीन गुण ही सारे कर्म करते हैं। तुम केवल एक माध्यम हो। लेकिन जब अहंकार आता है, तो मन कहता है — 'मैंने किया।'",
+   english:"All actions are performed by the modes of nature. One whose mind is deluded by ego thinks 'I am the doer.'"},
+  {day:2, theme:"Remembrance", hi:"स्मरण", ref:"Gita · 8.6",
+   sanskrit:"यं यं वापि स्मरन्भावं त्यजत्यन्ते कलेवरम्।\nतं तमेवैति कौन्तेय सदा तद्भावभावितः॥",
+   hindi:"जीवनभर जो विचार तुम्हारे मन में रहे, मृत्यु के वक्त वही उठेगा। इसीलिए अभी से जो सोचते हो, उसे सँभालो।",
+   english:"Whatever state of being one remembers when leaving the body at death — that alone will one attain, being ever absorbed in that thought."},
+  {day:3, theme:"Self-Reliance", hi:"आत्मनिर्भरता", ref:"Gita · 6.5",
+   sanskrit:"उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥",
+   hindi:"कोई गुरु, कोई देवता, कोई परिजन — कोई भी तुम्हें वहाँ नहीं ले जा सकता जहाँ तुम्हें जाना है। तुम्हारा मन ही तुम्हारी सबसे बड़ी शक्ति है।",
+   english:"Let a person lift themselves by their own self; let them not degrade themselves. For the self alone is the friend of the self, and the self alone is the enemy."},
+  {day:4, theme:"Oneness", hi:"एकता", ref:"Gita · 7.7",
+   sanskrit:"मत्तः परतरं नान्यत्किञ्चिदस्ति धनञ्जय।\nमयि सर्वमिदं प्रोतं सूत्रे मणिगणा इव॥",
+   hindi:"जब तुम धागे को देखते हो तो मोती अलग-अलग दिखते हैं। लेकिन धागा एक ही है। यह संसार भी ऐसा ही है।",
+   english:"O Arjuna, there is nothing whatsoever higher than Me. All this is strung on Me like clusters of gems on a thread."},
+  {day:5, theme:"Vision", hi:"दृष्टि", ref:"Gita · 13.27",
+   sanskrit:"समं सर्वेषु भूतेषु तिष्ठन्तं परमेश्वरम्।\nविनश्यत्स्वविनश्यन्तं यः पश्यति स पश्यति॥",
+   hindi:"आँखें खुली हों तो भी इंसान अंधा हो सकता है। असली देखना वह है जब तुम किसी भी इंसान में परमात्मा देख सको।",
+   english:"One who sees the Supreme Lord dwelling equally in all beings — the imperishable within the perishable — that person truly sees."},
+  {day:6, theme:"Renunciation", hi:"त्याग", ref:"Gita · 16.21",
+   sanskrit:"त्रिविधं नरकस्येदं द्वारं नाशनमात्मनः।\nकामः क्रोधस्तथा लोभस्तस्मादेतत्त्रयं त्यजेत्॥",
+   hindi:"काम, क्रोध और लोभ — ये तीन नरक के द्वार हैं। इन्हें त्यागो।",
+   english:"These three are the gateways to hell and destruction of the self — lust, anger, and greed. Therefore one should abandon these three."},
+  {day:7, theme:"Equality", hi:"समता", ref:"Gita · 9.29",
+   sanskrit:"समोऽहं सर्वभूतेषु न मे द्वेष्योऽस्ति न प्रियः।\nये भजन्ति तु मां भक्त्या मयि ते तेषु चाप्यहम्॥",
+   hindi:"परमात्मा का प्रेम सूरज की तरह है — सबको समान रोशनी देता है। भक्ति करने वाले उसे महसूस कर पाते हैं।",
+   english:"I am equally present in all beings; none is hateful or dear to Me. But those who worship Me with devotion — they are in Me and I in them."},
+  {day:8, theme:"Perception", hi:"अनुभूति", ref:"Gita · 15.11",
+   sanskrit:"यतन्तो योगिनश्चैनं पश्यन्त्यात्मन्यवस्थितम्।\nयतन्तोऽप्यकृतात्मानो नैनं पश्यन्त्यचेतसः॥",
+   hindi:"आत्मा छिपी नहीं है — तुम छिपे हो। योगी वो नहीं जो पहाड़ पर बैठा हो — योगी वो है जो भीड़ में भी शांत हो।",
+   english:"The striving yogis behold this soul established in the self. But those of unrefined mind, even if striving, cannot perceive it."},
+  {day:9, theme:"Faith", hi:"श्रद्धा", ref:"Gita · 17.3",
+   sanskrit:"सत्त्वानुरूपा सर्वस्य श्रद्धा भवति भारत।\nश्रद्धामयोऽयं पुरुषो यो यच्छ्रद्धः स एव सः॥",
+   hindi:"जैसी श्रद्धा, वैसा इंसान। तुम्हारा विश्वास ही तुम्हारी दुनिया बनाता है।",
+   english:"The faith of every person accords with their nature. A person is made of faith — whatever one's faith is, that indeed is what one is."},
+  {day:10, theme:"Detachment", hi:"वैराग्य", ref:"Gita · 2.47",
+   sanskrit:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+   hindi:"काम करना तुम्हारे हाथ में है, नतीजा नहीं। फल की चिंता छोड़ो — बस कर्म करते रहो।",
+   english:"You have the right to perform your duties, but never claim entitlement to its fruits. Let not the fruits be your motive, nor let your attachment be to inaction."},
+  {day:11, theme:"Stillness", hi:"स्थिरता", ref:"Gita · 6.19",
+   sanskrit:"यथा दीपो निवातस्थो नेङ्गते सोपमा स्मृता।\nयोगिनो यतचित्तस्य युञ्जतो योगमात्मनः॥",
+   hindi:"जैसे हवा न हो तो दीपक की लौ नहीं हिलती — वैसे ही जिसका मन वश में है, वो कभी नहीं डिगता।",
+   english:"As a lamp in a windless place does not flicker — that is the likeness of a yogi of subdued mind, practicing the yoga of the self."},
+  {day:12, theme:"Knowledge", hi:"ज्ञान", ref:"Gita · 4.38",
+   sanskrit:"न हि ज्ञानेन सदृशं पवित्रमिह विद्यते।\nतत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति॥",
+   hindi:"इस संसार में ज्ञान से पवित्र कुछ नहीं। जो साधना में पक जाता है, वो अपने भीतर ही इसे पा लेता है।",
+   english:"In this world, there is nothing as purifying as knowledge. One who is perfected in yoga finds this within the self in the course of time."},
+  {day:13, theme:"Devotion", hi:"भक्ति", ref:"Gita · 18.55",
+   sanskrit:"भक्त्या मामभिजानाति यावान्यश्चास्मि तत्त्वतः।\nततो मां तत्त्वतो ज्ञात्वा विशते तदनन्तरम्॥",
+   hindi:"भक्ति कोई कमज़ोरी नहीं — यह सबसे बड़ी शक्ति है। तर्क से परमात्मा को समझा जा सकता है, लेकिन जाना नहीं जा सकता।",
+   english:"By devotion one truly comes to know Me in truth. And having known Me in truth, one immediately enters into Me."},
+  {day:14, theme:"Immortality", hi:"अमरता", ref:"Gita · 2.20",
+   sanskrit:"न जायते म्रियते वा कदाचिन्नायं भूत्वा भविता वा न भूयः।\nअजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे॥",
+   hindi:"शरीर कपड़े की तरह है — पुराना हो जाए तो बदल जाता है। लेकिन भीतर जो है, वो न जन्मा, न मरेगा।",
+   english:"The soul is never born nor dies at any time. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain."},
+  {day:15, theme:"Surrender", hi:"समर्पण", ref:"Gita · 7.19",
+   sanskrit:"बहूनां जन्मनामन्ते ज्ञानवान्मां प्रपद्यते।\nवासुदेवः सर्वमिति स महात्मा सुदुर्लभः॥",
+   hindi:"यह जन्म-जन्म की यात्रा है। जब पूरी सफाई हो जाती है, तो इंसान कहता है — 'सब कुछ तुम ही हो।'",
+   english:"After many births and deaths, one who is truly in knowledge surrenders unto Me, knowing that I, Vasudeva, am everything."},
+  {day:16, theme:"Refuge", hi:"शरण", ref:"Gita · 12.6–7",
+   sanskrit:"ये तु सर्वाणि कर्माणि मयि संन्यस्य मत्पराः।\nअनन्येनैव योगेन मां ध्यायन्त उपासते॥",
+   hindi:"तुम्हें सब कुछ खुद नहीं करना। बस अपना हाथ मेरी तरफ बढ़ाओ। मैं तुम्हें इस संसार-सागर से पार ले जाऊँगा।",
+   english:"Those who surrender all actions to Me and worship with undivided devotion — I swiftly deliver them from the ocean of birth and death."},
+  {day:17, theme:"Presence", hi:"उपस्थिति", ref:"Gita · 5.8–9",
+   sanskrit:"नैव किञ्चित्करोमीति युक्तो मन्येत तत्त्ववित्।\nपश्यन् शृण्वन् स्पृशन् जिघ्रन् अश्नन् गच्छन् स्वपन् श्वसन्॥",
+   hindi:"हम खाते हैं पर स्वाद नहीं लेते। देखते हैं पर देखते नहीं। मन हमेशा कहीं और होता है। अभी, यहाँ, इस पल में रहो।",
+   english:"The one who knows the truth thinks 'I do nothing at all' — whether seeing, hearing, touching, smelling, eating, going, sleeping, or breathing."},
+  {day:18, theme:"Divinity", hi:"दिव्यता", ref:"Gita · 9.16",
+   sanskrit:"अहं क्रतुरहं यज्ञः स्वधाऽहमहमौषधम्।\nमन्त्रोऽहमहमेवाज्यमहमग्निरहं हुतम्॥",
+   hindi:"जब तुम दीया जलाते हो, मंत्र पढ़ते हो — तुम्हें लगता है किसी बाहर की शक्ति को बुला रहे हो। लेकिन कृष्ण कहते हैं — मैं ही हूँ वो।",
+   english:"I am the ritual, I am the sacrifice, I am the offering, I am the herb, I am the mantra, I am the clarified butter, I am the fire, and I am the oblation."},
+  {day:19, theme:"Infinity", hi:"अनंतता", ref:"Gita · 10.32–33",
+   sanskrit:"सर्गाणामादिरन्तश्च मध्यं चैवाहमर्जुन।\nअध्यात्मविद्या विद्यानां वादः प्रवदतामहम्॥",
+   hindi:"कृष्ण अर्जुन को एक दृष्टि दे रहे हैं — जो भी सबसे श्रेष्ठ है, सबसे पहला है, सबसे गहरा है — वो मैं हूँ।",
+   english:"I am the beginning, middle, and end of all creation. Among knowledge I am the knowledge of the Self. I am the letter A, and among compound words I am the dual compound."},
+  {day:20, theme:"Conquest", hi:"विजय", ref:"Gita · 3.43",
+   sanskrit:"एवं बुद्धेः परं बुद्ध्वा संस्तभ्यात्मानमात्मना।\nजहि शत्रुं महाबाहो कामरूपं दुरासदम्॥",
+   hindi:"सबसे बड़ा युद्ध बाहर नहीं लड़ा जाता — वो भीतर लड़ा जाता है। और सबसे ज़िद्दी दुश्मन है — इच्छा।",
+   english:"Thus knowing the Self to be superior to the intellect, O mighty-armed one, steady the self with the Self and slay the enemy — desire, so difficult to conquer."},
+  {day:21, theme:"Karma", hi:"कर्म", ref:"Gita · 2.47",
+   sanskrit:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+   hindi:"यह श्लोक पूरी गीता का सार है। काम करना तुम्हारे हाथ में है, नतीजा नहीं। बस कर्म करते रहो।",
+   english:"You have the right to perform your duties, but never claim entitlement to its fruits. Let not the fruits be your motive, nor let your attachment be to inaction."},
+];
+
 function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount}){
   const [tab,setTab]=useState("hindi");
-  const [playing,setPlaying]=useState(false);
-  const [mPlaying,setMPlaying]=useState(false);
-  const [prog,setProg]=useState(28);
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
   const [sharePopup,setSharePopup]=useState(false);
-  const iv=useRef(null);
-  const sl=SHLOKAS[0];
 
-  const togglePlay=()=>{setPlaying(p=>{if(!p)iv.current=setInterval(()=>setProg(x=>x>=100?0:x+0.4),200);else clearInterval(iv.current);return!p;});};
-  useEffect(()=>()=>clearInterval(iv.current),[]);
-  const sec=Math.floor(prog*84/100);
-  const ts=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`;
-  const isFav=favorites.some(f=>f.id===sl.id);
+  // 21-day journey: day based on app start date (day 1 = day 1, cycles every 21)
+  const journeyDayIdx = (Math.floor((Date.now() - new Date("2026-01-01").getTime()) / 86400000) % 21);
+  const todayLesson = GITA_JOURNEY[journeyDayIdx];
+  const journeyDay = journeyDayIdx + 1;
+
+  const isFav=favorites.some(f=>f.id===1);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
   const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==sl.id));showToast("Removed from favourites");}else{setFavorites(f=>[...f,sl]);showToast("Added to favourites ❤️");}};
 
@@ -586,72 +670,76 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
       <SB/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
-        <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#4A2800",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>Today's Sadhana</span>
+        <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#1A0A2E",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>VedPath</span>
         <div style={{width:34,height:34,borderRadius:12,background:"rgba(180,80,0,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer"}}>🔔</div>
       </div>
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
-        {/* SHLOKA CARD */}
-        <div style={{margin:"14px 16px 0",background:"linear-gradient(135deg,#3D1C00,#5C2E00)",borderRadius:26,padding:"20px",boxShadow:"0 12px 36px rgba(80,30,0,.28)",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"26px 26px 0 0"}}/>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,200,60,.12)",border:"1px solid rgba(255,200,60,.22)",borderRadius:20,padding:"4px 11px",marginBottom:14}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,210,100,.8)"}}>🪷 {sl.grantha} · {sl.chapter}</span>
+        {/* ── 21-DAY GITA JOURNEY SECTION ── */}
+
+        {/* Section header */}
+        <div style={{padding:"14px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(139,92,246,.7)",marginBottom:2}}>📖 21-Day Gita Journey</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:800,color:"#1A0A2E",letterSpacing:.5}}>Day {journeyDay} of 21</div>
           </div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#FFE4A0",lineHeight:2,padding:"16px 10px",background:"rgba(255,255,255,.04)",borderRadius:18,border:"1px solid rgba(255,200,60,.08)",marginBottom:14}}>
-  {sl.sanskrit.split("\n").map((line,i)=>(
-    <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",textAlign:"center"}}>{line}</div>
-  ))}
-</div>
-          <div style={{display:"flex",alignItems:"center",gap:12,background:"rgba(0,0,0,.2)",borderRadius:18,padding:"11px 14px"}}>
-            <PlayBtn playing={playing} onToggle={togglePlay} size={44} c1="#FFD700" c2="#FF8C00"/>
-            <div style={{flex:1}}>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(255,220,120,.85)",display:"block",marginBottom:6}}>हिंदी पाठ सुनें · 1:24</span>
-              <div style={{height:3,background:"rgba(255,200,60,.15)",borderRadius:10,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${prog}%`,background:"linear-gradient(90deg,#FFD700,#FF9000)",borderRadius:10,transition:"width .2s"}}/>
-              </div>
-            </div>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"rgba(255,200,60,.4)",flexShrink:0}}>{ts}</span>
+          <div style={{background:"linear-gradient(135deg,#3B1095,#6D28D9)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(109,40,217,.35)"}}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"white",letterSpacing:1}}>{todayLesson.theme}</div>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(200,180,255,.8)",marginTop:1}}>{todayLesson.hi}</div>
           </div>
         </div>
 
-        {/* TRANSLATION CARD — redesigned */}
-        <div style={{margin:"12px 16px 0",background:"white",borderRadius:24,overflow:"hidden",boxShadow:"0 6px 22px rgba(180,80,0,.09)",border:"1.5px solid rgba(255,165,0,.14)"}}>
-          {/* Tab bar */}
-          <div style={{display:"flex",borderBottom:"1.5px solid rgba(255,165,0,.1)"}}>
+        {/* Krishna image card — inspired by Shiva anushthan card */}
+        <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(109,40,217,.2)",border:"1px solid rgba(139,92,246,.25)",position:"relative"}}>
+          <div style={{height:3,background:"linear-gradient(90deg,#7C3AED,#A78BFA,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
+          <div style={{position:"relative",width:"100%"}}>
+            <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",maxHeight:320,objectPosition:"center top"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 40%,rgba(15,5,35,.96) 100%)"}}/>
+            {/* Day theme overlay */}
+            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"20px 20px 22px",textAlign:"center"}}>
+              <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(196,181,253,.55)",marginBottom:6}}>{todayLesson.ref}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:1.9,marginBottom:2}}>
+                {todayLesson.sanskrit.split("\n").map((line,i)=>(
+                  <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(14px,4.8vw,19px)",color:i===0?"#E8D5FF":"rgba(200,180,255,.8)"}}>{line}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Translation card — same as before but purple theme */}
+        <div style={{margin:"10px 16px 0",background:"rgba(15,5,35,.96)",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 20px rgba(109,40,217,.15)",border:"1px solid rgba(139,92,246,.2)"}}>
+          <div style={{display:"flex",borderBottom:"1px solid rgba(139,92,246,.15)"}}>
             {[{id:"hindi",label:"हिंदी",sub:"Hindi"},{id:"english",label:"English",sub:"अंग्रेज़ी"}].map(t=>{
               const on=tab===t.id;
               return(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"white":"rgba(255,240,220,.5)",borderBottom:on?"2.5px solid #C47010":"2.5px solid transparent",transition:"all .2s",position:"relative"}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#C47010":"rgba(160,80,10,.4)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(196,112,16,.6)":"rgba(160,80,10,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"rgba(109,40,217,.2)":"transparent",borderBottom:on?"2.5px solid #A78BFA":"2.5px solid transparent",transition:"all .2s"}}>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#C4B5FD":"rgba(167,139,250,.35)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(196,181,253,.5)":"rgba(167,139,250,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
                 </button>
               );
             })}
           </div>
-          {/* Content */}
-          <div style={{padding:"16px 18px 18px",position:"relative",minHeight:90}}>
-            {/* Language label pill */}
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:tab==="hindi"?"rgba(196,112,16,.08)":"rgba(80,100,200,.07)",border:`1px solid ${tab==="hindi"?"rgba(196,112,16,.18)":"rgba(80,100,200,.15)"}`,borderRadius:20,padding:"3px 10px",marginBottom:10}}>
-              <div style={{width:6,height:6,borderRadius:"50%",background:tab==="hindi"?"#C47010":"#5B7AE0"}}/>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:tab==="hindi"?"#C47010":"#5B7AE0"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+          <div style={{padding:"16px 18px 18px",position:"relative",minHeight:80}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(139,92,246,.15)",border:"1px solid rgba(139,92,246,.25)",borderRadius:20,padding:"3px 10px",marginBottom:10}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:"#A78BFA"}}/>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#A78BFA"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
             </div>
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"#3E1800",lineHeight:1.9}}>{sl.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"#2D3080",lineHeight:1.85}}>{sl.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"rgba(225,210,255,.9)",lineHeight:1.9}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(196,181,253,.8)",lineHeight:1.85}}>{todayLesson.english}</p>
             }
-            {/* Decorative quote mark */}
-            <div style={{position:"absolute",right:16,bottom:10,fontFamily:"serif",fontSize:52,color:tab==="hindi"?"rgba(196,112,16,.06)":"rgba(80,100,200,.06)",lineHeight:1,userSelect:"none"}}>"</div>
           </div>
         </div>
 
         {/* ── AAJ KA GYAAN TOGGLE ── */}
         <div style={{margin:"10px 16px 0"}}>
-          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.1)"}}>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(109,40,217,.08)",border:"1.5px solid rgba(139,92,246,.15)"}}>
             <div style={{padding:"13px 16px",display:"flex",alignItems:"center",gap:12}}>
-              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"#FFF3E0"}}>📖</div>
+              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"rgba(109,40,217,.1)",border:"1px solid rgba(139,92,246,.2)"}}>📖</div>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#5A3A18"}}>Aaj Ka Gyaan</div>
-                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#B0977A",marginTop:2}}>Bhagavad Gita · Ch.2 V.47</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#3B1095"}}>Aaj Ka Gyaan</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#9B7AE0",marginTop:2}}>{todayLesson.ref} · {todayLesson.theme}</div>
               </div>
               <button onClick={()=>{
                 if(tasksDone.shlok) return;
@@ -1007,7 +1095,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         </div>
         {/* Today's Aarti card */}
         <div style={{padding:"16px 16px 0"}}>
-          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.1)"}}>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(109,40,217,.08)",border:"1.5px solid rgba(139,92,246,.15)"}}>
             <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12}}>
               <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"#FFF0E8",border:`1.5px solid ${day.color}33`}}>{day.icon}</div>
               <div style={{flex:1,minWidth:0}}>
@@ -1124,8 +1212,13 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
 
                 {/* Message box */}
                 <div style={{width:"100%",background:"rgba(255,255,255,.06)",borderRadius:20,padding:"18px",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,marginBottom:16}}>
-                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"rgba(255,255,255,.9)",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line"}}>
-                    {day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।"}
+                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",textAlign:"center",lineHeight:2}}>
+                    {(day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।").split("\n").map((line,i)=>(
+                      <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",
+                        color:i%2===0?"rgba(255,255,255,.95)":"rgba(255,230,180,.8)"}}>
+                        {line}
+                      </div>
+                    ))}
                   </div>
                   <div style={{height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}33,transparent)`,margin:"14px 0"}}/>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1292,7 +1385,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           {[
             {ico:"🔥",val:String(tapasyaDays),lbl:"Tapasya"},
             {ico:"📖",val:String(shlokaCount),lbl:"Shlokas Read"},
-            
+            {ico:"🎵",val:"0m",lbl:"Mins Heard"},
           ].map(s=>(
             <div key={s.lbl} style={{flex:1,background:"white",borderRadius:20,padding:"14px 8px",display:"flex",flexDirection:"column",alignItems:"center",gap:5,boxShadow:"0 4px 16px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.12)"}}>
               <div style={{fontSize:18}}>{s.ico}</div>
@@ -1477,11 +1570,11 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
   const pct=Math.round((daysDone/108)*100);
 
   const comingSoon=[
-  {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",    ico:"🪔",c:"#EF4444"},
-  {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",       ico:"☀️",c:"#F59E0B"},
-  {n:"21-Day Shiva Dhyan",      h:"शिव ध्यान साधना · 21 दिन", ico:"🔱",c:"#60A5FA"},
-  {n:"51-Day Lakshmi Aradhana", h:"लक्ष्मी उपासना · 51 दिन",  ico:"🌸",c:"#EC4899"},
-];
+    {n:"21-Day Gita Journey",     h:"गीता ज्ञान साधना",    ico:"🪷",c:"#F97316"},
+    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",ico:"🪔",c:"#EF4444"},
+    {n:"30-Day Upanishad Path",   h:"उपनिषद् ज्ञान · 30 दिन",ico:"🌿",c:"#22C55E"},
+    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",  ico:"☀️",c:"#F59E0B"},
+  ];
 
   return(
     <div style={{width:"100%",height:"100%",background:BG_DARK,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
