@@ -586,7 +586,6 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
-  const [tab,setTab]=useState("hindi");
 
   // 21-day journey: starts from May 26 2026, day 1 = first day
   const JOURNEY_START = new Date("2026-05-26").getTime();
