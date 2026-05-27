@@ -2238,7 +2238,7 @@ export default function App(){
   const [mantaDays,setMantaDays]=useState(0);
   const [nightPrayerDays,setNightPrayerDays]=useState(0);
   const [bhaktDays,setBhaktDays]=useState(0);
-  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false});
+  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false,mantra:false});
   const [mantaDone,setMantaDone]=useState(false);
 
   const today = new Date().toDateString();
@@ -2328,9 +2328,9 @@ export default function App(){
             if(data.favorites){ setFavorites(data.favorites); }
             // Reset daily tasks if it's a new day
             if(data.lastTaskDate !== today){
-              setTasksDone({shlok:false, aarti:false});
+              setTasksDone({shlok:false, aarti:false, mantra:false});
               setMantaDone(false);
-              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false}, lastTaskDate:today, mantaDone:false, mantaDoneDate:today});
+              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false,mantra:false}, lastTaskDate:today, mantaDone:false, mantaDoneDate:today});
             } else if(data.tasksDone){
               setTasksDone(data.tasksDone);
             }
@@ -2369,7 +2369,7 @@ export default function App(){
     setMantaDone(false);
     setCompletedDates([]);
     setBhaktDays(0);
-    setTasksDone({shlok:false,aarti:false});
+    setTasksDone({shlok:false,aarti:false,mantra:false});
     setScreen("splash");
   };
 
