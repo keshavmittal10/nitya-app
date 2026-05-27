@@ -828,16 +828,16 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               try{
                 showToast("Creating card... 🎨");
                 const lesson=todayLesson;
-                const W=800,PAD=56;
-                // measure text height to determine canvas height
+                const W=800,PAD=60;
                 const canvas=document.createElement("canvas");
+                canvas.width=W;canvas.height=100;// temp height, will resize
                 const ctx=canvas.getContext("2d");
-                // helper: wrap text and return lines
+
+                // wrap helper
                 const wrap=(text,font,maxW)=>{
                   ctx.font=font;
                   const words=text.split(" ");
-                  const lines=[];
-                  let cur="";
+                  const lines=[];let cur="";
                   for(const w of words){
                     const test=cur?cur+" "+w:w;
                     if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
@@ -846,60 +846,78 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                   if(cur)lines.push(cur);
                   return lines;
                 };
+
                 const innerW=W-PAD*2;
-                const sanskrit=lesson.sanskrit.replace("\\n","\n");
-                const sanskritLines=sanskrit.split("\n");
-                const hindiLines=wrap(lesson.hindi,"bold 26px 'Noto Sans Devanagari',serif",innerW);
+                const SFONT="bold 24px sans-serif";
+                const HFONT="bold 26px sans-serif";
+
+                // split sanskrit on actual newline
+                const sanskritLines=lesson.sanskrit.split("\n");
+                // also wrap each sanskrit line in case it's too long
+                const wrappedSanskrit=[];
+                for(const sl of sanskritLines){
+                  const wl=wrap(sl,SFONT,innerW);
+                  wl.forEach(l=>wrappedSanskrit.push(l));
+                }
+                const hindiLines=wrap(lesson.hindi,HFONT,innerW);
                 const refLine=`${lesson.ref}  ·  ${lesson.theme}`;
-                // estimate height
-                const H=56+40+32+sanskritLines.length*52+40+hindiLines.length*46+40+32+60+56;
-                canvas.width=W; canvas.height=H;
+
+                // calculate total height
+                const H=60+50+28+wrappedSanskrit.length*46+28+hindiLines.length*50+28+80;
+                canvas.height=H;
+
                 // background
-                const bg=ctx.createLinearGradient(0,0,W,H);
+                const bg=ctx.createLinearGradient(0,0,0,H);
                 bg.addColorStop(0,"#0a2a1a");bg.addColorStop(.5,"#0f3d20");bg.addColorStop(1,"#0a2a1a");
                 ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-                // top bar
+
+                // top colour bar
                 const bar=ctx.createLinearGradient(0,0,W,0);
-                bar.addColorStop(0,"transparent");bar.addColorStop(.3,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(.7,"#4ade80");bar.addColorStop(1,"transparent");
+                bar.addColorStop(0,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(1,"#4ade80");
                 ctx.fillStyle=bar;ctx.fillRect(0,0,W,5);
-                let y=56;
-                // ref pill background
-                ctx.fillStyle="rgba(250,204,21,0.12)";
-                const pillW=ctx.measureText("🪷  "+refLine).width+40;
-                ctx.fillRect(PAD,y,pillW,36);
-                ctx.strokeStyle="rgba(250,204,21,0.3)";ctx.lineWidth=1;
-                ctx.strokeRect(PAD,y,pillW,36);
-                ctx.fillStyle="#facc15";ctx.font="bold 20px 'Syne',sans-serif";ctx.textBaseline="middle";
-                ctx.fillText("🪷  "+refLine,PAD+20,y+18);
-                y+=56;
-                // divider helper
+
+                let y=50;
+
+                // ref pill
+                ctx.font="bold 20px sans-serif";ctx.fillStyle="rgba(250,204,21,0.13)";
+                const pillW=Math.min(ctx.measureText(refLine).width+60,innerW);
+                ctx.fillRect(PAD,y,pillW,38);
+                ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1.5;ctx.strokeRect(PAD,y,pillW,38);
+                ctx.fillStyle="#facc15";ctx.textBaseline="middle";ctx.textAlign="left";
+                ctx.fillText(refLine,PAD+16,y+19);
+                y+=58;
+
+                // divider
                 const divider=(yy)=>{
-                  const g=ctx.createLinearGradient(PAD,0,W-PAD,0);
-                  g.addColorStop(0,"transparent");g.addColorStop(.45,"rgba(250,204,21,.4)");g.addColorStop(.55,"rgba(250,204,21,.4)");g.addColorStop(1,"transparent");
-                  ctx.strokeStyle=g;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();
-                  ctx.fillStyle="#facc15";ctx.font="16px serif";ctx.textAlign="center";ctx.fillText("◆",W/2,yy+6);ctx.textAlign="left";
+                  ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1;
+                  ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();
+                  ctx.fillStyle="#facc15";ctx.font="18px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+                  ctx.fillText("◆",W/2,yy);
                 };
-                divider(y);y+=32;
-                // sanskrit
-                ctx.fillStyle="#E0ECFF";ctx.font="bold 28px 'Noto Sans Devanagari',serif";ctx.textAlign="center";ctx.textBaseline="middle";
-                for(let i=0;i<sanskritLines.length;i++){
-                  ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.88)";
-                  ctx.fillText(sanskritLines[i],W/2,y+26);y+=52;
+
+                divider(y);y+=28;
+
+                // sanskrit lines
+                ctx.font=SFONT;ctx.textAlign="center";ctx.textBaseline="top";
+                for(let i=0;i<wrappedSanskrit.length;i++){
+                  ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.85)";
+                  ctx.fillText(wrappedSanskrit[i],W/2,y);y+=46;
                 }
-                ctx.textAlign="left";y+=8;
-                divider(y);y+=32;
-                // hindi
-                ctx.fillStyle="#fef08a";ctx.font="bold 26px 'Noto Sans Devanagari',serif";ctx.textBaseline="top";
-                for(const line of hindiLines){ctx.fillText(line,PAD,y);y+=46;}
-                y+=16;
-                divider(y);y+=32;
+                y+=10;divider(y);y+=28;
+
+                // hindi lines
+                ctx.font=HFONT;ctx.fillStyle="#fef08a";ctx.textAlign="left";ctx.textBaseline="top";
+                for(const line of hindiLines){ctx.fillText(line,PAD,y);y+=50;}
+                y+=10;divider(y);y+=28;
+
                 // branding
-                ctx.fillStyle="#4ade80";ctx.font="bold 22px 'Syne',sans-serif";ctx.textBaseline="middle";
-                ctx.fillText("🪷  NITYA",PAD,y+14);
-                ctx.fillStyle="rgba(134,239,172,0.6)";ctx.font="14px 'Syne',sans-serif";
-                ctx.fillText("नित्य · Daily Sadhana",PAD,y+36);
-                ctx.fillStyle="rgba(250,204,21,0.15)";ctx.font="56px 'Noto Sans Devanagari',serif";ctx.textAlign="right";
-                ctx.fillText("ॐ",W-PAD,y+40);
+                ctx.font="bold 22px sans-serif";ctx.fillStyle="#4ade80";ctx.textAlign="left";ctx.textBaseline="middle";
+                ctx.fillText("NITYA",PAD,y+16);
+                ctx.font="15px sans-serif";ctx.fillStyle="rgba(134,239,172,0.55)";
+                ctx.fillText("nitya.app  ·  Daily Sadhana",PAD,y+38);
+                ctx.font="52px sans-serif";ctx.fillStyle="rgba(250,204,21,0.14)";ctx.textAlign="right";
+                ctx.fillText("ॐ",W-PAD,y+28);
+
                 // share
                 canvas.toBlob(async(blob)=>{
                   if(!blob){showToast("Unable to create card");return;}
