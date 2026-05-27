@@ -763,28 +763,53 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
-        {/* Translation card — warm dark theme */}
-        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#071440,#0D1F5C)",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 20px rgba(7,20,64,.25)",border:"1px solid rgba(100,150,255,.18)"}}>
-          <div style={{display:"flex",borderBottom:"1px solid rgba(100,150,255,.12)"}}>
+        {/* Translation card — teal/cyan theme */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(160deg,#042f2e 0%,#0d4f4c 50%,#0a3d3b 100%)",borderRadius:24,overflow:"hidden",boxShadow:"0 12px 40px rgba(4,47,46,.5), 0 0 0 1px rgba(45,212,191,.18), inset 0 1px 0 rgba(255,255,255,.06)",position:"relative"}}>
+          {/* Top shimmer bar */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#2dd4bf,#5eead4,#2dd4bf,transparent)"}}/>
+          {/* Watermark */}
+          <div style={{position:"absolute",bottom:-10,right:8,fontFamily:"'Noto Sans Devanagari',serif",fontSize:80,color:"rgba(45,212,191,.05)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
+
+          {/* Tabs */}
+          <div style={{display:"flex",borderBottom:"1px solid rgba(45,212,191,.12)",position:"relative",zIndex:1}}>
             {[{id:"hindi",label:"हिंदी",sub:"Hindi"},{id:"english",label:"English",sub:"अंग्रेज़ी"}].map(t=>{
               const on=tab===t.id;
               return(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"rgba(100,150,255,.1)":"transparent",borderBottom:on?"2.5px solid #60A5FA":"2.5px solid transparent",transition:"all .2s"}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#93C5FD":"rgba(150,190,255,.35)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(147,197,253,.5)":"rgba(150,190,255,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"13px 8px 11px",border:"none",cursor:"pointer",background:on?"rgba(45,212,191,.1)":"transparent",borderBottom:on?"2.5px solid #2dd4bf":"2.5px solid transparent",transition:"all .2s"}}>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#5eead4":"rgba(94,234,212,.3)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(94,234,212,.45)":"rgba(94,234,212,.2)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
                 </button>
               );
             })}
           </div>
-          <div style={{padding:"16px 18px 20px",position:"relative"}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(100,150,255,.12)",border:"1px solid rgba(100,150,255,.22)",borderRadius:20,padding:"3px 10px",marginBottom:12}}>
-              <div style={{width:6,height:6,borderRadius:"50%",background:"#60A5FA"}}/>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#60A5FA"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+
+          <div style={{padding:"18px 18px 22px",position:"relative",zIndex:1}}>
+            {/* Top decorative line */}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(45,212,191,.35))"}}/>
+              <span style={{fontSize:11,color:"rgba(94,234,212,.6)"}}>✦</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(45,212,191,.35),transparent)"}}/>
             </div>
+
+            {/* Label pill */}
+            <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(45,212,191,.1)",border:"1px solid rgba(45,212,191,.22)",borderRadius:20,padding:"4px 12px"}}>
+                <div style={{width:5,height:5,borderRadius:"50%",background:"#2dd4bf"}}/>
+                <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#2dd4bf"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+              </div>
+            </div>
+
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"rgba(180,210,255,.95)",lineHeight:2}}>{todayLesson.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(160,200,255,.85)",lineHeight:1.9}}>{todayLesson.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"rgba(204,251,241,.95)",lineHeight:2,margin:0}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,color:"rgba(204,251,241,.9)",lineHeight:1.9,margin:0}}>{todayLesson.english}</p>
             }
+
+            {/* Bottom decorative line */}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginTop:18}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(45,212,191,.35))"}}/>
+              <span style={{fontSize:11,color:"rgba(94,234,212,.6)"}}>✦</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(45,212,191,.35),transparent)"}}/>
+            </div>
           </div>
         </div>
 
