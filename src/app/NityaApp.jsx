@@ -657,7 +657,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               <button
                 onClick={()=>{
                   const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
-                  const url=`https://wa.me/?text=${encodeURIComponent(text)}`;
+                  const encoded=encodeURIComponent(text);
+                  const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                  const url=isMobile?`whatsapp://send?text=${encoded}`:`https://web.whatsapp.com/send?text=${encoded}`;
                   window.open(url,"_blank");
                   setSharePopup(false);
                 }}
