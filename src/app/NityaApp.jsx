@@ -1,5 +1,63 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+
+
+// Simple English to Devanagari transliteration for common names
+function toDevanagari(name) {
+  if(!name) return "";
+  // If already contains Devanagari, return as is
+  if(/[ऀ-ॿ]/.test(name)) return name;
+  const map = {
+    // Common name mappings
+    "keshav":"केशव","ramesh":"रमेश","suresh":"सुरेश","mahesh":"महेश","dinesh":"दिनेश",
+    "rajesh":"राजेश","mukesh":"मुकेश","ganesh":"गणेश","naresh":"नरेश","umesh":"उमेश",
+    "priya":"प्रिया","kavita":"कविता","sunita":"सुनीता","anita":"अनीता","geeta":"गीता",
+    "sita":"सीता","rita":"रीता","rekha":"रेखा","usha":"उषा","asha":"आशा",
+    "arjun":"अर्जुन","ravi":"रवि","shiva":"शिव","krishna":"कृष्ण","ram":"राम",
+    "mohan":"मोहन","sohan":"सोहन","rohan":"रोहन","rohit":"रोहित","mohit":"मोहित",
+    "amit":"अमित","sumit":"सुमित","anil":"अनिल","sunil":"सुनील","kapil":"कपिल",
+    "vikas":"विकास","deepak":"दीपक","rakesh":"राकेश","lokesh":"लोकेश","yogesh":"योगेश",
+    "pooja":"पूजा","aarti":"आरती","archana":"अर्चना","vandana":"वंदना","radha":"राधा",
+    "meera":"मीरा","neha":"नेहा","sneha":"स्नेहा","preeti":"प्रीति","swati":"स्वाति",
+    "rahul":"राहुल","nikhil":"निखिल","akhil":"अखिल","sahil":"साहिल","sachin":"सचिन",
+    "lalit":"ललित","harish":"हरीश","girish":"गिरीश","suresh":"सुरेश","paresh":"परेश",
+    "shyam":"श्याम","ghansyam":"घनश्याम","balram":"बलराम","lakshmi":"लक्ष्मी",
+    "pankaj":"पंकज","sanjay":"संजय","vijay":"विजय","ajay":"अजय","manoj":"मनोज",
+    "pramod":"प्रमोद","vinod":"विनोद","arvind":"अरविंद","govind":"गोविंद","ravind":"रवींद्र",
+    "ashok":"अशोक","alok":"आलोक","trilok":"त्रिलोक","bhavesh":"भावेश","devesh":"देवेश",
+    "satish":"सतीश","jagdish":"जगदीश","ramakant":"रामकांत","shivkant":"शिवकांत",
+    "maya":"माया","mamta":"ममता","sarla":"सरला","kamla":"कमला","vimla":"विमला",
+    "seema":"सीमा","reema":"रीमा","heema":"हीमा","meena":"मीना","veena":"वीणा",
+    "anjali":"अंजली","shweta":"श्वेता","shruti":"श्रुति","smriti":"स्मृति","kratika":"कृतिका",
+  };
+  const lower = name.toLowerCase().trim();
+  if(map[lower]) return map[lower];
+  // Return original if not found
+  return name;
+}
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+async function saveUser(uid, data) {
+  await setDoc(doc(db, "users", uid), data, { merge: true });
+}
+async function loadUser(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? snap.data() : null;
+}
 
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Cinzel:wght@400;600;700&display=swap');
@@ -36,12 +94,12 @@ const SHLOKAS=[
 ];
 
 const PRAYERS={
-  0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#7C2D12,#9A3412)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
-  1:{deity:"Lord Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#1E3A5F,#1E40AF)",day:"Monday",sub:"शिव उपासना · सोमवार"},
-  2:{deity:"Lord Hanuman",name:"Hanuman Chalisa",hi:"श्री हनुमान चालीसा",icon:"🐒",color:"#FB923C",g:"linear-gradient(135deg,#7C2D12,#C2410C)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
-  3:{deity:"Lord Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#78350F,#92400E)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
-  4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#2E1065,#4C1D95)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
-  5:{deity:"Goddess Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#831843,#9D174D)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
+  0:{deity:"Surya Dev",name:"Aditya Hridayam",hi:"आदित्य हृदयम्",icon:"☀️",color:"#F97316",g:"linear-gradient(135deg,#4A1208,#5C1E08)",day:"Sunday",sub:"सूर्य उपासना · रविवार"},
+  1:{deity:"Bhagwaan Shiva",name:"Shiva Panchakshara",hi:"शिव पञ्चाक्षर स्तोत्र",icon:"🔱",color:"#60A5FA",g:"linear-gradient(135deg,#0A1828,#0E2260)",day:"Monday",sub:"शिव उपासना · सोमवार"},
+  2:{deity:"Prabhu Hanuman",name:"Shri Hanuman Aarti",hi:"श्री हनुमान आरती",icon:"🪔",color:"#FB923C",g:"linear-gradient(135deg,#421408,#7A2208)",day:"Tuesday",sub:"हनुमान उपासना · मंगलवार"},
+  3:{deity:"Shree Ganesha",name:"Ganesh Aarti",hi:"श्री गणेश आरती",icon:"🌺",color:"#F59E0B",g:"linear-gradient(135deg,#3C1806,#4A2006)",day:"Wednesday",sub:"गणेश उपासना · बुधवार"},
+  4:{deity:"Shyam Baba",name:"Shyam Baba Aarti",hi:"श्री श्याम बाबा आरती",icon:"🙏",color:"#8B5CF6",g:"linear-gradient(135deg,#140630,#280E50)",day:"Thursday",sub:"श्याम उपासना · गुरुवार"},
+  5:{deity:"Maa Lakshmi",name:"Lakshmi Aarti",hi:"श्री लक्ष्मी जी की आरती",icon:"🌸",color:"#EC4899",g:"linear-gradient(135deg,#420820,#520A28)",day:"Friday",sub:"लक्ष्मी उपासना · शुक्रवार"},
   6:{deity:"Shani Dev",name:"Shani Dev Aarti",hi:"श्री शनि देव आरती",icon:"⚫",color:"#64748B",g:"linear-gradient(135deg,#0F172A,#334155)",day:"Saturday",sub:"शनि उपासना · शनिवार"},
 };
 
@@ -254,10 +312,30 @@ function Splash({onEnter,onLogin,startMode="splash"}){
   const [verifying,setVerifying]=useState(false);
   const refs=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
 
-  const sendOtp=()=>{
+  const [confirmResult, setConfirmResult] = useState(null);
+
+  const sendOtp=async()=>{
     if(phone.length!==10){setErr("Valid 10-digit number required");return;}
-    setErr("");setMode("otp");
-    setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
+    setErr("");
+    try {
+      if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
+      const old=document.getElementById("recaptcha-container");
+      if(old) old.remove();
+      const div=document.createElement("div");
+      div.id="recaptcha-container";
+      document.body.appendChild(div);
+      auth.settings.appVerificationDisabledForTesting = false;
+      window.recaptchaVerifier=new RecaptchaVerifier(auth,"recaptcha-container",{size:"invisible",callback:()=>{},"expired-callback":()=>{}});
+      await window.recaptchaVerifier.render();
+      const result=await signInWithPhoneNumber(auth,"+91"+phone,window.recaptchaVerifier);
+      setConfirmResult(result);
+      setMode("otp");
+      setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
+    } catch(e) {
+      console.error("OTP Error:",e);
+      setErr("Error: "+e.code+" - "+e.message);
+      if(window.recaptchaVerifier){window.recaptchaVerifier.clear();window.recaptchaVerifier=null;}
+    }
   };
   const handleDigit=(val,i)=>{
     const d=val.replace(/\D/g,"").slice(-1);
@@ -270,10 +348,18 @@ function Splash({onEnter,onLogin,startMode="splash"}){
       const n=[...otp];n[i-1]="";setOtp(n);
     }
   };
-  const verify=()=>{
+  const verify=async()=>{
     if(otp.join("").length!==6){setErr("Enter 6-digit OTP");return;}
+    if(!confirmResult){setErr("Please request OTP first");return;}
     setVerifying(true);
-    setTimeout(()=>{setVerifying(false);onLogin(phone);},1400);
+    try {
+      await confirmResult.confirm(otp.join(""));
+      setVerifying(false);
+      onLogin(phone);
+    } catch(e) {
+      setVerifying(false);
+      setErr("Invalid OTP. Please try again.");
+    }
   };
 
   return(
@@ -408,31 +494,117 @@ function Splash({onEnter,onLogin,startMode="splash"}){
 }
 
 /* ── HOME ── */
-function Home({onNav,favorites,setFavorites}){
+
+
+const GITA_JOURNEY = [  {day:1,theme:"Ego",hi:"अहंकार",ref:"Gita · 3.27",
+   sanskrit:"प्रकृतेः क्रियमाणानि गुणैः कर्माणि सर्वशः।\nअहङ्कारविमूढात्मा कर्ताहमिति मन्यते॥",
+   hindi:"प्रकृति के तीन गुण — सत्व, रज और तम — ये ही सारे कर्म करते हैं। तुम केवल एक माध्यम हो। लेकिन जब अहंकार आता है, तो मन कहता है — \"यह मैंने किया।\" यही सबसे बड़ा भ्रम है। जिस दिन यह भ्रम टूट जाए, उस दिन तुम सच में मुक्त हो।",
+   english:"All actions are performed by the modes of nature. One whose mind is deluded by ego thinks 'I am the doer.'"},
+  {day:2,theme:"Remembrance",hi:"स्मरण",ref:"Gita · 8.6",
+   sanskrit:"यं यं वापि स्मरन्भावं त्यजत्यन्ते कलेवरम्।\nतं तमेवैति कौन्तेय सदा तद्भावभावितः॥",
+   hindi:"जीवनभर जो विचार तुम्हारे मन में रहे, मृत्यु के वक्त वही उठेगा। यह कोई संयोग नहीं — यह प्रकृति का नियम है। इसीलिए अभी से अपने मन को उस भाव में रंगो जो तुम बनना चाहते हो। मृत्यु की तैयारी कल नहीं, आज से होती है।",
+   english:"Whatever state of being one remembers when leaving the body at death — that alone will one attain, being ever absorbed in that thought."},
+  {day:3,theme:"Self-Reliance",hi:"आत्मनिर्भरता",ref:"Gita · 6.5",
+   sanskrit:"उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥",
+   hindi:"कोई गुरु, कोई देवता, कोई परिजन — कोई भी तुम्हें वहाँ नहीं ले जा सकता जहाँ तुम्हें जाना है। तुम्हारा मन ही तुम्हारी सबसे बड़ी सीढ़ी है और तुम्हारा मन ही सबसे गहरा गड्ढा भी। चुनाव तुम्हारा है — हर पल, हर सोच में।",
+   english:"Let a person lift themselves by their own self; let them not degrade themselves. For the self alone is the friend of the self, and the self alone is the enemy of the self."},
+  {day:4,theme:"Oneness",hi:"एकता",ref:"Gita · 7.7",
+   sanskrit:"मत्तः परतरं नान्यत्किञ्चिदस्ति धनञ्जय।\nमयि सर्वमिदं प्रोतं सूत्रे मणिगणा इव॥",
+   hindi:"जब तुम धागे को देखते हो तो मोती अलग-अलग दिखते हैं। लेकिन धागा एक ही है। यह संसार भी ऐसा ही है — ऊपर से सब अलग दिखता है, भीतर से सब एक ही सत्ता में पिरोया हुआ है। जिस दिन धागा दिखने लगे, उस दिन अकेलापन हमेशा के लिए चला जाता है।",
+   english:"O Arjuna, there is nothing whatsoever higher than Me. All this is strung on Me like clusters of gems on a thread."},
+  {day:5,theme:"Vision",hi:"दृष्टि",ref:"Gita · 13.27",
+   sanskrit:"समं सर्वेषु भूतेषु तिष्ठन्तं परमेश्वरम्।\nविनश्यत्स्वविनश्यन्तं यः पश्यति स पश्यति॥",
+   hindi:"आँखें खुली हों तो भी इंसान अंधा हो सकता है। और आँखें बंद हों तो भी कोई सब देख सकता है। असली देखना वह है जब तुम किसी भी इंसान, किसी भी जीव में उस एक को पहचान लो जो कभी मिटता नहीं। यही दृष्टि तुम्हें घृणा, ईर्ष्या और भेद से हमेशा के लिए आज़ाद कर देती है।",
+   english:"One who sees the Supreme Lord dwelling equally in all beings — the imperishable within the perishable — that person truly sees."},
+  {day:6,theme:"Renunciation",hi:"त्याग",ref:"Gita · 16.21",
+   sanskrit:"त्रिविधं नरकस्येदं द्वारं नाशनमात्मनः।\nकामः क्रोधस्तथा लोभस्तस्मादेतत्त्रयं त्यजेत्॥",
+   hindi:"काम माने सिर्फ वासना नहीं — यह हर वो इच्छा है जो मन को बेचैन रखती है। क्रोध वो आग है जो पहले खुद को जलाती है। और लोभ वो कुआँ है जिसका पेंदा कभी नहीं आता। कृष्ण कह रहे हैं — इन तीनों को छोड़ना मतलब खुद को खोना नहीं, बल्कि खुद को पाना है।",
+   english:"These three are the gateways to hell and destruction of the self — lust, anger, and greed. Therefore one should abandon all three."},
+  {day:7,theme:"Equality",hi:"समता",ref:"Gita · 9.29",
+   sanskrit:"समोऽहं सर्वभूतेषु न मे द्वेष्योऽस्ति न प्रियः।\nये भजन्ति तु मां भक्त्या मयि ते तेषु चाप्यहम्॥",
+   hindi:"परमात्मा का प्रेम किसी बैंक की तरह नहीं है जो सिर्फ अमीर को कर्ज़ दे। वो सूरज की तरह है — सबको समान रोशनी देता है। फर्क सिर्फ इतना है कि जो खिड़की खोलता है, उसे धूप मिलती है। भक्ति वही खिड़की है।",
+   english:"I am equally present in all beings; none is hateful or dear to Me. But those who worship Me with devotion — they are in Me, and I am also in them."},
+  {day:8,theme:"Perception",hi:"अनुभूति",ref:"Gita · 15.11",
+   sanskrit:"यतन्तो योगिनश्चैनं पश्यन्त्यात्मन्यवस्थितम्।\nयतन्तोऽप्यकृतात्मानो नैनं पश्यन्त्यचेतसः॥",
+   hindi:"आत्मा छिपी नहीं है — तुम छिपे हो। शोर में, भागदौड़ में, विचारों की भीड़ में। योगी वो नहीं जो पहाड़ पर बैठा हो — योगी वो है जिसने अपने भीतर की भीड़ को शांत कर लिया हो। तब आत्मा अपने आप दिखने लगती है, जैसे तालाब का पानी शांत हो तो तल दिखता है।",
+   english:"The striving yogis behold this soul established in the self. But those of unrefined mind and no self-discipline, even if striving, do not perceive it."},
+  {day:9,theme:"Faith",hi:"श्रद्धा",ref:"Gita · 17.3",
+   sanskrit:"सत्त्वानुरूपा सर्वस्य श्रद्धा भवति भारत।\nश्रद्धामयोऽयं पुरुषो यो यच्छ्रद्धः स एव सः॥",
+   hindi:"तुम जो बार-बार सोचते हो, जिस पर भरोसा करते हो — धीरे-धीरे तुम वही बन जाते हो। यह कोई दर्शन नहीं, यह जीवन का सबसे सीधा सच है। इसीलिए अपनी श्रद्धा को सँभालकर रखो — क्योंकि श्रद्धा ही तुम्हारा भविष्य गढ़ती है।",
+   english:"O Arjuna, the faith of each person is in accordance with their nature. A person is made of their faith — whatever one's faith is, that is what one becomes."},
+  {day:10,theme:"Detachment",hi:"वैराग्य",ref:"Gita · 18.17",
+   sanskrit:"यस्य नाहङ्कृतो भावो बुद्धिर्यस्य न लिप्यते।\nहत्वाऽपि स इमाँल्लोकान्न हन्ति न निबध्यते॥",
+   hindi:"अहंकार के बिना किया गया कर्म पानी पर खींची लकीर की तरह है — होता है, मिट जाता है, कोई निशान नहीं। जब \"मैंने किया\" का भाव नहीं होता, तो कर्म का बोझ भी नहीं होता। यही मुक्ति का सबसे सरल रास्ता है — बड़े से बड़ा काम करो, पर उसे अपना मत मानो।",
+   english:"One free from ego, whose intellect is untainted — even if that person slays all these worlds, they neither slay nor are they bound."},
+  {day:11,theme:"Practice",hi:"अभ्यास",ref:"Gita · 6.35",
+   sanskrit:"असंशयं महाबाहो मनो दुर्निग्रहं चलम्।\nअभ्यासेन तु कौन्तेय वैराग्येण च गृह्यते॥",
+   hindi:"मन की चंचलता कोई दोष नहीं — यह उसका स्वभाव है, जैसे हवा का चलना। दोष तब होता है जब तुम हवा को रोकने की बजाय उसके साथ बह जाते हो। अभ्यास माने रोज़ थोड़ा-थोड़ा मन को वापस लाना। वैराग्य माने यह जानना कि बाहर की चीज़ें तुम्हें वो नहीं दे सकतीं जो तुम सच में ढूँढ रहे हो।",
+   english:"Undoubtedly, O mighty-armed one, the mind is restless and difficult to control. But by practice and by dispassion, O Arjuna, it can be restrained."},
+  {day:12,theme:"Virtue",hi:"सद्गुण",ref:"Gita · 16.1",
+   sanskrit:"अभयं सत्त्वसंशुद्धिर्ज्ञानयोगव्यवस्थितिः।\nदानं दमश्च यज्ञश्च स्वाध्यायस्तप आर्जवम्॥",
+   hindi:"ये गुण कोई नियम नहीं हैं जो बाहर से थोपे जाएँ। ये वो फूल हैं जो तब खिलते हैं जब भीतर की ज़मीन तैयार हो। निडरता तब आती है जब तुम जान लो कि आत्मा को कोई नुकसान नहीं पहुँचा सकता। सरलता तब आती है जब दिखावे की ज़रूरत न रहे। ये सब एक-दूसरे से जुड़े हैं — एक को जगाओ, बाकी खुद आते हैं।",
+   english:"Fearlessness, purity of heart, steadfastness in knowledge and yoga, charity, self-control, sacrifice, study of the scriptures, austerity, and straightforwardness — these are the divine qualities."},
+  {day:13,theme:"Devotion",hi:"भक्ति",ref:"Gita · 18.55",
+   sanskrit:"भक्त्या मामभिजानाति यावान्यश्चास्मि तत्त्वतः।\nततो मां तत्त्वतो ज्ञात्वा विशते तदनन्तरम्॥",
+   hindi:"भक्ति कोई कमज़ोरी नहीं है — यह सबसे बड़ी शक्ति है। तर्क से परमात्मा को समझा जा सकता है, लेकिन जाना नहीं जा सकता। जैसे नमक पानी में घुल जाता है और अलग नहीं किया जा सकता — वैसे ही भक्त और भगवान एक हो जाते हैं। यही सच्चा ज्ञान है।",
+   english:"By devotion one truly comes to know Me in truth. And having known Me in truth, one immediately enters into Me."},
+  {day:14,theme:"Immortality",hi:"अमरता",ref:"Gita · 2.20",
+   sanskrit:"न जायते म्रियते वा कदाचिन्नायं भूत्वा भविता वा न भूयः।\nअजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे॥",
+   hindi:"हम जन्म से डरते नहीं, मृत्यु से डरते हैं। लेकिन जो कभी जन्मा ही नहीं, वो मरेगा कैसे? शरीर कपड़े की तरह है — पुराना हो जाए तो बदल लो। भीतर जो है वो वही है जो सदा था, सदा है और सदा रहेगा। इस सच को जान लो — फिर किसी चीज़ का डर नहीं रहता।",
+   english:"The soul is never born nor dies at any time. It is unborn, eternal, ever-existing, and primeval. It is not slain when the body is slain."},
+  {day:15,theme:"Surrender",hi:"समर्पण",ref:"Gita · 7.19",
+   sanskrit:"बहूनां जन्मनामन्ते ज्ञानवान्मां प्रपद्यते।\nवासुदेवः सर्वमिति स महात्मा सुदुर्लभः॥",
+   hindi:"यह जन्म-जन्म की यात्रा है। हर जीवन में थोड़ा और परत उतरती है, थोड़ा और साफ होता है। और जब पूरी सफाई हो जाती है — जब मन यह मान लेता है कि \"जो है, वो सब वासुदेव है\" — तब कहीं जाना नहीं पड़ता। वो खुद आ जाता है। ऐसा इंसान संसार में रहते हुए भी संसार से परे होता है।",
+   english:"After many births and deaths, one who is truly in knowledge surrenders unto Me, knowing that I, Vasudeva, am everything. Such a great soul is very rare."},
+  {day:16,theme:"Refuge",hi:"शरण",ref:"Gita · 12.6–7",
+   sanskrit:"ये तु सर्वाणि कर्माणि मयि संन्यस्य मत्पराः।\nअनन्येनैव योगेन मां ध्यायन्त उपासते॥",
+   hindi:"यह कृष्ण का सबसे बड़ा वादा है। वो कह रहे हैं — तुम्हें सब कुछ खुद नहीं करना। बस अपना हाथ मेरी तरफ बढ़ाओ। जो इंसान हर कर्म को परमात्मा को समर्पित करके चलता है, उसका बोझ परमात्मा उठा लेते हैं। यह कमज़ोरी नहीं — यह सबसे गहरी समझ है।",
+   english:"Those who surrender all actions to Me and worship with undivided devotion, their minds fixed on Me — I swiftly deliver them from the ocean of birth and death."},
+  {day:17,theme:"Presence",hi:"उपस्थिति",ref:"Gita · 5.8–9",
+   sanskrit:"नैव किञ्चित्करोमीति युक्तो मन्येत तत्त्ववित्।\nपश्यन् शृण्वन् स्पृशन् जिघ्रन् अश्नन् गच्छन् स्वपन् श्वसन्॥",
+   hindi:"हम खाते हैं पर स्वाद नहीं लेते। देखते हैं पर देखते नहीं। सुनते हैं पर सुनते नहीं। मन हमेशा कहीं और होता है — बीते हुए कल में या आने वाले कल में। ज्ञानी वो है जो यह जानता है कि \"मैं यंत्र नहीं हूँ\" — और इसीलिए हर पल में पूरा जीता है, बिना किसी दावे के।",
+   english:"The one who knows the truth thinks 'I do nothing at all' — whether seeing, hearing, touching, smelling, eating, going, sleeping, breathing — holding firm that the senses move among their objects."},
+  {day:18,theme:"Divinity",hi:"दिव्यता",ref:"Gita · 9.16",
+   sanskrit:"अहं क्रतुरहं यज्ञः स्वधाऽहमहमौषधम्।\nमन्त्रोऽहमहमेवाज्यमहमग्निरहं हुतम्॥",
+   hindi:"जब तुम दीया जलाते हो, मंत्र पढ़ते हो, आहुति देते हो — तुम्हें लगता है तुम कुछ बाहर की शक्ति को बुला रहे हो। लेकिन कृष्ण कह रहे हैं — वो शक्ति पहले से वहाँ है। अग्नि में, मंत्र में, घी में, और तुम्हारे हाथों में भी। पूजा इसीलिए नहीं होती कि भगवान को ज़रूरत है — पूजा इसीलिए होती है ताकि तुम यह देख सको।",
+   english:"I am the ritual, I am the sacrifice, I am the offering to the ancestors, I am the herb, I am the mantra, I am the clarified butter, I am the fire, and I am the act of offering."},
+  {day:19,theme:"Infinity",hi:"अनंतता",ref:"Gita · 10.32–33",
+   sanskrit:"सर्गाणामादिरन्तश्च मध्यं चैवाहमर्जुन।\nअध्यात्मविद्या विद्यानां वादः प्रवदतामहम्॥",
+   hindi:"कृष्ण अर्जुन को यह नहीं बता रहे कि वो बड़े हैं। वो उसे एक दृष्टि दे रहे हैं — जो भी सबसे श्रेष्ठ है, सबसे पहला है, सबसे गहरा है — वो मैं हूँ। इसका मतलब यह है कि जब तुम किसी भी चीज़ की गहराई में जाओ, तुम परमात्मा तक पहुँच जाओगे। हर रास्ता उसी तक जाता है।",
+   english:"I am the beginning, middle, and end of all creation. Among knowledge I am the knowledge of the Self. I am the letter A, inexhaustible time, and the Creator facing everywhere."},
+  {day:20,theme:"Conquest",hi:"विजय",ref:"Gita · 3.43",
+   sanskrit:"एवं बुद्धेः परं बुद्ध्वा संस्तभ्यात्मानमात्मना।\nजहि शत्रुं महाबाहो कामरूपं दुरासदम्॥",
+   hindi:"सबसे बड़ा युद्ध बाहर नहीं लड़ा जाता — वो भीतर लड़ा जाता है। और सबसे ज़िद्दी दुश्मन है — इच्छा। वो मरती नहीं, छिप जाती है। लेकिन जब आत्मा का बोध हो जाता है तो इच्छा की जड़ ही कट जाती है। फिर वो उठ नहीं सकती। यही असली विजय है।",
+   english:"Thus knowing the Self to be superior to the intellect, O mighty-armed one, steady the self with the Self and slay the enemy — desire — so difficult to conquer."},
+  {day:21,theme:"Karma",hi:"कर्म",ref:"Gita · 2.47",
+   sanskrit:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+   hindi:"यह श्लोक पूरी गीता का सार है। कृष्ण कह रहे हैं — काम करना तुम्हारे हाथ में है, नतीजा नहीं। लेकिन इंसान हमेशा उल्टा करता है — नतीजे की चिंता करता है और काम ढंग से नहीं करता। जब फल की चिंता छूट जाती है, तब काम में एक अजीब पवित्रता आ जाती है। और उस पवित्रता में जो शांति मिलती है — वो किसी फल से नहीं मिल सकती।",
+   english:"You have the right to perform your duties, but never claim entitlement to its fruits. Let not the fruits be your motive, nor let your attachment be to inaction."},
+];
+
+function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount}){
   const [tab,setTab]=useState("hindi");
-  const [playing,setPlaying]=useState(false);
-  const [mPlaying,setMPlaying]=useState(false);
-  const [prog,setProg]=useState(28);
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
   const [sharePopup,setSharePopup]=useState(false);
-  const iv=useRef(null);
-  const sl=SHLOKAS[0];
 
-  const togglePlay=()=>{setPlaying(p=>{if(!p)iv.current=setInterval(()=>setProg(x=>x>=100?0:x+0.4),200);else clearInterval(iv.current);return!p;});};
-  useEffect(()=>()=>clearInterval(iv.current),[]);
-  const sec=Math.floor(prog*84/100);
-  const ts=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`;
-  const isFav=favorites.some(f=>f.id===sl.id);
+  // 21-day journey: starts from May 26 2026, day 1 = first day
+  const JOURNEY_START = new Date("2026-05-26").getTime();
+  const daysSinceStart = Math.max(0, Math.floor((Date.now() - JOURNEY_START) / 86400000));
+  const journeyDayIdx = daysSinceStart % 21;
+  const todayLesson = GITA_JOURNEY[journeyDayIdx];
+  const journeyDay = journeyDayIdx + 1;
+
+  const isFav=favorites.some(f=>f.id===1);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
   const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==sl.id));showToast("Removed from favourites");}else{setFavorites(f=>[...f,sl]);showToast("Added to favourites ❤️");}};
 
   return(
-    <div style={{width:"100%",height:"100%",background:BG,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
-      <div style={{position:"absolute",bottom:-30,right:-30,fontFamily:"'Noto Sans Devanagari',serif",fontSize:260,color:"rgba(180,120,30,.04)",pointerEvents:"none",zIndex:0,lineHeight:1}}>ॐ</div>
+    <div style={{width:"100%",height:"100%",background:"linear-gradient(170deg,#EEF4FF 0%,#DCE9FF 55%,#C8DBFF 100%)",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",bottom:-30,right:-30,fontFamily:"'Noto Sans Devanagari',serif",fontSize:260,color:"rgba(30,70,180,.04)",pointerEvents:"none",zIndex:0,lineHeight:1}}>ॐ</div>
 
       {/* Toast */}
-      {toast&&<div style={{position:"absolute",top:72,left:"50%",transform:"translateX(-50%)",background:"rgba(40,20,0,.93)",color:"#FFD700",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,padding:"9px 20px",borderRadius:20,zIndex:50,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,.4)",animation:"fadeUp .3s ease"}}>{toast}</div>}
+      {toast&&<div style={{position:"absolute",top:72,left:"50%",transform:"translateX(-50%)",background:"rgba(10,20,60,.93)",color:"#A5C8FF",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,padding:"9px 20px",borderRadius:20,zIndex:50,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,.4)",animation:"fadeUp .3s ease"}}>{toast}</div>}
 
       {/* ── WHATSAPP SHARE POPUP ── */}
       {sharePopup&&(
@@ -500,57 +672,113 @@ function Home({onNav,favorites,setFavorites}){
 
       <SB/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
-        <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#4A2800",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>Today's Sadhana</span>
-        <div style={{width:34,height:34,borderRadius:12,background:"rgba(180,80,0,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer"}}>🔔</div>
+        <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#0D1F5C",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>VedPath</span>
+        <div style={{width:34,height:34,borderRadius:12,background:"rgba(26,58,143,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer"}}>🔔</div>
       </div>
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
-        {/* SHLOKA CARD */}
-        <div style={{margin:"14px 16px 0",background:"linear-gradient(135deg,#3D1C00,#5C2E00)",borderRadius:26,padding:"20px",boxShadow:"0 12px 36px rgba(80,30,0,.28)",position:"relative",overflow:"hidden"}}>
-          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"26px 26px 0 0"}}/>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,200,60,.12)",border:"1px solid rgba(255,200,60,.22)",borderRadius:20,padding:"4px 11px",marginBottom:14}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,210,100,.8)"}}>🪷 {sl.grantha} · {sl.chapter}</span>
+        {/* ── 21-DAY GITA JOURNEY SECTION ── */}
+
+        {/* Section header */}
+        <div style={{padding:"14px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(40,80,200,.6)",marginBottom:2}}>📖 21-Day Gita Journey</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:800,color:"#0D1F5C",letterSpacing:.5}}>Day {journeyDay} of 21</div>
           </div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:600,color:"#FFE4A0",lineHeight:1.9,textAlign:"center",whiteSpace:"pre-line",padding:"16px 10px",background:"rgba(255,255,255,.04)",borderRadius:18,border:"1px solid rgba(255,200,60,.08)",marginBottom:14}}>{sl.sanskrit}</div>
-          <div style={{display:"flex",alignItems:"center",gap:12,background:"rgba(0,0,0,.2)",borderRadius:18,padding:"11px 14px"}}>
-            <PlayBtn playing={playing} onToggle={togglePlay} size={44} c1="#FFD700" c2="#FF8C00"/>
-            <div style={{flex:1}}>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(255,220,120,.85)",display:"block",marginBottom:6}}>हिंदी पाठ सुनें · 1:24</span>
-              <div style={{height:3,background:"rgba(255,200,60,.15)",borderRadius:10,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${prog}%`,background:"linear-gradient(90deg,#FFD700,#FF9000)",borderRadius:10,transition:"width .2s"}}/>
-              </div>
-            </div>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"rgba(255,200,60,.4)",flexShrink:0}}>{ts}</span>
+          <div style={{background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(26,58,143,.35)"}}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"white",letterSpacing:1}}>{todayLesson.theme}</div>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(180,210,255,.85)",marginTop:1}}>{todayLesson.hi}</div>
           </div>
         </div>
 
-        {/* TRANSLATION CARD — redesigned */}
-        <div style={{margin:"12px 16px 0",background:"white",borderRadius:24,overflow:"hidden",boxShadow:"0 6px 22px rgba(180,80,0,.09)",border:"1.5px solid rgba(255,165,0,.14)"}}>
-          {/* Tab bar */}
-          <div style={{display:"flex",borderBottom:"1.5px solid rgba(255,165,0,.1)"}}>
+        {/* Krishna image card */}
+        <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(26,58,143,.25)",border:"1px solid rgba(100,150,255,.25)",position:"relative"}}>
+          <div style={{height:3,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#1D4ED8,#3B82F6,#60A5FA)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
+          <div style={{position:"relative",width:"100%"}}>
+            <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",height:380,objectPosition:"center top"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,.08) 0%,transparent 35%,rgba(5,15,50,.92) 100%)"}}/>
+            {/* Theme overlay at bottom */}
+            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"22px 22px 26px",textAlign:"center"}}>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(100,160,255,.15)",border:"1px solid rgba(100,160,255,.3)",borderRadius:20,padding:"4px 14px",marginBottom:12}}>
+                <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(180,210,255,.9)"}}>Day {journeyDay} · {todayLesson.ref}</span>
+              </div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:32,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:4}}>{todayLesson.theme}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(180,210,255,.8)"}}>{todayLesson.hi}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Shloka card — separate below image */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#0D1F5C,#1A3A8F)",borderRadius:22,padding:"18px",boxShadow:"0 8px 28px rgba(13,31,92,.3)",position:"relative",overflow:"hidden",border:"1px solid rgba(100,150,255,.18)"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#60A5FA)",borderRadius:"22px 22px 0 0"}}/>
+          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(100,160,255,.12)",border:"1px solid rgba(100,160,255,.22)",borderRadius:20,padding:"3px 11px",marginBottom:12}}>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(160,200,255,.8)"}}>🪷 {todayLesson.ref}</span>
+          </div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
+            {todayLesson.sanskrit.split("\n").map((line,i)=>(
+              <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",color:i===0?"#BAD4FF":"rgba(180,210,255,.85)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",textAlign:"center"}}>{line}</div>
+            ))}
+          </div>
+        </div>
+
+        {/* Translation card — warm dark theme */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#071440,#0D1F5C)",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 20px rgba(7,20,64,.25)",border:"1px solid rgba(100,150,255,.18)"}}>
+          <div style={{display:"flex",borderBottom:"1px solid rgba(100,150,255,.12)"}}>
             {[{id:"hindi",label:"हिंदी",sub:"Hindi"},{id:"english",label:"English",sub:"अंग्रेज़ी"}].map(t=>{
               const on=tab===t.id;
               return(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"white":"rgba(255,240,220,.5)",borderBottom:on?"2.5px solid #C47010":"2.5px solid transparent",transition:"all .2s",position:"relative"}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#C47010":"rgba(160,80,10,.4)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(196,112,16,.6)":"rgba(160,80,10,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"12px 8px 10px",border:"none",cursor:"pointer",background:on?"rgba(100,150,255,.1)":"transparent",borderBottom:on?"2.5px solid #60A5FA":"2.5px solid transparent",transition:"all .2s"}}>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#93C5FD":"rgba(150,190,255,.35)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(147,197,253,.5)":"rgba(150,190,255,.25)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
                 </button>
               );
             })}
           </div>
-          {/* Content */}
-          <div style={{padding:"16px 18px 18px",position:"relative",minHeight:90}}>
-            {/* Language label pill */}
-            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:tab==="hindi"?"rgba(196,112,16,.08)":"rgba(80,100,200,.07)",border:`1px solid ${tab==="hindi"?"rgba(196,112,16,.18)":"rgba(80,100,200,.15)"}`,borderRadius:20,padding:"3px 10px",marginBottom:10}}>
-              <div style={{width:6,height:6,borderRadius:"50%",background:tab==="hindi"?"#C47010":"#5B7AE0"}}/>
-              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:tab==="hindi"?"#C47010":"#5B7AE0"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+          <div style={{padding:"16px 18px 20px",position:"relative"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(100,150,255,.12)",border:"1px solid rgba(100,150,255,.22)",borderRadius:20,padding:"3px 10px",marginBottom:12}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:"#60A5FA"}}/>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#60A5FA"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
             </div>
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:"#3E1800",lineHeight:1.9}}>{sl.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"#2D3080",lineHeight:1.85}}>{sl.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"rgba(180,210,255,.95)",lineHeight:2}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(160,200,255,.85)",lineHeight:1.9}}>{todayLesson.english}</p>
             }
-            {/* Decorative quote mark */}
-            <div style={{position:"absolute",right:16,bottom:10,fontFamily:"serif",fontSize:52,color:tab==="hindi"?"rgba(196,112,16,.06)":"rgba(80,100,200,.06)",lineHeight:1,userSelect:"none"}}>"</div>
+          </div>
+        </div>
+
+        {/* ── AAJ KA GYAAN TOGGLE ── */}
+        <div style={{margin:"10px 16px 0"}}>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(109,40,217,.08)",border:"1.5px solid rgba(139,92,246,.15)"}}>
+            <div style={{padding:"13px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"rgba(109,40,217,.1)",border:"1px solid rgba(139,92,246,.2)"}}>📖</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#3B1095"}}>Aaj Ka Gyaan</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#9B7AE0",marginTop:2}}>{todayLesson.ref} · {todayLesson.theme}</div>
+              </div>
+              <button onClick={()=>{
+                if(tasksDone.shlok) return;
+                if(setTasksDone) setTasksDone({...tasksDone,shlok:true});
+                if(setKarma) setKarma(k=>k+50);
+                if(setShlokaCount) setShlokaCount(c=>c+1);
+              }} disabled={tasksDone.shlok}
+                style={{width:38,height:38,borderRadius:"50%",flexShrink:0,border:"none",cursor:tasksDone.shlok?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+                  background:tasksDone.shlok?"linear-gradient(135deg,#FFD700,#FF8C00)":"white",
+                  boxShadow:tasksDone.shlok?"0 4px 14px rgba(255,180,0,.45)":"inset 0 0 0 2.5px rgba(200,140,40,.3)",
+                  transition:"all .3s"}}>
+                {tasksDone.shlok
+                  ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  :<div style={{width:14,height:14,borderRadius:"50%",border:"2.5px solid rgba(200,140,40,.35)"}}/>
+                }
+              </button>
+            </div>
+            <div style={{height:3,background:"rgba(255,165,0,.1)"}}>
+              <div style={{height:"100%",width:tasksDone.shlok?"100%":"0%",background:"linear-gradient(90deg,#FFD700,#FF8C00)",transition:"width .8s ease"}}/>
+            </div>
+            <div style={{padding:"5px 16px 9px"}}>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:tasksDone.shlok?"#C47010":"rgba(196,160,64,.5)"}}>
+                {tasksDone.shlok?"✓ +50 XP EARNED · Gyaan complete":"Tap ✓ when you've read today's shlok · +50 XP"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -661,6 +889,12 @@ const FULL_DAYS=[
   {id:0,short:"Sun",full:"Sunday",deity:"Surya Dev",icon:"☀️",name:"सूर्य देव आरती",sub:"आदित्य उपासना · रविवार",
    color:"#F97316",bg:"linear-gradient(170deg,#FFF4EB 0%,#FFE8CC 55%,#FFD4A0 100%)",
    heroBg:"linear-gradient(135deg,#7C2D12,#9A3412,#C2410C)",glow:"rgba(249,115,22,.2)",
+   image:"/surya.png",
+   tathastuBg:"linear-gradient(145deg,#1A0800,#2C1200)",
+   tathastu2:"linear-gradient(135deg,#2C1400,#4A2000)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nसूर्य देव का तेज\nतुम्हारे साथ है।",
+   tathastuSender:"— सूर्य देव",
+   tathastuColor:"#FB923C",tathastuGlow:"rgba(251,146,60,.4)",darkText:"#9A3412",
    verses:[
      {label:"आरती प्रारम्भ",text:"जय कश्यप नंदन, ॐ जय आदित्य देवा।\nकंचन काया किरणमय, तेज प्रभु देवा॥",c:"#F97316"},
      {label:"पद २",text:"सप्त अश्व रथ राजित, अरुण सारथी स्वामी।\nत्रिभुवन प्रकाशक तुम, जीवन के दानी॥",c:"#FB923C"},
@@ -671,9 +905,15 @@ const FULL_DAYS=[
      {label:"पद ७",text:"ऋषि मुनि देव जन सब, महिमा तेरी गावें।\nभक्ति भाव से जो ध्यावे, शुभ फल वह पावे॥",c:"#FB923C"},
      {label:"आरती समापन",text:"जय कश्यप नंदन, ॐ जय आदित्य देवा।\nकंचन काया किरणमय, तेज प्रभु देवा॥",c:"#F97316"},
    ]},
-  {id:1,short:"Mon",full:"Monday",deity:"Lord Shiva",icon:"🔱",name:"शिव जी की आरती",sub:"शिव उपासना · सोमवार",
+  {id:1,short:"Mon",full:"Monday",deity:"Bhagwaan Shiva",icon:"🔱",name:"शिव जी की आरती",sub:"शिव उपासना · सोमवार",
    color:"#60A5FA",bg:"linear-gradient(170deg,#EFF6FF 0%,#DBEAFE 55%,#BFDBFE 100%)",
    heroBg:"linear-gradient(135deg,#1E3A5F,#1E40AF,#1D4ED8)",glow:"rgba(96,165,250,.2)",
+   image:"/shiva.png",
+   tathastuBg:"linear-gradient(145deg,#050E1F,#0A1830)",
+   tathastu2:"linear-gradient(135deg,#0C1A3A,#142850)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशिव का आशीर्वाद\nतुम्हारे साथ है।",
+   tathastuSender:"— महादेव शिव",
+   tathastuColor:"#60A5FA",tathastuGlow:"rgba(96,165,250,.4)",darkText:"#1E3A5F",
    verses:[
      {label:"आरती प्रारम्भ",text:"ॐ जय शिव ओंकारा, प्रभु जय शिव ओंकारा।\nब्रह्मा विष्णु सदाशिव, अर्धांगी धारा॥",c:"#60A5FA"},
      {label:"पद २",text:"एकानन चतुरानन पंचानन राजे।\nहंसासन गरुड़ासन वृषवाहन साजे॥",c:"#818CF8"},
@@ -684,9 +924,15 @@ const FULL_DAYS=[
      {label:"पद ७",text:"ब्रह्मा विष्णु सदाशिव जानत अविवेका।\nप्रणवाक्षर के मध्ये ये तीनों एका॥",c:"#60A5FA"},
      {label:"आरती समापन",text:"त्रिगुणस्वामी जी की आरती जो कोई नर गावे।\nकहत शिवानन्द स्वामी सुख संपत्ति पावे॥",c:"#A78BFA"},
    ]},
-  {id:2,short:"Tue",full:"Tuesday",deity:"Lord Hanuman",icon:"🪔",name:"हनुमान जी की आरती",sub:"हनुमान उपासना · मंगलवार",
+  {id:2,short:"Tue",full:"Tuesday",deity:"Prabhu Hanuman",icon:"🪔",name:"हनुमान जी की आरती",sub:"हनुमान उपासना · मंगलवार",
    color:"#EF4444",bg:"linear-gradient(170deg,#FFF5F5 0%,#FFE4E4 55%,#FECACA 100%)",
    heroBg:"linear-gradient(135deg,#7F1D1D,#991B1B,#B91C1C)",glow:"rgba(239,68,68,.2)",
+   image:"/hanuman.png",
+   tathastuBg:"linear-gradient(145deg,#1A0200,#2E0500)",
+   tathastu2:"linear-gradient(135deg,#3A0800,#5C1000)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nहनुमान जी का बल\nतुम्हारे साथ है।",
+   tathastuSender:"— श्री हनुमान",
+   tathastuColor:"#F87171",tathastuGlow:"rgba(248,113,113,.4)",darkText:"#7F1D1D",
    verses:[
      {label:"आरती प्रारम्भ",text:"आरती कीजै हनुमान लला की।\nदुष्ट दलन रघुनाथ कला की॥",c:"#EF4444"},
      {label:"पद २",text:"जाके बल से गिरिवर कांपे।\nरोग दोष जाके निकट न झांके॥",c:"#F97316"},
@@ -702,61 +948,97 @@ const FULL_DAYS=[
      {label:"पद १२",text:"जो हनुमानजी की आरती गावै।\nबसि बैकुंठ परम पद पावै॥",c:"#EF4444"},
      {label:"आरती समापन",text:"आरती कीजै हनुमान लला की।\nदुष्ट दलन रघुनाथ कला की॥",c:"#DC2626"},
    ]},
-  {id:3,short:"Wed",full:"Wednesday",deity:"Lord Ganesha",icon:"🌺",name:"श्री गणेश आरती",sub:"गणेश उपासना · बुधवार",
+  {id:3,short:"Wed",full:"Wednesday",deity:"Shree Ganesha",icon:"🌺",name:"श्री गणेश आरती",sub:"गणेश उपासना · बुधवार",
    color:"#F59E0B",bg:"linear-gradient(170deg,#FFFBEB 0%,#FEF3C7 55%,#FDE68A 100%)",
    heroBg:"linear-gradient(135deg,#78350F,#92400E,#B45309)",glow:"rgba(245,158,11,.2)",
+   image:"/ganesha.png",floatIcon:"🐘",
+   tathastuBg:"linear-gradient(145deg,#221000,#3A1C00)",
+   tathastu2:"linear-gradient(135deg,#2C1400,#503000)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nगणेश का आशीष\nतुम्हारे साथ है।",
+   tathastuSender:"— श्री गणेश",
+   tathastuColor:"#F59E0B",tathastuGlow:"rgba(245,158,11,.35)",darkText:"#78350F",
    verses:[
-     {label:"आरती प्रारम्भ",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
-     {label:"पद २",text:"एकदंत दयावंत चार भुजाधारी।\nमाथे सिंदूर सोहे मूसे की सवारी॥",c:"#FBBF24"},
-     {label:"पद ३",text:"अंधन को आंख देत कोढ़िन को काया।\nबांझन को पुत्र देत निर्धन को माया॥",c:"#F59E0B"},
-     {label:"पद ४",text:"हार चढ़े फूल चढ़े और चढ़े मेवा।\nलड्डुअन का भोग लगे संत करें सेवा॥",c:"#D97706"},
-     {label:"पद ५",text:"दीनन की लाज राखो शंभु सुतवारी।\nकामना को पूर्ण करो जग बलिहारी॥",c:"#FBBF24"},
-     {label:"आरती समापन",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
+     {bg:"linear-gradient(135deg,#3C1806,#5C2A08)",label:"आरती प्रारम्भ",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
+     {bg:"linear-gradient(135deg,#4A2200,#6B3800)",label:"पद २",text:"एकदंत दयावंत चार भुजाधारी।\nमाथे सिंदूर सोहे मूसे की सवारी॥",c:"#FBBF24"},
+     {bg:"linear-gradient(135deg,#3A1604,#582804)",label:"पद ३",text:"अंधन को आंख देत कोढ़िन को काया।\nबांझन को पुत्र देत निर्धन को माया॥",c:"#F59E0B"},
+     {bg:"linear-gradient(135deg,#4E2A00,#703C00)",label:"पद ४",text:"हार चढ़े फूल चढ़े और चढ़े मेवा।\nलड्डुअन का भोग लगे संत करें सेवा॥",c:"#D97706"},
+     {bg:"linear-gradient(135deg,#421C04,#623008)",label:"पद ५",text:"दीनन की लाज राखो शंभु सुतवारी।\nकामना को पूर्ण करो जग बलिहारी॥",c:"#FBBF24"},
+     {bg:"linear-gradient(135deg,#3C1806,#5C2A08)",label:"आरती समापन",text:"जय गणेश जय गणेश जय गणेश देवा।\nमाता जाकी पार्वती पिता महादेवा॥",c:"#F59E0B"},
    ]},
   {id:4,short:"Thu",full:"Thursday",deity:"Shyam Baba",icon:"🙏",name:"श्री श्याम बाबा आरती",sub:"श्याम उपासना · गुरुवार",
    color:"#8B5CF6",bg:"linear-gradient(170deg,#F5F3FF 0%,#EDE9FE 55%,#DDD6FE 100%)",
    heroBg:"linear-gradient(135deg,#2E1065,#3B0764,#4C1D95)",glow:"rgba(139,92,246,.2)",
+   image:"/shyam.png",floatIcon:"✨",
+   tathastuBg:"linear-gradient(145deg,#0E0520,#1A0A35)",
+   tathastu2:"linear-gradient(135deg,#150830,#280F5A)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nश्याम बाबा का प्रेम\nतुम्हारे साथ है।",
+   tathastuSender:"— श्री श्याम",
+   tathastuColor:"#8B5CF6",tathastuGlow:"rgba(139,92,246,.35)",darkText:"#2E1065",
    verses:[
-     {label:"आरती प्रारम्भ",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#8B5CF6"},
-     {label:"पद २",text:"रत्न सिंहासन राजत, मोर मुकुट सिर धारे।\nमोरछड़ी की शोभा, मन भक्तों के हरे॥",c:"#A78BFA"},
-     {label:"पद ३",text:"तन मन धन सब अर्पण, चरणों में तेरे स्वामी।\nदीनों के तुम दाता, अंतर्यामी स्वामी॥",c:"#8B5CF6"},
-     {label:"पद ४",text:"हारे के सहारे तुम, जग में नाम तुम्हारा।\nजो शरण तुम्हारी आए, पार करो भव धारा॥",c:"#7C3AED"},
-     {label:"पद ५",text:"शीश के दानी बाबा, महिमा अपरंपारा।\nतेरी कृपा से चमके, जीवन यह हमारा॥",c:"#A78BFA"},
-     {label:"पद ६",text:"जो कोई प्रेम से गावे, आरती श्याम तुम्हारी।\nकृपा बरसे उस पर, मिटे विपदा सारी॥",c:"#8B5CF6"},
-     {label:"आरती समापन",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#7C3AED"},
+     {bg:"linear-gradient(135deg,#14062E,#240A52)",label:"आरती प्रारम्भ",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#8B5CF6"},
+     {bg:"linear-gradient(135deg,#1A0840,#2E1068)",label:"पद २",text:"रत्न सिंहासन राजत, मोर मुकुट सिर धारे।\nमोरछड़ी की शोभा, मन भक्तों के हरे॥",c:"#A78BFA"},
+     {bg:"linear-gradient(135deg,#100428,#1E0848)",label:"पद ३",text:"तन मन धन सब अर्पण, चरणों में तेरे स्वामी।\nदीनों के तुम दाता, अंतर्यामी स्वामी॥",c:"#8B5CF6"},
+     {bg:"linear-gradient(135deg,#1C0A3C,#320C5E)",label:"पद ४",text:"हारे के सहारे तुम, जग में नाम तुम्हारा।\nजो शरण तुम्हारी आए, पार करो भव धारा॥",c:"#7C3AED"},
+     {bg:"linear-gradient(135deg,#140630,#260A50)",label:"पद ५",text:"शीश के दानी बाबा, महिमा अपरंपारा।\nतेरी कृपा से चमके, जीवन यह हमारा॥",c:"#A78BFA"},
+     {bg:"linear-gradient(135deg,#180840,#2C0E60)",label:"पद ६",text:"जो कोई प्रेम से गावे, आरती श्याम तुम्हारी।\nकृपा बरसे उस पर, मिटे विपदा सारी॥",c:"#8B5CF6"},
+     {bg:"linear-gradient(135deg,#14062E,#240A52)",label:"आरती समापन",text:"ॐ जय श्री श्याम हरे, बाबा जय श्री श्याम हरे।\nखाटू धाम विराजत, भक्तों के संकट टरे॥",c:"#7C3AED"},
    ]},
-  {id:5,short:"Fri",full:"Friday",deity:"Goddess Lakshmi",icon:"🌸",name:"श्री लक्ष्मी जी की आरती",sub:"लक्ष्मी उपासना · शुक्रवार",
+  {id:5,short:"Fri",full:"Friday",deity:"Maa Lakshmi",icon:"🌸",name:"श्री लक्ष्मी जी की आरती",sub:"लक्ष्मी उपासना · शुक्रवार",
    color:"#EC4899",bg:"linear-gradient(170deg,#FDF2F8 0%,#FCE7F3 55%,#FBCFE8 100%)",
    heroBg:"linear-gradient(135deg,#831843,#9D174D,#BE185D)",glow:"rgba(236,72,153,.2)",
+   image:"/lakshmi.png",floatIcon:"🪷",
+   tathastuBg:"linear-gradient(145deg,#1E0414,#340820)",
+   tathastu2:"linear-gradient(135deg,#2A0618,#500A2C)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nमाँ लक्ष्मी की कृपा\nतुम्हारे साथ है।",
+   tathastuSender:"— माँ लक्ष्मी",
+   tathastuColor:"#EC4899",tathastuGlow:"rgba(236,72,153,.35)",darkText:"#831843",
    verses:[
-     {label:"आरती प्रारम्भ",text:"ॐ जय लक्ष्मी माता, मैया जय लक्ष्मी माता।\nतुमको निसदिन सेवत, हरि विष्णु विधाता॥",c:"#EC4899"},
-     {label:"पद २",text:"उमा रमा ब्रह्माणी, तुम ही जग माता।\nसूर्य चन्द्रमा ध्यावत, नारद ऋषि गाता॥",c:"#F472B6"},
-     {label:"पद ३",text:"दुर्गा रूप निरंजनि, सुख संपत्ति दाता।\nजो कोई तुमको ध्यावत, ऋद्धि सिद्धि धन पाता॥",c:"#EC4899"},
-     {label:"पद ४",text:"तुम पाताल निवासिनि, तुम ही शुभदाता।\nकर्म प्रभाव प्रकाशिनि, भव निधि की त्राता॥",c:"#DB2777"},
-     {label:"पद ५",text:"जिस घर तुम रहती, सब सद्गुण आता।\nसब संभव हो जाता, मन नहीं घबराता॥",c:"#F472B6"},
-     {label:"पद ६",text:"तुम बिन यज्ञ न होते, वस्त्र न कोई पाता।\nखान पान का वैभव, सब तुमसे आता॥",c:"#EC4899"},
-     {label:"पद ७",text:"शुभ गुण मंदिर सुंदर, क्षीरोदधि जाता।\nरत्न चतुर्दश तुम बिन, कोई नहीं पाता॥",c:"#DB2777"},
-     {label:"पद ८",text:"महालक्ष्मीजी की आरती, जो कोई नर गाता।\nउर आनंद समाता, पाप उतर जाता॥",c:"#F472B6"},
+     {bg:"linear-gradient(135deg,#420820,#620A2C)",label:"आरती प्रारम्भ",text:"ॐ जय लक्ष्मी माता, मैया जय लक्ष्मी माता।\nतुमको निसदिन सेवत, हरि विष्णु विधाता॥",c:"#EC4899"},
+     {bg:"linear-gradient(135deg,#52082C,#780C3A)",label:"पद २",text:"उमा रमा ब्रह्माणी, तुम ही जग माता।\nसूर्य चन्द्रमा ध्यावत, नारद ऋषि गाता॥",c:"#F472B6"},
+     {bg:"linear-gradient(135deg,#3C0618,#5A0A24)",label:"पद ३",text:"दुर्गा रूप निरंजनि, सुख संपत्ति दाता।\nजो कोई तुमको ध्यावत, ऋद्धि सिद्धि धन पाता॥",c:"#EC4899"},
+     {bg:"linear-gradient(135deg,#4E0A26,#6E0C32)",label:"पद ४",text:"तुम पाताल निवासिनि, तुम ही शुभदाता।\nकर्म प्रभाव प्रकाशिनि, भव निधि की त्राता॥",c:"#DB2777"},
+     {bg:"linear-gradient(135deg,#420820,#620A2E)",label:"पद ५",text:"जिस घर तुम रहती, सब सद्गुण आता।\nसब संभव हो जाता, मन नहीं घबराता॥",c:"#F472B6"},
+     {bg:"linear-gradient(135deg,#500A28,#720C36)",label:"पद ६",text:"तुम बिन यज्ञ न होते, वस्त्र न कोई पाता।\nखान पान का वैभव, सब तुमसे आता॥",c:"#EC4899"},
+     {bg:"linear-gradient(135deg,#3C0618,#580A22)",label:"पद ७",text:"शुभ गुण मंदिर सुंदर, क्षीरोदधि जाता।\nरत्न चतुर्दश तुम बिन, कोई नहीं पाता॥",c:"#DB2777"},
+     {bg:"linear-gradient(135deg,#4A0820,#680A2C)",label:"पद ८",text:"महालक्ष्मीजी की आरती, जो कोई नर गाता।\nउर आनंद समाता, पाप उतर जाता॥",c:"#F472B6"},
      {label:"आरती समापन",text:"ॐ जय लक्ष्मी माता, मैया जय लक्ष्मी माता।\nतुमको निसदिन सेवत, हरि विष्णु विधाता॥",c:"#EC4899"},
    ]},
   {id:6,short:"Sat",full:"Saturday",deity:"Shani Dev",icon:"⚫",name:"श्री शनि देव आरती",sub:"शनि उपासना · शनिवार",
    color:"#64748B",bg:"linear-gradient(170deg,#F8FAFC 0%,#F1F5F9 55%,#E2E8F0 100%)",
    heroBg:"linear-gradient(135deg,#0F172A,#1E293B,#334155)",glow:"rgba(100,116,139,.18)",
+   image:"/shani.png",floatIcon:"⚖️",
+   tathastuBg:"linear-gradient(145deg,#060810,#0E1220)",
+   tathastu2:"linear-gradient(135deg,#0A0C18,#141828)",
+   tathastuMsg:"हे भक्त, तुम्हारी प्रार्थना\nस्वीकार हुई।\nशनि देव का न्याय\nतुम्हारे साथ है।",
+   tathastuSender:"— शनि देव",
+   tathastuColor:"#94A3B8",tathastuGlow:"rgba(148,163,184,.3)",darkText:"#0F172A",
    verses:[
-     {label:"आरती प्रारम्भ",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
-     {label:"पद २",text:"श्याम अंग वक्र दृष्टि चतुर्भुजा धारी।\nनीलाम्बर धार नाथ गज की असवारी॥",c:"#94A3B8"},
-     {label:"पद ३",text:"क्रीट मुकुट शीश राजित दिपत है लिलारी।\nमुक्तन की माला गले शोभित बलिहारी॥",c:"#64748B"},
-     {label:"पद ४",text:"मोदक मिष्ठान पान चढ़त हैं सुपारी।\nलोहा तिल तेल उड़द महिषी अति प्यारी॥",c:"#475569"},
-     {label:"पद ५",text:"देव दनुज ऋषि मुनि सुमिरत नर नारी।\nविश्वनाथ धरत ध्यान शरण हैं तुम्हारी॥",c:"#94A3B8"},
-     {label:"आरती समापन",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
+     {bg:"linear-gradient(135deg,#060810,#0E1628)",label:"आरती प्रारम्भ",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
+     {bg:"linear-gradient(135deg,#0C1220,#182034)",label:"पद २",text:"श्याम अंग वक्र दृष्टि चतुर्भुजा धारी।\nनीलाम्बर धार नाथ गज की असवारी॥",c:"#94A3B8"},
+     {bg:"linear-gradient(135deg,#080C18,#101C2E)",label:"पद ३",text:"क्रीट मुकुट शीश राजित दिपत है लिलारी।\nमुक्तन की माला गले शोभित बलिहारी॥",c:"#64748B"},
+     {bg:"linear-gradient(135deg,#0E1428,#1A2238)",label:"पद ४",text:"मोदक मिष्ठान पान चढ़त हैं सुपारी।\nलोहा तिल तेल उड़द महिषी अति प्यारी॥",c:"#475569"},
+     {bg:"linear-gradient(135deg,#0A1020,#16202E)",label:"पद ५",text:"देव दनुज ऋषि मुनि सुमिरत नर नारी।\nविश्वनाथ धरत ध्यान शरण हैं तुम्हारी॥",c:"#94A3B8"},
+     {bg:"linear-gradient(135deg,#060810,#0E1628)",label:"आरती समापन",text:"जय जय श्री शनिदेव भक्तन हितकारी।\nसूरज के पुत्र प्रभु छाया महतारी॥",c:"#64748B"},
    ]},
 ];
 
-function Prarthana({onNav}){
+function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays,userName=""}){
   const todayIdx=new Date().getDay();
   const [sel,setSel]=useState(todayIdx);
+  const [tathastu,setTathastu]=useState(false);
+  const [toast,setToast]=useState("");
   const day=FULL_DAYS[sel];
   const pick=(i)=>{setSel(i);};
+  const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
+
+  const completeAarti=()=>{
+    if(tasksDone.aarti) return;
+    if(setTasksDone) setTasksDone({...tasksDone,aarti:true});
+    if(setKarma) setKarma(k=>k+30);
+    if(setBhaktDays) setBhaktDays(d=>d+1);
+    setTathastu(true);
+  };
+
   return(
     <div style={{width:"100%",height:"100%",background:day.bg,display:"flex",flexDirection:"column",position:"relative",overflow:"hidden",transition:"background .5s ease"}}>
       <div style={{position:"absolute",top:-80,left:"50%",transform:"translateX(-50%)",width:320,height:320,background:`radial-gradient(circle,${day.glow} 0%,transparent 65%)`,borderRadius:"50%",pointerEvents:"none",zIndex:0,animation:"breathe 6s ease-in-out infinite",transition:"background .5s ease"}}/>
@@ -769,7 +1051,7 @@ function Prarthana({onNav}){
       <div style={{padding:"12px 16px 0",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.55)",borderRadius:22,padding:"5px",backdropFilter:"blur(16px)",border:`1px solid ${day.color}25`,boxShadow:`0 4px 18px ${day.color}14`}}>
           {FULL_DAYS.map((d,i)=>{const on=i===sel;const isToday=i===todayIdx;return(
-            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative"}}>
+            <button key={i} onClick={()=>pick(i)} style={{flex:1,padding:"8px 0 7px",borderRadius:16,border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all .25s cubic-bezier(.16,1,.3,1)",background:on?`linear-gradient(140deg,${d.color},${d.color}CC)`:"transparent",boxShadow:on?`0 4px 16px ${d.color}44`:"none",position:"relative",opacity:1,pointerEvents:"auto"}}>
               {isToday&&!on&&<div style={{position:"absolute",top:4,left:"50%",transform:"translateX(6px)",width:5,height:5,borderRadius:"50%",background:d.color,boxShadow:`0 0 5px ${d.color}88`}}/>}
               <span style={{fontSize:on?16:13,lineHeight:1,transition:"font-size .2s"}}>{d.icon}</span>
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:7.5,fontWeight:on?800:600,letterSpacing:.5,textTransform:"uppercase",lineHeight:1,color:on?"white":`${d.color}88`}}>{d.short}</span>
@@ -791,63 +1073,235 @@ function Prarthana({onNav}){
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:700,color:"rgba(255,255,255,.9)"}}>{day.name}</div>
           </div>
         </div>
+        {/* Instruction card */}
+        <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"14px 16px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
+          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+            <span style={{fontSize:20,flexShrink:0}}>🙏</span>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:600,color:day.darkText||"#2D1200",lineHeight:1.8}}>
+              पूरे भाव के साथ अपने शांत मन से बैठें। एक बार अपनी वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें।
+            </div>
+          </div>
+        </div>
         {/* Section label */}
-        <div style={{padding:"16px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <div style={{padding:"14px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:`${day.color}99`}}>🙏 आरती के पद</div>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:600,color:`${day.color}66`}}>{day.verses.length} पद</div>
         </div>
         {/* Verse cards */}
         <div style={{padding:"0 16px",display:"flex",flexDirection:"column",gap:10}}>
           {day.verses.map((v,i)=>{const isFirst=v.label==="आरती प्रारम्भ";const isLast=v.label==="आरती समापन";return(
-            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"15px 17px 15px 21px",background:`${v.c}0D`,border:`1.5px solid ${v.c}2E`,position:"relative",overflow:"hidden",boxShadow:"0 2px 10px rgba(0,0,0,.05)",animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
-              <div style={{position:"absolute",left:0,top:0,bottom:0,width:4,background:`linear-gradient(180deg,${v.c},${v.c}55)`,borderRadius:"22px 0 0 22px"}}/>
-              <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-                <div style={{width:36,height:36,borderRadius:12,flexShrink:0,background:`${v.c}15`,border:`1px solid ${v.c}30`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  {isFirst||isLast?<span style={{fontSize:14}}>{isFirst?"🔔":"🙏"}</span>:<span style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:700,color:v.c}}>{i}</span>}
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:`${v.c}88`,marginBottom:8}}>{v.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:800,color:"#1A0800",lineHeight:2}}>
-                    {v.text.split("\n").map((line,li,arr)=>(
-                      <span key={li}>
-                        {line}
-                        {li<arr.length-1&&<><br/><div style={{height:1,background:`linear-gradient(90deg,transparent,${v.c}40,transparent)`,margin:"2px 0"}}/></>}
-                      </span>
-                    ))}
+            <div key={`${sel}-${i}`} style={{borderRadius:22,padding:"18px 18px 18px 20px",background:`${v.c}15`,border:`1.5px solid ${v.c}35`,position:"relative",overflow:"hidden",boxShadow:`0 6px 20px ${v.c}33`,animation:`fadeUp .35s ${i*.04+.05}s ease both`}}>
+              {/* subtle top shimmer line */}
+              <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)`,borderRadius:"22px 22px 0 0"}}/>
+              {/* inner glow */}
+              <div style={{position:"absolute",top:-30,right:-20,width:120,height:120,background:`radial-gradient(circle,${v.c}22 0%,transparent 70%)`,pointerEvents:"none"}}/>
+              <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:day.darkText||v.c,opacity:.7,marginBottom:10}}>{v.label}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
+                {v.text.split("\n").map((line,li,arr)=>(
+                  <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:day.darkText||v.c}}>
+                    {line}
+                    {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${day.darkText||v.c}55,transparent)`,margin:"5px 0"}}/>}
                   </div>
-                </div>
-                <div style={{width:8,height:8,borderRadius:"50%",background:v.c,flexShrink:0,marginTop:6,boxShadow:`0 0 8px ${v.c}99`}}/>
+                ))}
               </div>
             </div>
           );})}
         </div>
-        {/* Closing */}
-        <div style={{margin:"16px 16px 0",borderRadius:22,padding:"18px 20px",border:`1px solid ${day.color}22`,textAlign:"center",background:`${day.color}09`}}>
-          <div style={{fontSize:28,marginBottom:8}}>{day.icon}</div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:700,color:`${day.color}CC`,lineHeight:1.8}}>{day.name} सम्पन्न</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:`${day.color}55`,marginTop:5}}>जय {day.deity} 🙏</div>
+        {/* Today's Aarti card */}
+        <div style={{padding:"16px 16px 0"}}>
+          <div style={{background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 3px 14px rgba(109,40,217,.08)",border:"1.5px solid rgba(139,92,246,.15)"}}>
+            <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{width:44,height:44,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0,background:"#FFF0E8",border:`1.5px solid ${day.color}33`}}>{day.icon}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#5A3A18"}}>Today's Aarti</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"#B0977A",marginTop:2}}>{day.deity} · {day.name}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:4,marginTop:4,background:`${day.color}18`,border:`1px solid ${day.color}33`,borderRadius:10,padding:"2px 8px"}}>
+                  <span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:day.color}}>{day.hi||day.sub}</span>
+                </div>
+              </div>
+              <button onClick={completeAarti} disabled={tasksDone.aarti}
+                style={{width:38,height:38,borderRadius:"50%",flexShrink:0,border:"none",cursor:tasksDone.aarti?"default":"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+                  background:tasksDone.aarti?"linear-gradient(135deg,#FFD700,#FF8C00)":"white",
+                  boxShadow:tasksDone.aarti?"0 4px 14px rgba(255,180,0,.45)":"inset 0 0 0 2.5px rgba(200,140,40,.3)",
+                  transition:"all .3s"}}>
+                {tasksDone.aarti
+                  ?<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 4.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  :<div style={{width:14,height:14,borderRadius:"50%",border:"2.5px solid rgba(200,140,40,.35)"}}/>
+                }
+              </button>
+            </div>
+            <div style={{height:3,background:`${day.color}12`}}>
+              <div style={{height:"100%",width:tasksDone.aarti?"100%":"0%",background:`linear-gradient(90deg,${day.color},${day.color}88)`,transition:"width .8s ease"}}/>
+            </div>
+            <div style={{padding:"6px 16px 10px"}}>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:tasksDone.aarti?"#C47010":"rgba(196,160,64,.5)"}}>
+                {tasksDone.aarti?"✓ +30 XP EARNED":"Tap ✓ to complete · +30 XP"}
+              </span>
+            </div>
+          </div>
         </div>
-        <div style={{height:16}}/>
+
+        {/* ── TATHASTU CARD — locked until aarti complete ── */}
+        <div style={{padding:"10px 16px 0"}}>
+          <div
+            style={{
+              borderRadius:24,overflow:"hidden",
+              border:tasksDone.aarti?`1.5px solid ${day.tathastuColor||"#8B5CF6"}44`:"1.5px solid rgba(255,255,255,.08)",
+              boxShadow:tasksDone.aarti?`0 8px 32px ${day.tathastuGlow||"rgba(139,92,246,.18)"}`:"none",
+              opacity:tasksDone.aarti?1:0.45,
+              cursor:"default",
+              transition:"all .5s ease",
+              background:day.tathastuBg||"linear-gradient(135deg,#1A0A30,#2D1560)",
+              position:"relative",
+            }}>
+            {/* Shimmer on activate */}
+            {tasksDone.aarti&&<div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)",animation:"shimmer 3s ease-in-out infinite",pointerEvents:"none"}}/>}
+            {/* Top rainbow bar */}
+            <div style={{height:3,background:tasksDone.aarti?`linear-gradient(90deg,${day.tathastuColor||"#8B5CF6"},rgba(255,255,255,.5),${day.tathastuColor||"#8B5CF6"})`:"rgba(255,255,255,.08)",backgroundSize:"200% 100%",animation:tasksDone.aarti?"gradShift 3s linear infinite":"none"}}/>
+
+            {/* Locked state — show blurred deity image with lock */}
+            {!tasksDone.aarti&&(
+              <div style={{padding:"16px 16px",display:"flex",alignItems:"center",gap:14}}>
+                {/* Blurred deity image preview */}
+                {day.image&&(
+                  <div style={{width:64,height:64,borderRadius:16,overflow:"hidden",flexShrink:0,position:"relative",border:"1px solid rgba(255,255,255,.1)"}}>
+                    <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",filter:"blur(4px) brightness(.5)",transform:"scale(1.1)"}}/>
+                    <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>🔒</div>
+                  </div>
+                )}
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"'Cinzel',serif",fontSize:20,fontWeight:700,color:"rgba(255,255,255,.22)",letterSpacing:3}}>तथास्तु</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(255,255,255,.15)",marginTop:4}}>Complete today's aarti to unlock</div>
+                </div>
+              </div>
+            )}
+
+
+
+            {/* Unlocked — auto expanded when aarti done */}
+            {tasksDone.aarti&&(
+              <div style={{padding:"24px 18px 28px",display:"flex",flexDirection:"column",alignItems:"center"}}>
+
+                {/* Floating deity icon */}
+                <div style={{fontSize:50,animation:"floatUp 3s ease-in-out infinite",filter:`drop-shadow(0 6px 18px ${day.tathastuGlow||"rgba(255,200,80,.6)"})`,marginBottom:10}}>{day.icon}</div>
+
+                {/* TATHASTU */}
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:4,lineHeight:1.2,marginBottom:5,textShadow:`0 0 40px ${day.tathastuGlow||"rgba(255,200,80,.5)"}`,textAlign:"center"}}>तथास्तु</div>
+                <div style={{fontFamily:"'Cormorant Garamond',serif",fontStyle:"italic",fontSize:15,color:"rgba(255,255,255,.4)",letterSpacing:3,marginBottom:22}}>So it shall be</div>
+
+                {/* Divider */}
+                <div style={{width:60,height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}55,transparent)`,marginBottom:22}}/>
+
+                {/* Image — square with curved borders, inner card feel */}
+                {day.image&&(
+                  <div style={{
+                    width:"100%",
+                    background:day.tathastu2||"rgba(255,255,255,.06)",
+                    borderRadius:24,
+                    padding:12,
+                    border:`1px solid ${day.tathastuColor||"#FFD700"}22`,
+                    boxShadow:`0 8px 32px ${day.tathastuGlow||"rgba(255,200,80,.2)"},inset 0 1px 0 rgba(255,255,255,.06)`,
+                    marginBottom:18,
+                    position:"relative",
+                    overflow:"hidden",
+                  }}>
+                    {/* Inner card glow */}
+                    <div style={{position:"absolute",top:-40,left:"50%",transform:"translateX(-50%)",width:200,height:200,background:`radial-gradient(circle,${day.tathastuGlow||"rgba(255,200,80,.15)"} 0%,transparent 70%)`,pointerEvents:"none"}}/>
+                    <div style={{
+                      borderRadius:16,
+                      overflow:"hidden",
+                      width:"100%",
+                      aspectRatio:"1/1",
+                      position:"relative",
+                      boxShadow:`0 4px 20px ${day.tathastuGlow||"rgba(255,200,80,.25)"}`,
+                    }}>
+                      <img src={day.image} alt={day.deity} style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}/>
+                    </div>
+                    {/* Deity name below image inside card */}
+                    <div style={{textAlign:"center",marginTop:10,marginBottom:2}}>
+                      <div style={{fontFamily:"'Cinzel',serif",fontSize:13,fontWeight:700,color:day.tathastuColor||"#FFD700",letterSpacing:2}}>{day.deity}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Message box */}
+                <div style={{width:"100%",background:"rgba(255,255,255,.06)",borderRadius:20,padding:"18px",border:`1px solid ${day.tathastuColor||"#FFD700"}22`,marginBottom:16}}>
+                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",textAlign:"center",lineHeight:2}}>
+                    {(day.tathastuMsg||"तुम्हारी प्रार्थना स्वीकार हुई।\nदेव का आशीर्वाद तुम्हारे साथ है।").split("\n").map((line,i)=>(
+                      <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",
+                        color:i%2===0?"rgba(255,255,255,.95)":"rgba(255,230,180,.8)"}}>
+                        {line}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{height:1,background:`linear-gradient(90deg,transparent,${day.tathastuColor||"#FFD700"}33,transparent)`,margin:"14px 0"}}/>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{fontFamily:"'Cinzel',serif",fontSize:10,color:"rgba(255,255,255,.3)",letterSpacing:1}}>{day.tathastuSender||`— ${day.deity}`}</div>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:4,background:`${day.tathastuColor||"#FFD700"}18`,border:`1px solid ${day.tathastuColor||"#FFD700"}33`,borderRadius:20,padding:"3px 10px"}}>
+                      <span style={{fontSize:11}}>✨</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,color:day.tathastuColor||"#FFD700"}}>+30 Karma</span>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{height:24}}/>
       </div>
+
       <BNav active="prarthana" onNav={onNav} dark={false}/>
     </div>
   );
 }
 
 /* ── SADHANA ── */
-function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone}){
+function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false},setTasksDone,userName="",completedDates=[],addCompletedDate}){
   const today=new Date().getDay();
   const todayPrayer=PRAYERS[today]||PRAYERS[2];
 
   const TASK_DEFS=[
     {id:"shlok",icon:"🌅",bg:"#FFF3E0",title:"Morning Shlok",sub:"Bhagavad Gita · Ch.2 V.47",detail:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।",xp:50},
     {id:"aarti",icon:"🪔",bg:"#FFF0E8",title:"Today's Aarti",sub:`${todayPrayer.deity} · ${todayPrayer.hi}`,detail:todayPrayer.name,xp:30,accentColor:todayPrayer.color},
+    {id:"mantra",icon:"📿",bg:"#F5F0FF",title:"Mantra Japa",sub:"Anushthan · महामृत्युञ्जय मंत्र",detail:"ॐ त्र्यम्बकं यजामहे...",xp:20,accentColor:"#8B5CF6"},
   ];
   const tasks=TASK_DEFS.map(t=>({...t,done:!!tasksDone[t.id]}));
 
+  // Real week tracking using actual completion dates
+  const todayDate = new Date();
+  const todayDayJS = todayDate.getDay(); // 0=Sun,1=Mon..6=Sat
+  const todayDotIdx = todayDayJS===0?6:todayDayJS-1; // Mon=0..Sun=6
+
+  // Get Monday of current week
+  const getMondayOfWeek = (d) => {
+    const day = d.getDay();
+    const diff = (day===0?-6:1-day);
+    const monday = new Date(d);
+    monday.setDate(d.getDate()+diff);
+    return monday;
+  };
+  const monday = getMondayOfWeek(todayDate);
+
+  // Build 7 day slots Mon-Sun with their date strings
+  const weekDates = Array.from({length:7},(_,i)=>{
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    return d.toISOString().split("T")[0];
+  });
+
+  const todayStr = todayDate.toISOString().split("T")[0];
+  const todayAllDone = tasksDone.shlok && tasksDone.aarti && tasksDone.mantra;
+
   const days=[{l:"Mon"},{l:"Tue"},{l:"Wed"},{l:"Thu"},{l:"Fri"},{l:"Sat"},{l:"Sun"}].map((d,i)=>{
-    if(i<tapasyaDays) return {...d,s:"done"};
-    if(i===tapasyaDays) return {...d,s:"today"};
+    const dateStr = weekDates[i];
+    const isPast = dateStr < todayStr;
+    const isToday = dateStr === todayStr;
+    const isCompleted = completedDates.includes(dateStr) || (isToday && todayAllDone);
+    if(isCompleted) return {...d,s:"done"};
+    if(isToday) return {...d,s:"today"};
+    if(isPast) return {...d,s:"missed"};
     return {...d,s:"up"};
   });
   const earned=tasks.filter(t=>t.done).reduce((a,t)=>a+t.xp,0);
@@ -855,19 +1309,21 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
   const toggleTask=(id)=>{
-    const nowDone=!tasksDone[id];
-    const nextDone={...tasksDone,[id]:nowDone};
+    if(tasksDone[id]) return; // irreversible
+    const nextDone={...tasksDone,[id]:true};
     setTasksDone(nextDone);
     const taskXp=TASK_DEFS.find(t=>t.id===id)?.xp||0;
-    setKarma(k=>nowDone ? k+taskXp : k-taskXp);
-    if(id==="shlok"&&nowDone&&setShlokaCount) setShlokaCount(c=>c+1);
+    setKarma(k=>k+taskXp);
+    if(id==="shlok"&&setShlokaCount) setShlokaCount(c=>c+1);
     const allDone=TASK_DEFS.every(t=>nextDone[t.id]);
     const wasDone=TASK_DEFS.every(t=>tasksDone[t.id]);
     if(allDone&&!wasDone){
       if(setTapasyaDays) setTapasyaDays(d=>d+1);
       if(setBhaktDays) setBhaktDays(d=>d+1);
+      if(addCompletedDate) addCompletedDate(new Date().toISOString().split("T")[0]);
+      showToast("🎉 Sadhana Complete! +15 Streak");
     }
-    if(nowDone&&!user) showToast("🔐 Sign in to save your progress!");
+    if(!user) showToast("🔐 Sign in to save your progress!");
   };
 
   return(
@@ -923,15 +1379,13 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
         <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,#3D2000,#5C3200)",borderRadius:26,padding:"20px 22px",position:"relative",overflow:"hidden",boxShadow:"0 12px 36px rgba(93,50,0,.3)"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"26px 26px 0 0"}}/>
           <div style={{position:"absolute",right:18,top:"50%",transform:"translateY(-50%)",fontSize:56,opacity:.14}}>🏆</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"2.5px",textTransform:"uppercase",color:"rgba(255,210,120,.6)"}}>Total Karma Points</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:"2.5px",textTransform:"uppercase",color:"rgba(255,210,120,.6)"}}>Today's Karma Points</div>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:46,fontWeight:800,color:"#FFD700",lineHeight:1.05,margin:"5px 0 3px",letterSpacing:-1}}>{earned}</div>
           {(()=>{
-            const curLvl=LEVELS.find(l=>earned>=l.min&&earned<=l.max)||LEVELS[0];
-            const nxtLvl=LEVELS[LEVELS.indexOf(curLvl)+1];
-            const pct=nxtLvl?Math.min(Math.round(((earned-curLvl.min)/(nxtLvl.min-curLvl.min))*100),100):100;
+            const pct=Math.min(Math.round((earned/100)*100),100);
             return(<>
               <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontStyle:"italic",color:"rgba(255,210,120,.55)"}}>
-                {earned===0?"Complete today's sadhana to earn Karma Points":nxtLvl?`${nxtLvl.min-earned} points to ${nxtLvl.label}`:"Maximum level reached 🏆"}
+                {earned===0?"Complete today's sadhana to earn Karma Points":earned>=(50+30+20)?"Today's sadhana complete! 🎉":`${(50+30+20)-earned} points to today's sadhana`}
               </div>
               <div style={{height:6,background:"rgba(255,255,255,.08)",borderRadius:10,marginTop:16,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#FFD700,#FF8C00)",borderRadius:10,transition:"width .5s ease"}}/>
@@ -964,11 +1418,13 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
                 ?{background:"linear-gradient(135deg,#FFD700,#E8A020)",boxShadow:"0 3px 10px rgba(232,160,32,.4)",color:"white",fontSize:14}
                 :d.s==="today"
                 ?{background:"linear-gradient(135deg,#FF6B00,#CC4400)",boxShadow:"0 3px 14px rgba(255,100,0,.5)",color:"white",fontSize:14,animation:"todayPulse 2s ease-in-out infinite"}
-                :{background:"rgba(93,50,0,.07)",border:"1.5px dashed rgba(180,120,30,.25)",color:"rgba(180,120,30,.3)",fontSize:10};
+                :d.s==="missed"
+                ?{background:"rgba(93,50,0,.07)",border:"1.5px solid rgba(180,120,30,.18)",color:"rgba(180,120,30,.35)",fontSize:13}
+                :{background:"rgba(93,50,0,.04)",border:"1.5px dashed rgba(180,120,30,.15)",color:"rgba(180,120,30,.2)",fontSize:10};
               return(
                 <div key={d.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
                   <div style={{width:34,height:34,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Syne',sans-serif",fontWeight:700,...c}}>
-                    {d.s==="done"?"✓":d.s==="today"?"🔥":"·"}
+                    {d.s==="done"?"✓":d.s==="today"?"🔥":d.s==="missed"?"🌙":"·"}
                   </div>
                   <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:".5px",textTransform:"uppercase",color:"#C4A882"}}>{d.l}</span>
                 </div>
@@ -1042,12 +1498,63 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           </div>
         </div>
 
-        {/* Completion message */}
+        {/* ── KRISHNA COMPLETION CARD ── */}
         {tasks.every(t=>t.done)&&(
-          <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,#3D2000,#5C3200)",borderRadius:22,padding:"18px 20px",textAlign:"center",boxShadow:"0 8px 28px rgba(93,50,0,.25)",animation:"fadeUp .5s ease both"}}>
-            <div style={{fontSize:28,marginBottom:6}}>🎉</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#FFD700",marginBottom:4}}>Sadhana Complete!</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"rgba(255,210,120,.7)"}}>आज की साधना सम्पन्न हुई। +{earned} Karma अर्जित।</div>
+          <div style={{margin:"14px 16px 0",borderRadius:28,overflow:"hidden",boxShadow:"0 20px 60px rgba(180,80,0,.2)",animation:"fadeUp .6s ease both",position:"relative",border:"1.5px solid rgba(255,200,80,.2)"}}>
+            {/* Top shimmer bar */}
+            <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FF4500,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
+
+            {/* Image — full width */}
+            <div style={{position:"relative",width:"100%",background:"linear-gradient(135deg,#FFF8EE,#FFF0D6)"}}>
+              <img src="/krishna-bhakt.jpg" alt="Krishna" style={{width:"100%",display:"block",objectFit:"cover"}}/>
+              {/* Gradient fade at bottom of image */}
+              <div style={{position:"absolute",bottom:0,left:0,right:0,height:"40%",background:"linear-gradient(180deg,transparent,rgba(30,10,0,.85))"}}/>
+            </div>
+
+            {/* Text section */}
+            <div style={{background:"linear-gradient(135deg,#1A0800,#2C1200)",padding:"22px 20px 26px",position:"relative",overflow:"hidden"}}>
+              {/* Ambient glow */}
+              <div style={{position:"absolute",top:-40,left:"50%",transform:"translateX(-50%)",width:200,height:200,background:"radial-gradient(circle,rgba(255,140,0,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
+              {/* OM watermark */}
+              <div style={{position:"absolute",right:-10,bottom:-20,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(255,150,30,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
+
+              {/* Sadhana complete badge */}
+              <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(255,215,0,.12)",border:"1px solid rgba(255,215,0,.25)",borderRadius:20,padding:"6px 16px"}}>
+                  <span style={{fontSize:14}}>🎉</span>
+                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"#FFD700"}}>Sadhana Complete · +{earned} Karma</span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,rgba(255,180,60,.3),transparent)",marginBottom:20}}/>
+
+              {/* Main poem lines */}
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",textAlign:"center",lineHeight:2}}>
+                {[
+                  {text:"तू ही मेरा घर,",color:"#FFE4A0"},
+                  {text:"तेरा नाम ही मेरी सांस,",color:"rgba(255,220,140,.85)"},
+                  {text:"तू ही मेरा प्रिय,",color:"#FFE4A0"},
+                  {text:"तू ही मेरा हृदय।",color:"rgba(255,220,140,.85)"},
+                ].map((l,i)=>(
+                  <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:l.color,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>{l.text}</div>
+                ))}
+
+                {/* Spacer */}
+                <div style={{height:14}}/>
+
+                {/* Closing card — from user */}
+                <div style={{background:"rgba(255,200,60,.08)",border:"1px solid rgba(255,200,60,.18)",borderRadius:16,padding:"14px 16px",margin:"0 4px"}}>
+                  <div style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:"rgba(255,230,160,.9)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>क्योंकि तू ही मेरा</div>
+                  <div style={{fontSize:"clamp(15px,5.2vw,21px)",fontWeight:700,color:"#FFD700",textShadow:"0 2px 16px rgba(255,180,30,.4)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip"}}>सबसे प्यारा सखा।</div>
+                </div>
+              </div>
+
+              {/* Attribution — from user */}
+              <div style={{display:"flex",justifyContent:"center",marginTop:16}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:700,color:"rgba(255,180,60,.55)",letterSpacing:1}}>— {userName||"Your Sadhak"}</div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1059,25 +1566,19 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
 }
 
 /* ── ANUSHTHAN ── */
-function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
-  const [mantaDone,setMantaDone]=useState(false);
+function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone=false,setMantaDone,tasksDone={shlok:false,aarti:false,mantra:false},setTasksDone}){
   const [toast,setToast]=useState("");
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
   const daysDone=mantaDays;
 
   const toggleMantra=()=>{
-    setMantaDone(p=>{
-      const next=!p;
-      if(next){
-        if(setMantaDays)setMantaDays(d=>d+1);
-        if(setKarma)setKarma(k=>k+20);
-        if(!user) showToast("🔐 Sign in to save your progress!");
-      } else {
-        if(setMantaDays)setMantaDays(d=>Math.max(0,d-1));
-        if(setKarma)setKarma(k=>Math.max(0,k-20));
-      }
-      return next;
-    });
+    if(mantaDone) return;
+    if(setMantaDone)setMantaDone(true);
+    if(setMantaDays)setMantaDays(d=>d+1);
+    if(setKarma)setKarma(k=>k+20);
+    if(setTasksDone)setTasksDone({...tasksDone,mantra:true});
+    showToast("✅ Day "+(mantaDays+1)+" complete! +20 Karma");
+    if(!user) showToast("🔐 Sign in to save your progress!");
   };
 
   const pct=Math.round((daysDone/108)*100);
@@ -1126,11 +1627,10 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
           {/* Mantra text */}
           <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",marginBottom:14}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.55)",marginBottom:8}}>Maha Mrityunjaya Mantra</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#E8D5FF",lineHeight:2}}>
-              ॐ त्र्यम्बकं यजामहे<br/>
-              सुगन्धिं पुष्टिवर्धनम्।<br/>
-              उर्वारुकमिव बन्धनान्<br/>
-              मृत्योर्मुक्षीय माऽमृतात्॥
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
+              {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
+                <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
+              ))}
             </div>
           </div>
 
@@ -1187,6 +1687,23 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
           </div>
         </div>
 
+        {/* ── SHIVA BLESSING CARD — shows after mantra done ── */}
+        {(mantaDone||tasksDone.mantra)&&(
+          <div style={{margin:"14px 16px 0",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(96,165,250,.25)",border:"1px solid rgba(167,139,250,.3)",animation:"fadeUp .6s ease both",position:"relative"}}>
+            <div style={{height:3,background:"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
+            <div style={{position:"relative",width:"100%",aspectRatio:"1/1",overflow:"hidden"}}>
+              <img src="/shiva-tathastu.png" alt="Bhagwaan Shiva" style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}/>
+              <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,transparent 50%,rgba(10,5,30,.96) 100%)"}}/>
+              <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"20px 20px 24px",textAlign:"center"}}>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:700,color:"white",lineHeight:1.7,textShadow:"0 2px 16px rgba(96,165,250,.6)"}}>
+                  मैं सदैव तुम्हारे साथ हूँ।
+                </div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:600,color:"rgba(167,139,250,.8)",letterSpacing:2,marginTop:6}}>— Bhagwaan Shiva</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* How to chant */}
         <div style={{margin:"10px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"14px 16px",border:"1px solid rgba(167,139,250,.12)"}}>
           <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.6)",marginBottom:8}}>⚡ How to Chant</div>
@@ -1216,9 +1733,45 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user}){
     </div>
   );
 }
+
+/* ── NAME SCREEN ── */
+function NameScreen({onDone}){
+  const [name,setName]=useState("");
+  const [err,setErr]=useState("");
+  return(
+    <div style={{width:"100%",height:"100%",background:"linear-gradient(175deg,#1E0C00 0%,#2C1400 45%,#1A0A00 100%)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden",padding:"0 28px"}}>
+      <div style={{position:"absolute",top:-40,left:"50%",width:300,height:300,background:"radial-gradient(circle,rgba(255,120,0,.18) 0%,transparent 68%)",borderRadius:"50%",animation:"glowBreath 5s ease-in-out infinite alternate",transform:"translateX(-50%)",pointerEvents:"none"}}/>
+      <div style={{width:"100%",animation:"fadeUp .6s ease both"}}>
+        <div style={{textAlign:"center",marginBottom:32}}>
+          <div style={{fontSize:52,marginBottom:12}}>🙏</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,190,80,.4)",marginBottom:8}}>Welcome to Nitya</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:700,color:"#FFF0D0",marginBottom:6}}>What's your name?</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"rgba(255,200,100,.5)"}}>आपका नाम क्या है?</div>
+        </div>
+        <input
+          value={name}
+          onChange={e=>{setName(e.target.value);setErr("");}}
+          onKeyDown={e=>e.key==="Enter"&&name.trim()&&onDone(name.trim())}
+          placeholder="Enter your name"
+          style={{width:"100%",background:"rgba(255,255,255,.08)",border:`1.5px solid ${err?"rgba(255,100,80,.4)":"rgba(255,165,0,.2)"}`,borderRadius:16,padding:"16px",fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:700,color:"white",outline:"none",marginBottom:10,textAlign:"center",letterSpacing:1}}
+        />
+        {err&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:11,color:"#FCA5A5",textAlign:"center",marginBottom:10}}>{err}</div>}
+        <button
+          onClick={()=>{if(!name.trim()){setErr("Please enter your name");return;}onDone(name.trim());}}
+          style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"16px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 6px 24px rgba(180,80,0,.45)",position:"relative",overflow:"hidden"}}
+        >
+          <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"shimmer 3s ease-in-out infinite"}}/>
+          Begin My Journey →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* ── PROFILE ── */
-function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0}){
-  const [name,setName]=useState("Ramesh Ji");
+function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName,onSignOut}){
+  const [name,setName]=useState(userName||"Seeker");
+  useEffect(()=>{if(userName)setName(userName);},[userName]);
   const [editName,setEditName]=useState(false);
   const [notif,setNotif]=useState(true);
 
@@ -1315,7 +1868,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
           <div style={{width:62,height:62,borderRadius:"50%",background:"linear-gradient(135deg,#FF9800,#E65100)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,border:"3px solid rgba(255,255,255,.2)",flexShrink:0,boxShadow:"0 4px 14px rgba(255,100,0,.3)"}}>🧘</div>
           <div style={{flex:1,minWidth:0}}>
             {editName
-              ?<input value={name} onChange={e=>setName(e.target.value)} onBlur={()=>setEditName(false)} autoFocus
+              ?<input value={name} onChange={e=>setName(e.target.value)} onBlur={()=>{setEditName(false);if(setUserName)setUserName(name);}} autoFocus
                   style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"white",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,200,80,.4)",outline:"none",width:"100%"}}/>
               :<div style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"white",cursor:"pointer",display:"flex",alignItems:"center",gap:6}} onClick={()=>setEditName(true)}>
                 {name}<span style={{fontSize:13,opacity:.55}}>✏️</span>
@@ -1518,7 +2071,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
 
         {/* Sign out */}
         <div style={{padding:"14px 16px 0"}}>
-          <button style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
+          <button onClick={onSignOut} style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
         </div>
 
         <div style={{height:16}}/>
@@ -1530,36 +2083,182 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
 
 /* ── ROOT ── */
 export default function App(){
-  const [screen,setScreen]=useState("splash");
+  const [screen,setScreen]=useState("loading");
   const [favorites,setFavorites]=useState([]);
   const [karma,setKarma]=useState(0);
   const [user,setUser]=useState(null);
-  // Badge-driving stats — lifted to root so Profile can read them
-  const [tapasyaDays,setTapasyaDays]=useState(0);      // consecutive daily sadhana days
-  const [shlokaCount,setShlokaCount]=useState(0);      // total shlokas read
-  const [mantaDays,setMantaDays]=useState(0);          // days of 108-day mantra completed
-  const [nightPrayerDays,setNightPrayerDays]=useState(0); // consecutive evening prayer days
-  const [bhaktDays,setBhaktDays]=useState(0);          // total regular completion days
-  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false}); // persists across nav
+  const [userName,setUserName]=useState("");
+  const [tapasyaDays,setTapasyaDays]=useState(0);
+  const [completedDates,setCompletedDates]=useState([]); // array of date strings like "2026-05-21"
+  const [shlokaCount,setShlokaCount]=useState(0);
+  const [mantaDays,setMantaDays]=useState(0);
+  const [nightPrayerDays,setNightPrayerDays]=useState(0);
+  const [bhaktDays,setBhaktDays]=useState(0);
+  const [tasksDone,setTasksDone]=useState({shlok:false,aarti:false});
+  const [mantaDone,setMantaDone]=useState(false);
+
+  const today = new Date().toDateString();
+
+  // Save all state to Firestore
+  const persist = async(uid, patch) => {
+    try { await saveUser(uid, patch); } catch(e) { console.error("Save error",e); }
+  };
+
+  // Wrapped setters that also save to Firestore
+  const setKarmaSave = (v) => {
+    setKarma(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {karma:next});
+      return next;
+    });
+  };
+  const addCompletedDate = (dateStr) => {
+    setCompletedDates(prev => {
+      const next = prev.includes(dateStr) ? prev : [...prev, dateStr];
+      if(user?.uid) persist(user.uid, {completedDates:next});
+      return next;
+    });
+  };
+
+  const setMantaDaysSave = (v) => {
+    setMantaDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {mantaDays:next});
+      return next;
+    });
+  };
+  const setMantaDoneSave = (v) => {
+    setMantaDone(v);
+    if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:today});
+  };
+  const setTapasyaDaysSave = (v) => {
+    setTapasyaDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {tapasyaDays:next});
+      return next;
+    });
+  };
+  const setShlokaCountSave = (v) => {
+    setShlokaCount(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {shlokaCount:next});
+      return next;
+    });
+  };
+  const setBhaktDaysSave = (v) => {
+    setBhaktDays(prev => {
+      const next = typeof v==="function" ? v(prev) : v;
+      if(user?.uid) persist(user.uid, {bhaktDays:next});
+      return next;
+    });
+  };
+  const setTasksDoneSave = (v) => {
+    const next = typeof v==="function" ? v(tasksDone) : v;
+    setTasksDone(next);
+    if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:today});
+  };
+  const setUserNameSave = (n) => {
+    setUserName(n);
+    if(user?.uid) persist(user.uid, {userName:n});
+  };
+
+  // Listen to Firebase auth state — this is what keeps user logged in
+  useEffect(()=>{
+    const unsub = onAuthStateChanged(auth, async(firebaseUser)=>{
+      if(firebaseUser){
+        // User is logged in — load their data from Firestore
+        setUser({uid:firebaseUser.uid, phone:firebaseUser.phoneNumber});
+        try {
+          const data = await loadUser(firebaseUser.uid);
+          if(data){
+            if(data.userName){ setUserName(data.userName); }
+            if(data.karma !== undefined){ setKarma(data.karma); }
+            if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
+            if(data.completedDates){ setCompletedDates(data.completedDates); }
+            if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
+            if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
+            // Reset mantaDone if it's a new day
+            if(data.mantaDoneDate === today && data.mantaDone){ setMantaDone(true); }
+            else { setMantaDone(false); }
+            if(data.bhaktDays !== undefined){ setBhaktDays(data.bhaktDays); }
+            if(data.favorites){ setFavorites(data.favorites); }
+            // Reset daily tasks if it's a new day
+            if(data.lastTaskDate !== today){
+              setTasksDone({shlok:false, aarti:false});
+              setMantaDone(false);
+              persist(firebaseUser.uid, {tasksDone:{shlok:false,aarti:false}, lastTaskDate:today, mantaDone:false, mantaDoneDate:today});
+            } else if(data.tasksDone){
+              setTasksDone(data.tasksDone);
+            }
+            // Go to home if they have a name, else name screen
+            setScreen(data.userName ? "home" : "name");
+          } else {
+            // New user — go to name screen
+            setScreen("name");
+          }
+        } catch(e){
+          console.error("Load error",e);
+          setScreen("name");
+        }
+      } else {
+        // Not logged in
+        setUser(null);
+        setScreen("splash");
+      }
+    });
+    return ()=>unsub();
+  },[]);
+
+  // Save favorites when they change
+  useEffect(()=>{
+    if(user?.uid) persist(user.uid, {favorites});
+  },[favorites]);
+
+  const handleSignOut = () => {
+    auth.signOut();
+    setUser(null);
+    setUserName("");
+    setKarma(0);
+    setTapasyaDays(0);
+    setShlokaCount(0);
+    setMantaDays(0);
+    setMantaDone(false);
+    setCompletedDates([]);
+    setBhaktDays(0);
+    setTasksDone({shlok:false,aarti:false});
+    setScreen("splash");
+  };
+
+  if(screen==="loading") return(
+    <div style={{width:"100vw",height:"100dvh",background:"linear-gradient(175deg,#1E0C00,#2C1400,#1A0A00)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16}}>
+      <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:52,color:"rgba(255,200,80,.8)",animation:"pulse 2s infinite"}}>ॐ</div>
+      <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,200,80,.4)"}}>Loading...</div>
+    </div>
+  );
 
   return(
     <>
       <style>{css}</style>
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{setUser({phone});setScreen("home");}}/>}
-          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites}/>}
-          {screen==="prarthana" &&<Prarthana onNav={setScreen}/>}
-          {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarma} user={user} onGoLogin={()=>setScreen("login")}
-            tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDays}
-            shlokaCount={shlokaCount} setShlokaCount={setShlokaCount}
-            bhaktDays={bhaktDays} setBhaktDays={setBhaktDays}
-            tasksDone={tasksDone} setTasksDone={setTasksDone}/>}
-          {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarma}
-            mantaDays={mantaDays} setMantaDays={setMantaDays} user={user}/>}
+          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
+          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave}/>}
+          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName}/>}
+          {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
+            tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
+            shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
+            bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}
+            userName={userName} completedDates={completedDates} addCompletedDate={addCompletedDate}/>}
+          {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
+            mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
+            mantaDone={mantaDone} setMantaDone={setMantaDoneSave}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
-            mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}/>}
+            mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
+            userName={userName} setUserName={setUserNameSave} onSignOut={handleSignOut}/>}
+          {screen==="name" && <NameScreen onDone={(n)=>{setUserNameSave(n);setScreen("home");}}/>}
         </div>
       </div>
     </>
