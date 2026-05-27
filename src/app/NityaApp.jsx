@@ -709,14 +709,35 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
         </div>
 
         {/* Shloka card — separate below image */}
-        <div style={{margin:"10px 16px 0",background:"linear-gradient(135deg,#0D1F5C,#1A3A8F)",borderRadius:22,padding:"18px",boxShadow:"0 8px 28px rgba(13,31,92,.3)",position:"relative",overflow:"hidden",border:"1px solid rgba(100,150,255,.18)"}}>
-          <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#60A5FA)",borderRadius:"22px 22px 0 0"}}/>
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(100,160,255,.12)",border:"1px solid rgba(100,160,255,.22)",borderRadius:20,padding:"3px 11px",marginBottom:12}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(160,200,255,.8)"}}>🪷 {todayLesson.ref}</span>
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(160deg,#0A1845 0%,#112270 50%,#0D1F5C 100%)",borderRadius:24,padding:"22px 20px 24px",boxShadow:"0 12px 40px rgba(13,31,92,.45), 0 0 0 1px rgba(100,150,255,.2), inset 0 1px 0 rgba(255,255,255,.07)",position:"relative",overflow:"hidden"}}>
+          {/* Animated top bar */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#60A5FA,#93C5FD,#60A5FA,transparent)",borderRadius:"24px 24px 0 0"}}/>
+          {/* Subtle radial glow behind text */}
+          <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:220,height:120,background:"radial-gradient(ellipse,rgba(96,165,250,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
+          {/* Corner ॐ watermark */}
+          <div style={{position:"absolute",bottom:-8,right:10,fontFamily:"'Noto Sans Devanagari',serif",fontSize:80,color:"rgba(100,150,255,.06)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
+
+          {/* Ref pill */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",marginBottom:18}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(96,165,250,.1)",border:"1px solid rgba(96,165,250,.25)",borderRadius:20,padding:"4px 14px"}}>
+              <span style={{fontSize:10}}>🪷</span>
+              <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(147,197,253,.9)"}}>{todayLesson.ref}</span>
+            </div>
           </div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2}}>
-            {todayLesson.sanskrit.split("\n").map((line,i)=>(
-              <div key={i} style={{fontSize:"clamp(15px,5.2vw,21px)",color:i===0?"#BAD4FF":"rgba(180,210,255,.85)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",textAlign:"center"}}>{line}</div>
+
+          {/* Sanskrit lines with separator */}
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700}}>
+            {todayLesson.sanskrit.split("\n").map((line,i,arr)=>(
+              <div key={i}>
+                <div style={{fontSize:"clamp(15px,5vw,20px)",color:i===0?"#E0ECFF":"rgba(180,210,255,.88)",textAlign:"center",lineHeight:1.75,letterSpacing:.3,textShadow:"0 0 24px rgba(96,165,250,.35)"}}>{line}</div>
+                {i < arr.length-1 && (
+                  <div style={{display:"flex",alignItems:"center",gap:10,margin:"10px 0"}}>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.3))"}}/>
+                    <span style={{fontSize:10,color:"rgba(147,197,253,.5)"}}>✦</span>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(96,165,250,.3),transparent)"}}/>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
