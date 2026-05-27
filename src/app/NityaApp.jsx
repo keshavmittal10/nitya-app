@@ -1515,7 +1515,6 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           {[
             {ico:"🔥",val:String(tapasyaDays),lbl:"Tapasya"},
             {ico:"📖",val:String(shlokaCount),lbl:"Shlokas Read"},
-            {ico:"🎵",val:"0m",lbl:"Mins Heard"},
           ].map(s=>(
             <div key={s.lbl} style={{flex:1,background:"white",borderRadius:20,padding:"14px 8px",display:"flex",flexDirection:"column",alignItems:"center",gap:5,boxShadow:"0 4px 16px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.12)"}}>
               <div style={{fontSize:18}}>{s.ico}</div>
