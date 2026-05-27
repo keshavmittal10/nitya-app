@@ -594,6 +594,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const todayLesson = GITA_JOURNEY[journeyDayIdx];
   const journeyDay = journeyDayIdx + 1;
 
+  const isFav=favorites.some(f=>f.id===todayLesson.day);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
   const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{...todayLesson,id:todayLesson.day}]);showToast("Added to favourites ❤️");}};
 
