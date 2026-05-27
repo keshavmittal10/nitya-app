@@ -617,12 +617,16 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
         {/* ── 21-DAY GITA JOURNEY SECTION ── */}
 
-        {/* Section header */}
-        <div style={{padding:"14px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(40,80,200,.6)",marginBottom:2}}>📖 21-Day Gita Journey</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:16,fontWeight:800,color:"#0D1F5C",letterSpacing:.5}}>Day {journeyDay} of 21</div>
-          </div>
+        {/* Big bold heading */}
+        <div style={{padding:"16px 20px 0"}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(40,80,200,.5)",marginBottom:6}}>📖 Daily Scripture</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:800,color:"#0D1F5C",letterSpacing:.5,lineHeight:1.1}}>21-Day Gita Journey</div>
+          <div style={{height:3,width:60,background:"linear-gradient(90deg,#3B82F6,transparent)",borderRadius:4,marginTop:8}}/>
+        </div>
+
+        {/* Theme badge row */}
+        <div style={{padding:"12px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:600,color:"rgba(40,80,200,.5)"}}>Today's lesson</div>
           <div style={{background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(26,58,143,.35)"}}>
             <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"white",letterSpacing:1}}>{todayLesson.theme}</div>
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(180,210,255,.85)",marginTop:1}}>{todayLesson.hi}</div>
@@ -634,13 +638,21 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           <div style={{height:3,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#1D4ED8,#3B82F6,#60A5FA)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
           <div style={{position:"relative",width:"100%"}}>
             <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",height:380,objectPosition:"center top"}}/>
-            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(0,0,0,.08) 0%,transparent 35%,rgba(5,15,50,.92) 100%)"}}/>
+            <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(5,15,50,.75) 0%,transparent 40%,rgba(5,15,50,.92) 100%)"}}/>
+            {/* Day counter at TOP */}
+            <div style={{position:"absolute",top:0,left:0,right:0,padding:"18px 22px",display:"flex",alignItems:"flex-start",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(180,210,255,.75)",marginBottom:2}}>Gita Journey</div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:42,fontWeight:800,color:"white",lineHeight:1,textShadow:"0 2px 24px rgba(59,130,246,.6)"}}>Day {journeyDay}</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:600,color:"rgba(180,210,255,.6)"}}>of 21</div>
+              </div>
+              <div style={{background:"rgba(100,160,255,.18)",border:"1px solid rgba(100,160,255,.3)",borderRadius:14,padding:"6px 12px",backdropFilter:"blur(8px)"}}>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(180,210,255,.9)"}}>{todayLesson.ref}</div>
+              </div>
+            </div>
             {/* Theme overlay at bottom */}
             <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"22px 22px 26px",textAlign:"center"}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(100,160,255,.15)",border:"1px solid rgba(100,160,255,.3)",borderRadius:20,padding:"4px 14px",marginBottom:12}}>
-                <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(180,210,255,.9)"}}>Day {journeyDay} · {todayLesson.ref}</span>
-              </div>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:32,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:4}}>{todayLesson.theme}</div>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:28,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:4}}>{todayLesson.theme}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(180,210,255,.8)"}}>{todayLesson.hi}</div>
             </div>
           </div>
