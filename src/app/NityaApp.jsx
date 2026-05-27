@@ -586,7 +586,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
-  const [sharePopup,setSharePopup]=useState(false);
+  const [tab,setTab]=useState("hindi");
 
   // 21-day journey: starts from May 26 2026, day 1 = first day
   const JOURNEY_START = new Date("2026-05-26").getTime();
@@ -607,86 +607,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
       {toast&&<div style={{position:"absolute",top:72,left:"50%",transform:"translateX(-50%)",background:"rgba(10,20,60,.93)",color:"#A5C8FF",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,padding:"9px 20px",borderRadius:20,zIndex:50,whiteSpace:"nowrap",boxShadow:"0 4px 20px rgba(0,0,0,.4)",animation:"fadeUp .3s ease"}}>{toast}</div>}
 
       {/* ── WHATSAPP SHARE POPUP ── */}
-      {sharePopup&&(
-        <div style={{position:"absolute",inset:0,zIndex:60,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"flex-end",background:"rgba(0,0,0,.65)",backdropFilter:"blur(6px)"}}
-          onClick={e=>{if(e.target===e.currentTarget)setSharePopup(false);}}>
-          <div style={{width:"100%",background:"white",borderRadius:"28px 28px 0 0",padding:"0 0 32px",animation:"fadeUp .35s cubic-bezier(.16,1,.3,1) both",boxShadow:"0 -12px 40px rgba(0,0,0,.25)"}}>
 
-            {/* Handle */}
-            <div style={{display:"flex",justifyContent:"center",padding:"12px 0 8px"}}>
-              <div style={{width:40,height:4,borderRadius:4,background:"rgba(0,0,0,.15)"}}/>
-            </div>
-
-            {/* Header */}
-            <div style={{padding:"0 20px 16px",borderBottom:"1px solid rgba(0,0,0,.07)"}}>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:.5,textTransform:"uppercase",color:"#2D1400",marginBottom:2}}>Share Preview</div>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:500,color:"#C4A882",letterSpacing:.5}}>This is how it will look on WhatsApp Status</div>
-            </div>
-
-            {/* ── PREVIEW CARD ── */}
-            <div style={{margin:"16px 20px",borderRadius:22,overflow:"hidden",boxShadow:"0 8px 32px rgba(80,30,0,.18)"}}>
-              {/* Card top — saffron gradient */}
-              <div style={{background:"linear-gradient(135deg,#3D1C00,#5C2E00)",padding:"20px 18px 16px",position:"relative",overflow:"hidden"}}>
-                <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)"}}/>
-                {/* Watermark OM */}
-                <div style={{position:"absolute",right:-8,bottom:-12,fontFamily:"'Noto Sans Devanagari',serif",fontSize:80,color:"rgba(255,200,60,.07)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
-                {/* Grantha tag */}
-                <div style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(255,200,60,.14)",border:"1px solid rgba(255,200,60,.25)",borderRadius:20,padding:"3px 10px",marginBottom:12}}>
-                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,210,100,.9)"}}>🪷 {sl.grantha} · {sl.chapter}</span>
-                </div>
-                {/* Sanskrit */}
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#FFE4A0",lineHeight:1.85,textAlign:"center",whiteSpace:"pre-line",padding:"12px 8px",background:"rgba(255,255,255,.04)",borderRadius:14,border:"1px solid rgba(255,200,60,.08)",marginBottom:12}}>{sl.sanskrit}</div>
-                {/* Hindi meaning */}
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:12,fontWeight:700,color:"rgba(255,220,140,.85)",lineHeight:1.7,textAlign:"center"}}>{sl.hindi}</div>
-              </div>
-              {/* Card bottom — branding */}
-              <div style={{background:"#FFF8EC",padding:"10px 18px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                  <div style={{width:22,height:22,borderRadius:7,background:"linear-gradient(135deg,#FF8C00,#FF4500)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>🪷</div>
-                  <div>
-                    <div style={{fontFamily:"'Cinzel',serif",fontSize:11,fontWeight:700,color:"#6B2A00",letterSpacing:1}}>NITYA</div>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontSize:7.5,fontWeight:600,letterSpacing:1,color:"#C4A882",textTransform:"uppercase"}}>नित्य · Daily Sadhana</div>
-                  </div>
-                </div>
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,color:"rgba(180,100,20,.3)"}}>ॐ</div>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div style={{display:"flex",gap:10,padding:"0 20px"}}>
-              <button
-                onClick={async()=>{
-                  const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
-                  try {
-                    if(navigator.share){
-                      await navigator.share({title:"Nitya · Daily Shlok",text});
-                    } else {
-                      await navigator.clipboard.writeText(text);
-                      showToast("Copied to clipboard! 📋");
-                    }
-                  } catch(e){
-                    try {
-                      await navigator.clipboard.writeText(text);
-                      showToast("Copied to clipboard! 📋");
-                    } catch(e2){
-                      showToast("Unable to share");
-                    }
-                  }
-                  setSharePopup(false);
-                }}
-                style={{flex:1,background:"linear-gradient(135deg,#25D366,#128C7E)",border:"none",borderRadius:18,padding:"14px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 5px 18px rgba(37,211,102,.35)"}}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                <span style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,color:"white",letterSpacing:.5}}>Share to WhatsApp</span>
-              </button>
-              <button
-                onClick={()=>setSharePopup(false)}
-                style={{width:50,background:"rgba(0,0,0,.06)",border:"none",borderRadius:18,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0}}>
-                ✕
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <SB/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
@@ -898,19 +819,27 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
-        {/* ── SHARE + FAVOURITE ROW (outside cards, below translation) ── */}
-        <div style={{margin:"10px 16px 0",display:"flex",gap:8}}>
-          {/* WhatsApp */}
-          <button onClick={()=>setSharePopup(true)} style={{flex:1,background:"linear-gradient(135deg,#25D366,#128C7E)",border:"none",borderRadius:18,padding:"12px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:"0 4px 16px rgba(37,211,102,.3)",transition:"transform .15s"}}
+        {/* ── SHARE + FAVOURITE ROW ── */}
+        <div style={{margin:"10px 16px 0",display:"flex",gap:10}}>
+          {/* Share */}
+          <button
+            onClick={async()=>{
+              const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
+              try{
+                if(navigator.share){await navigator.share({title:"Nitya · Daily Shlok",text});}
+                else{await navigator.clipboard.writeText(text);showToast("Copied to clipboard! 📋");}
+              }catch(e){
+                try{await navigator.clipboard.writeText(text);showToast("Copied to clipboard! 📋");}
+                catch(e2){showToast("Unable to share");}
+              }
+            }}
+            style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:18,padding:"13px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.35)",transition:"transform .15s"}}
             onMouseDown={e=>e.currentTarget.style.transform="scale(.97)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,color:"white",letterSpacing:.3}}>WhatsApp</span>
-          </button>
-          {/* Instagram */}
-          <button onClick={()=>showToast("Shared to Instagram! ✨")} style={{flex:1,background:"linear-gradient(135deg,#833AB4,#FD1D1D,#F77737)",border:"none",borderRadius:18,padding:"12px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:"0 4px 16px rgba(131,58,180,.3)",transition:"transform .15s"}}
-            onMouseDown={e=>e.currentTarget.style.transform="scale(.97)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,color:"white",letterSpacing:.3}}>Instagram</span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:700,color:"white",letterSpacing:.5}}>Share Shlok</span>
           </button>
           {/* Favourite */}
           <button onClick={toggleFav} style={{width:48,height:48,borderRadius:16,border:"none",cursor:"pointer",background:isFav?"linear-gradient(135deg,#FF6B6B,#FF4444)":"rgba(180,80,0,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,boxShadow:isFav?"0 4px 14px rgba(255,100,100,.4)":"none",flexShrink:0,transition:"all .2s"}}>
