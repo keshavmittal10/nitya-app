@@ -657,11 +657,20 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               <button
                 onClick={async()=>{
                   const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
-                  if(navigator.share){
-                    await navigator.share({text});
-                  } else {
-                    await navigator.clipboard.writeText(text);
-                    showToast("Copied to clipboard! 📋");
+                  try {
+                    if(navigator.share){
+                      await navigator.share({title:"Nitya · Daily Shlok",text});
+                    } else {
+                      await navigator.clipboard.writeText(text);
+                      showToast("Copied to clipboard! 📋");
+                    }
+                  } catch(e){
+                    try {
+                      await navigator.clipboard.writeText(text);
+                      showToast("Copied to clipboard! 📋");
+                    } catch(e2){
+                      showToast("Unable to share");
+                    }
                   }
                   setSharePopup(false);
                 }}
@@ -734,20 +743,23 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
             </div>
           </div>
 
-          {/* Sanskrit lines with separator */}
+          {/* Sanskrit lines with decorative borders */}
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700}}>
-            {todayLesson.sanskrit.split("\n").map((line,i,arr)=>(
-              <div key={i}>
-                <div style={{fontSize:"clamp(15px,5vw,20px)",color:i===0?"#E0ECFF":"rgba(180,210,255,.88)",textAlign:"center",lineHeight:1.75,letterSpacing:.3,textShadow:"0 0 24px rgba(96,165,250,.35)"}}>{line}</div>
-                {i < arr.length-1 && (
-                  <div style={{display:"flex",alignItems:"center",gap:10,margin:"10px 0"}}>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.3))"}}/>
-                    <span style={{fontSize:10,color:"rgba(147,197,253,.5)"}}>✦</span>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(96,165,250,.3),transparent)"}}/>
-                  </div>
-                )}
-              </div>
+            {/* Top decorative line */}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.4))"}}/>
+              <span style={{fontSize:12,color:"rgba(147,197,253,.7)"}}>✦</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(96,165,250,.4),transparent)"}}/>
+            </div>
+            {todayLesson.sanskrit.split("\n").map((line,i)=>(
+              <div key={i} style={{fontSize:"clamp(15px,5vw,20px)",color:i===0?"#E0ECFF":"rgba(180,210,255,.88)",textAlign:"center",lineHeight:1.75,letterSpacing:.3,textShadow:"0 0 24px rgba(96,165,250,.35)",marginBottom:i===0?6:0}}>{line}</div>
             ))}
+            {/* Bottom decorative line */}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginTop:14}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(96,165,250,.4))"}}/>
+              <span style={{fontSize:12,color:"rgba(147,197,253,.7)"}}>✦</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(96,165,250,.4),transparent)"}}/>
+            </div>
           </div>
         </div>
 
