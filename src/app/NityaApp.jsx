@@ -865,8 +865,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                 // ref pill background
                 ctx.fillStyle="rgba(250,204,21,0.12)";
                 const pillW=ctx.measureText("🪷  "+refLine).width+40;
-                ctx.beginPath();ctx.roundRect(PAD,y,pillW,36,18);ctx.fill();
-                ctx.strokeStyle="rgba(250,204,21,0.3)";ctx.lineWidth=1;ctx.stroke();
+                ctx.fillRect(PAD,y,pillW,36);
+                ctx.strokeStyle="rgba(250,204,21,0.3)";ctx.lineWidth=1;
+                ctx.strokeRect(PAD,y,pillW,36);
                 ctx.fillStyle="#facc15";ctx.font="bold 20px 'Syne',sans-serif";ctx.textBaseline="middle";
                 ctx.fillText("🪷  "+refLine,PAD+20,y+18);
                 y+=56;
