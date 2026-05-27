@@ -655,12 +655,14 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
             {/* Action buttons */}
             <div style={{display:"flex",gap:10,padding:"0 20px"}}>
               <button
-                onClick={()=>{
+                onClick={async()=>{
                   const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
-                  const encoded=encodeURIComponent(text);
-                  const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                  const url=isMobile?`whatsapp://send?text=${encoded}`:`https://web.whatsapp.com/send?text=${encoded}`;
-                  window.open(url,"_blank");
+                  if(navigator.share){
+                    await navigator.share({text});
+                  } else {
+                    await navigator.clipboard.writeText(text);
+                    showToast("Copied to clipboard! 📋");
+                  }
                   setSharePopup(false);
                 }}
                 style={{flex:1,background:"linear-gradient(135deg,#25D366,#128C7E)",border:"none",borderRadius:18,padding:"14px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 5px 18px rgba(37,211,102,.35)"}}>
