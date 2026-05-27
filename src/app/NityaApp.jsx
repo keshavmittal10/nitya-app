@@ -763,52 +763,86 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
-        {/* Translation card — baby blue theme */}
-        <div style={{margin:"10px 16px 0",background:"linear-gradient(160deg,#1a3a5c 0%,#1e4976 50%,#163354 100%)",borderRadius:24,overflow:"hidden",boxShadow:"0 12px 40px rgba(26,58,92,.5), 0 0 0 1px rgba(147,197,253,.18), inset 0 1px 0 rgba(255,255,255,.07)",position:"relative"}}>
-          {/* Top shimmer bar */}
-          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#93c5fd,#bfdbfe,#93c5fd,transparent)"}}/>
-          {/* Watermark */}
-          <div style={{position:"absolute",bottom:-10,right:8,fontFamily:"'Noto Sans Devanagari',serif",fontSize:80,color:"rgba(147,197,253,.06)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
+        {/* Translation card — Peacock feather theme */}
+        <div style={{margin:"10px 16px 0",background:"linear-gradient(160deg,#0a2a1a 0%,#0f3d20 45%,#122e14 100%)",borderRadius:24,overflow:"hidden",boxShadow:"0 12px 40px rgba(10,42,26,.6), 0 0 0 1px rgba(134,197,94,.2), inset 0 1px 0 rgba(255,255,255,.06)",position:"relative"}}>
+
+          {/* Top shimmer bar — feather colours */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#4ade80,#facc15,#4ade80,transparent)"}}/>
+
+          {/* Peacock feather SVG — top right corner watermark */}
+          <div style={{position:"absolute",top:-6,right:-6,opacity:.13,pointerEvents:"none",zIndex:0}}>
+            <svg width="90" height="110" viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Feather stem */}
+              <path d="M45 105 Q44 70 43 40 Q42 20 45 5" stroke="#facc15" strokeWidth="2" strokeLinecap="round"/>
+              {/* Barbs left */}
+              <path d="M44 80 Q30 74 18 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M43 68 Q28 60 14 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M43 56 Q30 46 20 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
+              <path d="M43 44 Q34 34 28 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
+              {/* Barbs right */}
+              <path d="M46 80 Q60 74 72 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M46 68 Q62 60 76 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M46 56 Q60 46 70 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
+              <path d="M46 44 Q56 34 62 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
+              {/* Eye of feather */}
+              <ellipse cx="45" cy="18" rx="10" ry="13" fill="none" stroke="#facc15" strokeWidth="1.5"/>
+              <ellipse cx="45" cy="18" rx="6" ry="8" fill="none" stroke="#4ade80" strokeWidth="1.2"/>
+              <ellipse cx="45" cy="18" rx="3" ry="4" fill="#facc15" opacity=".6"/>
+            </svg>
+          </div>
+
+          {/* Flute SVG — bottom left watermark */}
+          <div style={{position:"absolute",bottom:10,left:-4,opacity:.1,pointerEvents:"none",zIndex:0,transform:"rotate(-18deg)"}}>
+            <svg width="100" height="22" viewBox="0 0 100 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="9" width="96" height="5" rx="2.5" fill="#facc15"/>
+              <circle cx="20" cy="11.5" r="2.5" fill="#0a2a1a" stroke="#facc15" strokeWidth="1"/>
+              <circle cx="33" cy="11.5" r="2.5" fill="#0a2a1a" stroke="#facc15" strokeWidth="1"/>
+              <circle cx="46" cy="11.5" r="2.5" fill="#0a2a1a" stroke="#facc15" strokeWidth="1"/>
+              <circle cx="59" cy="11.5" r="2.5" fill="#0a2a1a" stroke="#facc15" strokeWidth="1"/>
+              <circle cx="72" cy="11.5" r="2.5" fill="#0a2a1a" stroke="#facc15" strokeWidth="1"/>
+              <path d="M2 11.5 Q0 8 2 5" stroke="#facc15" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
 
           {/* Tabs */}
-          <div style={{display:"flex",borderBottom:"1px solid rgba(147,197,253,.12)",position:"relative",zIndex:1}}>
+          <div style={{display:"flex",borderBottom:"1px solid rgba(74,222,128,.12)",position:"relative",zIndex:1}}>
             {[{id:"hindi",label:"हिंदी",sub:"Hindi"},{id:"english",label:"English",sub:"अंग्रेज़ी"}].map(t=>{
               const on=tab===t.id;
               return(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"13px 8px 11px",border:"none",cursor:"pointer",background:on?"rgba(147,197,253,.1)":"transparent",borderBottom:on?"2.5px solid #93c5fd":"2.5px solid transparent",transition:"all .2s"}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#bfdbfe":"rgba(191,219,254,.3)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(191,219,254,.45)":"rgba(191,219,254,.2)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
+                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"13px 8px 11px",border:"none",cursor:"pointer",background:on?"rgba(74,222,128,.08)":"transparent",borderBottom:on?"2.5px solid #4ade80":"2.5px solid transparent",transition:"all .2s"}}>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:on?800:600,color:on?"#86efac":"rgba(134,239,172,.28)",letterSpacing:.3,lineHeight:1}}>{t.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:500,color:on?"rgba(134,239,172,.4)":"rgba(134,239,172,.18)",letterSpacing:1,textTransform:"uppercase",marginTop:2}}>{t.sub}</div>
                 </button>
               );
             })}
           </div>
 
           <div style={{padding:"18px 18px 22px",position:"relative",zIndex:1}}>
-            {/* Top decorative line */}
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(147,197,253,.4))"}}/>
-              <span style={{fontSize:11,color:"rgba(191,219,254,.65)"}}>✦</span>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(147,197,253,.4),transparent)"}}/>
+            {/* Top decorative line with feather vane motif */}
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
+              <span style={{fontSize:14,lineHeight:1}}>🪶</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
             </div>
 
             {/* Label pill */}
             <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
-              <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(147,197,253,.1)",border:"1px solid rgba(147,197,253,.25)",borderRadius:20,padding:"4px 12px"}}>
-                <div style={{width:5,height:5,borderRadius:"50%",background:"#93c5fd"}}/>
-                <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#93c5fd"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
+              <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(250,204,21,.1)",border:"1px solid rgba(250,204,21,.25)",borderRadius:20,padding:"4px 14px"}}>
+                <span style={{fontSize:9}}>🎋</span>
+                <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"#facc15"}}>{tab==="hindi"?"भावार्थ · Meaning":"Translation"}</span>
               </div>
             </div>
 
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"rgba(219,234,254,.95)",lineHeight:2,margin:0}}>{todayLesson.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,color:"rgba(219,234,254,.9)",lineHeight:1.9,margin:0}}>{todayLesson.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"rgba(220,252,231,.95)",lineHeight:2,margin:0}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,color:"rgba(220,252,231,.92)",lineHeight:1.9,margin:0}}>{todayLesson.english}</p>
             }
 
-            {/* Bottom decorative line */}
-            <div style={{display:"flex",alignItems:"center",gap:10,marginTop:18}}>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(147,197,253,.4))"}}/>
-              <span style={{fontSize:11,color:"rgba(191,219,254,.65)"}}>✦</span>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(147,197,253,.4),transparent)"}}/>
+            {/* Bottom decorative line with flute motif */}
+            <div style={{display:"flex",alignItems:"center",gap:8,marginTop:18}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(74,222,128,.4))"}}/>
+              <span style={{fontSize:13,lineHeight:1}}>🎵</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(74,222,128,.4),transparent)"}}/>
             </div>
           </div>
         </div>
