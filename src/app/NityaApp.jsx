@@ -594,7 +594,6 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const todayLesson = GITA_JOURNEY[journeyDayIdx];
   const journeyDay = journeyDayIdx + 1;
 
-  const isFav=favorites.some(f=>f.id===todayLesson.day);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
   const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{...todayLesson,id:todayLesson.day}]);showToast("Added to favourites ❤️");}};
 
@@ -818,19 +817,101 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
+        {/* ── HIDDEN SHARE CARD (rendered off-screen, captured as image) ── */}
+
         {/* ── SHARE + FAVOURITE ROW ── */}
         <div style={{margin:"10px 16px 0",display:"flex",gap:10}}>
           {/* Share */}
           <button
             onClick={async()=>{
-              const text=`🪷 ${todayLesson.ref} · ${todayLesson.theme}\n\n${todayLesson.sanskrit}\n\n${todayLesson.hindi}\n\n— Nitya App`;
               try{
-                if(navigator.share){await navigator.share({title:"Nitya · Daily Shlok",text});}
-                else{await navigator.clipboard.writeText(text);showToast("Copied to clipboard! 📋");}
-              }catch(e){
-                try{await navigator.clipboard.writeText(text);showToast("Copied to clipboard! 📋");}
-                catch(e2){showToast("Unable to share");}
-              }
+                showToast("Creating card... 🎨");
+                const lesson=todayLesson;
+                const W=800,PAD=56;
+                // measure text height to determine canvas height
+                const canvas=document.createElement("canvas");
+                const ctx=canvas.getContext("2d");
+                // helper: wrap text and return lines
+                const wrap=(text,font,maxW)=>{
+                  ctx.font=font;
+                  const words=text.split(" ");
+                  const lines=[];
+                  let cur="";
+                  for(const w of words){
+                    const test=cur?cur+" "+w:w;
+                    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
+                    else cur=test;
+                  }
+                  if(cur)lines.push(cur);
+                  return lines;
+                };
+                const innerW=W-PAD*2;
+                const sanskrit=lesson.sanskrit.replace("\\n","\n");
+                const sanskritLines=sanskrit.split("\n");
+                const hindiLines=wrap(lesson.hindi,"bold 26px 'Noto Sans Devanagari',serif",innerW);
+                const refLine=`${lesson.ref}  ·  ${lesson.theme}`;
+                // estimate height
+                const H=56+40+32+sanskritLines.length*52+40+hindiLines.length*46+40+32+60+56;
+                canvas.width=W; canvas.height=H;
+                // background
+                const bg=ctx.createLinearGradient(0,0,W,H);
+                bg.addColorStop(0,"#0a2a1a");bg.addColorStop(.5,"#0f3d20");bg.addColorStop(1,"#0a2a1a");
+                ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+                // top bar
+                const bar=ctx.createLinearGradient(0,0,W,0);
+                bar.addColorStop(0,"transparent");bar.addColorStop(.3,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(.7,"#4ade80");bar.addColorStop(1,"transparent");
+                ctx.fillStyle=bar;ctx.fillRect(0,0,W,5);
+                let y=56;
+                // ref pill background
+                ctx.fillStyle="rgba(250,204,21,0.12)";
+                const pillW=ctx.measureText("🪷  "+refLine).width+40;
+                ctx.beginPath();ctx.roundRect(PAD,y,pillW,36,18);ctx.fill();
+                ctx.strokeStyle="rgba(250,204,21,0.3)";ctx.lineWidth=1;ctx.stroke();
+                ctx.fillStyle="#facc15";ctx.font="bold 20px 'Syne',sans-serif";ctx.textBaseline="middle";
+                ctx.fillText("🪷  "+refLine,PAD+20,y+18);
+                y+=56;
+                // divider helper
+                const divider=(yy)=>{
+                  const g=ctx.createLinearGradient(PAD,0,W-PAD,0);
+                  g.addColorStop(0,"transparent");g.addColorStop(.45,"rgba(250,204,21,.4)");g.addColorStop(.55,"rgba(250,204,21,.4)");g.addColorStop(1,"transparent");
+                  ctx.strokeStyle=g;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();
+                  ctx.fillStyle="#facc15";ctx.font="16px serif";ctx.textAlign="center";ctx.fillText("◆",W/2,yy+6);ctx.textAlign="left";
+                };
+                divider(y);y+=32;
+                // sanskrit
+                ctx.fillStyle="#E0ECFF";ctx.font="bold 28px 'Noto Sans Devanagari',serif";ctx.textAlign="center";ctx.textBaseline="middle";
+                for(let i=0;i<sanskritLines.length;i++){
+                  ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.88)";
+                  ctx.fillText(sanskritLines[i],W/2,y+26);y+=52;
+                }
+                ctx.textAlign="left";y+=8;
+                divider(y);y+=32;
+                // hindi
+                ctx.fillStyle="#fef08a";ctx.font="bold 26px 'Noto Sans Devanagari',serif";ctx.textBaseline="top";
+                for(const line of hindiLines){ctx.fillText(line,PAD,y);y+=46;}
+                y+=16;
+                divider(y);y+=32;
+                // branding
+                ctx.fillStyle="#4ade80";ctx.font="bold 22px 'Syne',sans-serif";ctx.textBaseline="middle";
+                ctx.fillText("🪷  NITYA",PAD,y+14);
+                ctx.fillStyle="rgba(134,239,172,0.6)";ctx.font="14px 'Syne',sans-serif";
+                ctx.fillText("नित्य · Daily Sadhana",PAD,y+36);
+                ctx.fillStyle="rgba(250,204,21,0.15)";ctx.font="56px 'Noto Sans Devanagari',serif";ctx.textAlign="right";
+                ctx.fillText("ॐ",W-PAD,y+40);
+                // share
+                canvas.toBlob(async(blob)=>{
+                  if(!blob){showToast("Unable to create card");return;}
+                  const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
+                  try{
+                    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+                      await navigator.share({title:"Nitya · Daily Shlok",files:[file]});
+                    } else {
+                      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();
+                      showToast("Card saved! 📥");
+                    }
+                  }catch(e){showToast("Sharing cancelled");}
+                },"image/png");
+              }catch(e){showToast("Unable to create card");}
             }}
             style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:18,padding:"13px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.35)",transition:"transform .15s"}}
             onMouseDown={e=>e.currentTarget.style.transform="scale(.97)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
