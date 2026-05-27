@@ -1408,7 +1408,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   const todayPrayer=PRAYERS[today]||PRAYERS[2];
 
   const TASK_DEFS=[
-    {id:"shlok",icon:"🌅",bg:"#FFF3E0",title:"Morning Shlok",sub:"Bhagavad Gita · Ch.2 V.47",detail:"कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।",xp:50},
+    {id:"shlok",icon:"🌅",bg:"#FFF3E0",title:"Morning Shlok",sub:"Aaj Ka Gyan",detail:"",xp:50},
     {id:"aarti",icon:"🪔",bg:"#FFF0E8",title:"Today's Aarti",sub:`${todayPrayer.deity} · ${todayPrayer.hi}`,detail:todayPrayer.name,xp:30,accentColor:todayPrayer.color},
     {id:"mantra",icon:"📿",bg:"#F5F0FF",title:"Mantra Japa",sub:"Anushthan · महामृत्युञ्जय मंत्र",detail:"ॐ त्र्यम्बकं यजामहे...",xp:20,accentColor:"#8B5CF6"},
   ];
@@ -1600,7 +1600,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
                           <span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:accent}}>{t.detail}</span>
                         </div>
                       )}
-                      {t.id!=="aarti"&&(
+                      {t.id!=="aarti"&&t.detail&&(
                         <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:11,color:"rgba(180,100,20,.55)",marginTop:3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{t.detail}</div>
                       )}
                     </div>
