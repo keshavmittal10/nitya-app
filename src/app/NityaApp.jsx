@@ -732,6 +732,21 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,transparent,#60A5FA,#93C5FD,#60A5FA,transparent)",borderRadius:"24px 24px 0 0"}}/>
           {/* Subtle radial glow behind text */}
           <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:220,height:120,background:"radial-gradient(ellipse,rgba(96,165,250,.12) 0%,transparent 70%)",pointerEvents:"none"}}/>
+          {/* Flute backdrop */}
+          <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%) rotate(-8deg)",opacity:.07,pointerEvents:"none",zIndex:0}}>
+            <svg width="280" height="36" viewBox="0 0 280 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="14" width="272" height="8" rx="4" fill="#93C5FD"/>
+              <ellipse cx="4" cy="18" rx="4" ry="8" fill="#93C5FD"/>
+              <circle cx="35" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="62" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="89" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="116" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="143" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="170" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <circle cx="197" cy="18" r="4" fill="#0A1845" stroke="#93C5FD" strokeWidth="1.5"/>
+              <path d="M276 14 Q284 10 276 6" stroke="#93C5FD" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            </svg>
+          </div>
           {/* Corner ॐ watermark */}
           <div style={{position:"absolute",bottom:-8,right:10,fontFamily:"'Noto Sans Devanagari',serif",fontSize:80,color:"rgba(100,150,255,.06)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
 
@@ -818,10 +833,10 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
 
           <div style={{padding:"18px 18px 22px",position:"relative",zIndex:1}}>
-            {/* Top decorative line with feather vane motif */}
+            {/* Top decorative line */}
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
               <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
-              <span style={{fontSize:14,lineHeight:1}}>🪶</span>
+              <span style={{fontSize:12,color:"#facc15"}}>◆</span>
               <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
             </div>
 
@@ -834,15 +849,15 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
             </div>
 
             {tab==="hindi"
-              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"rgba(220,252,231,.95)",lineHeight:2,margin:0}}>{todayLesson.hindi}</p>
-              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,color:"rgba(220,252,231,.92)",lineHeight:1.9,margin:0}}>{todayLesson.english}</p>
+              ?<p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:19,fontWeight:700,color:"#fef08a",lineHeight:2,margin:0}}>{todayLesson.hindi}</p>
+              :<p style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:700,color:"#fef08a",lineHeight:1.9,margin:0}}>{todayLesson.english}</p>
             }
 
-            {/* Bottom decorative line with flute motif */}
+            {/* Bottom decorative line */}
             <div style={{display:"flex",alignItems:"center",gap:8,marginTop:18}}>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(74,222,128,.4))"}}/>
-              <span style={{fontSize:13,lineHeight:1}}>🎵</span>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(74,222,128,.4),transparent)"}}/>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
+              <span style={{fontSize:12,color:"#facc15"}}>◆</span>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
             </div>
           </div>
         </div>
