@@ -1231,13 +1231,9 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
           </div>
         </div>
         {/* Instruction card */}
-        <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"14px 16px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
-          <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
-            <span style={{fontSize:20,flexShrink:0}}>🙏</span>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:600,color:day.darkText||"#2D1200",lineHeight:1.8}}>
-              पूरे भाव के साथ अपने शांत मन से बैठें। एक बार अपनी वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें।
-            </div>
-          </div>
+        <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:`${day.color}99`,marginBottom:10}}>🙏 How to Pray</div>
+          <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:day.darkText||"#2D1200",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार अपनी मधुर वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें। आरती पूर्ण होने पर ✓ दबाएं।</p>
         </div>
         {/* Section label */}
         <div style={{padding:"14px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
