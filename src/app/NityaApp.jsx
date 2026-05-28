@@ -1253,7 +1253,13 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
                 {v.text.split("\n").map((line,li,arr)=>(
                   <div key={li} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)",color:day.darkText||v.c}}>
                     {line}
-                    {li<arr.length-1&&<div style={{height:1,background:`linear-gradient(90deg,transparent,${day.darkText||v.c}55,transparent)`,margin:"5px 0"}}/>}
+                    {li<arr.length-1&&(
+                      <div style={{display:"flex",alignItems:"center",gap:6,margin:"6px 0"}}>
+                        <span style={{fontSize:10,color:day.darkText||v.c,opacity:.6,flexShrink:0}}>◆</span>
+                        <div style={{flex:1,height:1,background:`linear-gradient(90deg,${day.darkText||v.c}44,${day.darkText||v.c}22,${day.darkText||v.c}44)`}}/>
+                        <span style={{fontSize:10,color:day.darkText||v.c,opacity:.6,flexShrink:0}}>◆</span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
