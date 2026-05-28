@@ -1784,17 +1784,17 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite",borderRadius:"26px 26px 0 0"}}/>
           <div style={{position:"absolute",right:-8,bottom:-18,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(167,139,250,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
 
-          {/* Heading — centered, Hindi, big bold */}
+          {/* Heading — centered, Hindi, big bold, yellow */}
           <div style={{textAlign:"center",marginBottom:4}}>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:26,fontWeight:800,color:"#E8D5FF",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:30,fontWeight:800,color:"#fef08a",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,color:"rgba(200,170,255,.6)",marginTop:4}}>प्रतिदिन एक जाप</div>
           </div>
 
-          {/* Mantra text — centered, bigger, yellow */}
+          {/* Mantra text — original style */}
           <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"20px 16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",margin:"16px 0 14px"}}>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,lineHeight:2.1}}>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
               {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
-                <div key={i} style={{fontSize:"clamp(17px,5.5vw,24px)",color:"#fef08a",textShadow:"0 0 18px rgba(250,204,21,.3)"}}>{line}</div>
+                <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
               ))}
             </div>
           </div>
