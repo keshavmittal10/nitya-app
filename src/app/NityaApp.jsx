@@ -1785,17 +1785,83 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           <div style={{position:"absolute",right:-8,bottom:-18,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(167,139,250,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
 
           {/* Heading — centered, Hindi, big bold, yellow */}
-          <div style={{textAlign:"center",marginBottom:4}}>
+          <div style={{textAlign:"center",marginBottom:0}}>
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:30,fontWeight:800,color:"#fef08a",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,.85)",marginTop:4}}>प्रतिदिन एक जाप</div>
+
+            {/* Separator with circles at ends */}
+            <div style={{display:"flex",alignItems:"center",gap:8,margin:"10px 16px 10px"}}>
+              <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.5)",flexShrink:0}}/>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(167,139,250,.4),rgba(250,204,21,.4),rgba(167,139,250,.4))"}}/>
+              <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.5)",flexShrink:0}}/>
+            </div>
+
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,.85)"}}>प्रतिदिन एक जाप</div>
           </div>
 
-          {/* Mantra text — original style */}
-          <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"20px 16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",margin:"16px 0 14px"}}>
+          {/* Shiva decorative elements row */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:18,margin:"14px 0 6px",opacity:.75}}>
+            {/* Crescent moon */}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M14 4a8 8 0 1 0 0 14A7 7 0 0 1 14 4z" fill="#C4B5FD" opacity=".8"/>
+            </svg>
+            {/* Damru */}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <polygon points="5,3 17,3 11,11" fill="#A78BFA" opacity=".7"/>
+              <polygon points="5,19 17,19 11,11" fill="#A78BFA" opacity=".7"/>
+              <line x1="11" y1="3" x2="11" y2="19" stroke="#fef08a" strokeWidth="1.2"/>
+              <circle cx="3" cy="11" r="2" fill="#fef08a" opacity=".6"/>
+              <circle cx="19" cy="11" r="2" fill="#fef08a" opacity=".6"/>
+            </svg>
+            {/* Shivling */}
+            <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
+              <ellipse cx="14" cy="28" rx="12" ry="4" fill="#7C3AED" opacity=".5"/>
+              <rect x="8" y="24" width="12" height="4" rx="2" fill="#A78BFA" opacity=".6"/>
+              <ellipse cx="14" cy="14" rx="8" ry="12" fill="#C4B5FD" opacity=".55"/>
+              <ellipse cx="14" cy="8" rx="5" ry="7" fill="#E8D5FF" opacity=".5"/>
+              <ellipse cx="14" cy="5" rx="3" ry="3" fill="#fef08a" opacity=".45"/>
+            </svg>
+            {/* Trishul */}
+            <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+              <line x1="11" y1="6" x2="11" y2="26" stroke="#A78BFA" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M11 6 L7 2 Q5 0 7 0 Q9 0 11 4 Q13 0 15 0 Q17 0 15 2 Z" fill="#C4B5FD"/>
+              <path d="M11 6 L5 3" stroke="#C4B5FD" strokeWidth="1.2" strokeLinecap="round"/>
+              <path d="M11 6 L17 3" stroke="#C4B5FD" strokeWidth="1.2" strokeLinecap="round"/>
+              <line x1="7" y1="14" x2="15" y2="14" stroke="#fef08a" strokeWidth="1" opacity=".5"/>
+            </svg>
+            {/* Crescent moon (mirror) */}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <path d="M8 4a8 8 0 1 1 0 14A7 7 0 0 0 8 4z" fill="#C4B5FD" opacity=".8"/>
+            </svg>
+          </div>
+
+          {/* Mantra text box with decorative lines above & below */}
+          <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"18px 16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",margin:"8px 0 14px",position:"relative"}}>
+            {/* Top line with shivling */}
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
+              <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+                <ellipse cx="7" cy="16" rx="6" ry="2" fill="#7C3AED" opacity=".5"/>
+                <ellipse cx="7" cy="9" rx="4" ry="7" fill="#C4B5FD" opacity=".6"/>
+                <ellipse cx="7" cy="4" rx="2.5" ry="3" fill="#fef08a" opacity=".5"/>
+              </svg>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
+            </div>
+
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
               {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
                 <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
               ))}
+            </div>
+
+            {/* Bottom line with shivling */}
+            <div style={{display:"flex",alignItems:"center",gap:8,marginTop:14}}>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
+              <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
+                <ellipse cx="7" cy="16" rx="6" ry="2" fill="#7C3AED" opacity=".5"/>
+                <ellipse cx="7" cy="9" rx="4" ry="7" fill="#C4B5FD" opacity=".6"/>
+                <ellipse cx="7" cy="4" rx="2.5" ry="3" fill="#fef08a" opacity=".5"/>
+              </svg>
+              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
             </div>
           </div>
 
