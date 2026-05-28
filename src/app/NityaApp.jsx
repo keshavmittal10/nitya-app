@@ -1784,87 +1784,127 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite",borderRadius:"26px 26px 0 0"}}/>
           <div style={{position:"absolute",right:-8,bottom:-18,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(167,139,250,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
 
-          {/* Heading — centered, Hindi, big bold, yellow */}
-          <div style={{textAlign:"center",marginBottom:0}}>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:30,fontWeight:800,color:"#fef08a",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
 
-            {/* Separator with circles at ends */}
-            <div style={{display:"flex",alignItems:"center",gap:8,margin:"10px 16px 10px"}}>
-              <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.5)",flexShrink:0}}/>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(167,139,250,.4),rgba(250,204,21,.4),rgba(167,139,250,.4))"}}/>
-              <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.5)",flexShrink:0}}/>
-            </div>
-
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,.85)"}}>प्रतिदिन एक जाप</div>
-          </div>
-
-          {/* Shiva decorative elements row */}
-          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:18,margin:"14px 0 6px",opacity:.75}}>
-            {/* Crescent moon */}
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M14 4a8 8 0 1 0 0 14A7 7 0 0 1 14 4z" fill="#C4B5FD" opacity=".8"/>
-            </svg>
-            {/* Damru */}
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <polygon points="5,3 17,3 11,11" fill="#A78BFA" opacity=".7"/>
-              <polygon points="5,19 17,19 11,11" fill="#A78BFA" opacity=".7"/>
-              <line x1="11" y1="3" x2="11" y2="19" stroke="#fef08a" strokeWidth="1.2"/>
-              <circle cx="3" cy="11" r="2" fill="#fef08a" opacity=".6"/>
-              <circle cx="19" cy="11" r="2" fill="#fef08a" opacity=".6"/>
-            </svg>
-            {/* Shivling */}
-            <svg width="28" height="32" viewBox="0 0 28 32" fill="none">
-              <ellipse cx="14" cy="28" rx="12" ry="4" fill="#7C3AED" opacity=".5"/>
-              <rect x="8" y="24" width="12" height="4" rx="2" fill="#A78BFA" opacity=".6"/>
-              <ellipse cx="14" cy="14" rx="8" ry="12" fill="#C4B5FD" opacity=".55"/>
-              <ellipse cx="14" cy="8" rx="5" ry="7" fill="#E8D5FF" opacity=".5"/>
-              <ellipse cx="14" cy="5" rx="3" ry="3" fill="#fef08a" opacity=".45"/>
-            </svg>
-            {/* Trishul */}
-            <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
-              <line x1="11" y1="6" x2="11" y2="26" stroke="#A78BFA" strokeWidth="1.5" strokeLinecap="round"/>
-              <path d="M11 6 L7 2 Q5 0 7 0 Q9 0 11 4 Q13 0 15 0 Q17 0 15 2 Z" fill="#C4B5FD"/>
-              <path d="M11 6 L5 3" stroke="#C4B5FD" strokeWidth="1.2" strokeLinecap="round"/>
-              <path d="M11 6 L17 3" stroke="#C4B5FD" strokeWidth="1.2" strokeLinecap="round"/>
-              <line x1="7" y1="14" x2="15" y2="14" stroke="#fef08a" strokeWidth="1" opacity=".5"/>
-            </svg>
-            {/* Crescent moon (mirror) */}
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M8 4a8 8 0 1 1 0 14A7 7 0 0 0 8 4z" fill="#C4B5FD" opacity=".8"/>
+          {/* ── BACKGROUND ELEMENTS ── */}
+          {/* Large Trishul — left background */}
+          <div style={{position:"absolute",left:-18,top:"50%",transform:"translateY(-55%)",opacity:.07,pointerEvents:"none",zIndex:0}}>
+            <svg width="90" height="200" viewBox="0 0 90 200" fill="none">
+              {/* Staff */}
+              <rect x="41" y="70" width="8" height="130" rx="4" fill="#C4B5FD"/>
+              {/* Cross bar */}
+              <rect x="20" y="115" width="50" height="5" rx="2.5" fill="#C4B5FD"/>
+              {/* Center prong */}
+              <path d="M45 10 C45 10 38 30 38 50 C38 62 41 68 45 70 C49 68 52 62 52 50 C52 30 45 10 45 10Z" fill="#E8D5FF"/>
+              <path d="M45 10 L45 0" stroke="#fef08a" strokeWidth="3" strokeLinecap="round"/>
+              {/* Left prong */}
+              <path d="M45 40 C45 40 28 35 20 28 C14 22 16 14 20 12 C26 10 32 18 36 30 C40 42 45 50 45 50Z" fill="#C4B5FD"/>
+              <path d="M20 12 L14 6" stroke="#fef08a" strokeWidth="2" strokeLinecap="round"/>
+              {/* Right prong */}
+              <path d="M45 40 C45 40 62 35 70 28 C76 22 74 14 70 12 C64 10 58 18 54 30 C50 42 45 50 45 50Z" fill="#C4B5FD"/>
+              <path d="M70 12 L76 6" stroke="#fef08a" strokeWidth="2" strokeLinecap="round"/>
+              {/* Tip glow */}
+              <circle cx="45" cy="0" r="4" fill="#fef08a" opacity=".8"/>
             </svg>
           </div>
 
-          {/* Mantra text box with decorative lines above & below */}
-          <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"18px 16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",margin:"8px 0 14px",position:"relative"}}>
-            {/* Top line with shivling */}
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
-              <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
-                <ellipse cx="7" cy="16" rx="6" ry="2" fill="#7C3AED" opacity=".5"/>
-                <ellipse cx="7" cy="9" rx="4" ry="7" fill="#C4B5FD" opacity=".6"/>
-                <ellipse cx="7" cy="4" rx="2.5" ry="3" fill="#fef08a" opacity=".5"/>
-              </svg>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
+          {/* Large Shivling — right background */}
+          <div style={{position:"absolute",right:-10,bottom:-10,opacity:.08,pointerEvents:"none",zIndex:0}}>
+            <svg width="110" height="140" viewBox="0 0 110 140" fill="none">
+              {/* Pind (base square) */}
+              <rect x="15" y="105" width="80" height="22" rx="4" fill="#A78BFA"/>
+              {/* Pitha (octagonal base) */}
+              <ellipse cx="55" cy="108" rx="40" ry="10" fill="#7C3AED"/>
+              <rect x="20" y="98" width="70" height="14" rx="5" fill="#9D7BEA"/>
+              {/* Avudaiyar (yoni base) */}
+              <ellipse cx="55" cy="96" rx="36" ry="8" fill="#A78BFA"/>
+              {/* Water channel spout */}
+              <path d="M91 96 Q100 96 102 104 Q104 110 98 112" stroke="#C4B5FD" strokeWidth="3" strokeLinecap="round" fill="none"/>
+              {/* Linga shaft */}
+              <path d="M30 96 Q28 70 32 50 Q36 32 55 20 Q74 32 78 50 Q82 70 80 96Z" fill="#C4B5FD"/>
+              {/* Linga rounded top */}
+              <ellipse cx="55" cy="20" rx="23" ry="16" fill="#D8C8F8"/>
+              {/* Crown tip */}
+              <ellipse cx="55" cy="10" rx="12" ry="10" fill="#E8D5FF"/>
+              <ellipse cx="55" cy="5" rx="6" ry="5" fill="#fef08a" opacity=".7"/>
+              {/* Highlight stripe on linga */}
+              <path d="M48 90 Q46 60 50 35" stroke="rgba(255,255,255,.15)" strokeWidth="4" strokeLinecap="round"/>
+              {/* Bilva leaves suggestion */}
+              <ellipse cx="38" cy="52" rx="7" ry="4" fill="#4ade80" opacity=".3" transform="rotate(-30 38 52)"/>
+              <ellipse cx="72" cy="52" rx="7" ry="4" fill="#4ade80" opacity=".3" transform="rotate(30 72 52)"/>
+              <ellipse cx="55" cy="42" rx="7" ry="4" fill="#4ade80" opacity=".3"/>
+            </svg>
+          </div>
+
+          {/* Crescent moon + damru — top corners watermarks */}
+          <div style={{position:"absolute",top:14,right:16,opacity:.1,pointerEvents:"none",zIndex:0}}>
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <path d="M26 6a14 14 0 1 0 0 28A12 12 0 0 1 26 6z" fill="#fef08a"/>
+              <circle cx="28" cy="10" r="2" fill="#fef08a" opacity=".6"/>
+            </svg>
+          </div>
+          <div style={{position:"absolute",top:12,left:16,opacity:.09,pointerEvents:"none",zIndex:0}}>
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <polygon points="8,4 28,4 18,18" fill="#C4B5FD"/>
+              <polygon points="8,32 28,32 18,18" fill="#C4B5FD"/>
+              <line x1="18" y1="4" x2="18" y2="32" stroke="#fef08a" strokeWidth="2"/>
+              <circle cx="4" cy="18" r="3" fill="#fef08a"/>
+              <circle cx="32" cy="18" r="3" fill="#fef08a"/>
+            </svg>
+          </div>
+
+          {/* ── CONTENT (above backgrounds) ── */}
+          <div style={{position:"relative",zIndex:1}}>
+            {/* Heading */}
+            <div style={{textAlign:"center",marginBottom:0}}>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:30,fontWeight:800,color:"#fef08a",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
+
+              {/* Separator with circles */}
+              <div style={{display:"flex",alignItems:"center",gap:8,margin:"10px 16px"}}>
+                <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.6)",flexShrink:0}}/>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(167,139,250,.3),rgba(250,204,21,.5),rgba(167,139,250,.3))"}}/>
+                <div style={{width:7,height:7,borderRadius:"50%",background:"rgba(167,139,250,.6)",flexShrink:0}}/>
+              </div>
+
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,.85)"}}>प्रतिदिन एक जाप</div>
             </div>
 
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
-              {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
-                <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
-              ))}
-            </div>
+            {/* Mantra text with top/bottom lines + shivling icon */}
+            <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"18px 16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",margin:"16px 0 14px"}}>
+              {/* Top line */}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
+                {/* Mini shivling icon */}
+                <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+                  <ellipse cx="8" cy="18" rx="7" ry="2.5" fill="#7C3AED" opacity=".7"/>
+                  <rect x="3" y="13" width="10" height="5" rx="2" fill="#9D7BEA" opacity=".8"/>
+                  <ellipse cx="8" cy="8" rx="5" ry="8" fill="#C4B5FD" opacity=".8"/>
+                  <ellipse cx="8" cy="3" rx="3" ry="3" fill="#fef08a" opacity=".9"/>
+                </svg>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
+              </div>
 
-            {/* Bottom line with shivling */}
-            <div style={{display:"flex",alignItems:"center",gap:8,marginTop:14}}>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.45))"}}/>
-              <svg width="14" height="18" viewBox="0 0 14 18" fill="none">
-                <ellipse cx="7" cy="16" rx="6" ry="2" fill="#7C3AED" opacity=".5"/>
-                <ellipse cx="7" cy="9" rx="4" ry="7" fill="#C4B5FD" opacity=".6"/>
-                <ellipse cx="7" cy="4" rx="2.5" ry="3" fill="#fef08a" opacity=".5"/>
-              </svg>
-              <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.45),transparent)"}}/>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
+                {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
+                  <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
+                ))}
+              </div>
+
+              {/* Bottom line */}
+              <div style={{display:"flex",alignItems:"center",gap:8,marginTop:14}}>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
+                <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+                  <ellipse cx="8" cy="18" rx="7" ry="2.5" fill="#7C3AED" opacity=".7"/>
+                  <rect x="3" y="13" width="10" height="5" rx="2" fill="#9D7BEA" opacity=".8"/>
+                  <ellipse cx="8" cy="8" rx="5" ry="8" fill="#C4B5FD" opacity=".8"/>
+                  <ellipse cx="8" cy="3" rx="3" ry="3" fill="#fef08a" opacity=".9"/>
+                </svg>
+                <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
+              </div>
             </div>
           </div>
 
+          {/* Progress + Stats */}
+          <div style={{position:"relative",zIndex:1}}>
           {/* Progress */}
           <div style={{marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
@@ -1886,7 +1926,7 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
               </div>
             ))}
           </div>
-        </div>
+          </div>
 
         {/* ── MANUAL TICK CARD ── */}
         <div style={{margin:"12px 16px 0",background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 18px rgba(124,58,237,.12)",border:"1.5px solid rgba(124,58,237,.15)"}}>
