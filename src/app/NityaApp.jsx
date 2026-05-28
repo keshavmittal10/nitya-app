@@ -1766,23 +1766,24 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
-        {/* ── FEATURED: 108-DAY MANTRA DISCIPLINE ── */}
+        {/* ── 108-DAY MANTRA DISCIPLINE — outside heading ── */}
+        <div style={{padding:"16px 20px 0"}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(167,139,250,.5)",marginBottom:6}}>🔥 Active Journey</div>
+          <div style={{fontFamily:"'Cinzel',serif",fontSize:26,fontWeight:800,color:"#F0E6FF",letterSpacing:.5,lineHeight:1.1}}>108-Day Mantra<br/>Discipline</div>
+          <div style={{height:3,width:60,background:"linear-gradient(90deg,#7C3AED,transparent)",borderRadius:4,marginTop:8}}/>
+        </div>
+
+        {/* ── MAIN MANTRA CARD ── */}
         <div style={{margin:"14px 16px 0",background:"linear-gradient(135deg,#1A0E30,#261545)",borderRadius:26,padding:"20px",position:"relative",overflow:"hidden",boxShadow:"0 14px 44px rgba(15,8,60,.5)",border:"1px solid rgba(139,92,246,.28)"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#7C3AED,#60A5FA,#A78BFA,#7C3AED)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite",borderRadius:"26px 26px 0 0"}}/>
           <div style={{position:"absolute",right:-8,bottom:-18,fontFamily:"'Noto Sans Devanagari',serif",fontSize:120,color:"rgba(167,139,250,.06)",lineHeight:1,pointerEvents:"none"}}>ॐ</div>
 
-          {/* Badge */}
-          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(167,139,250,.15)",border:"1px solid rgba(167,139,250,.3)",borderRadius:20,padding:"4px 11px",marginBottom:12}}>
-            <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(167,139,250,.9)"}}>🔥 Active Journey</span>
-          </div>
-
-          {/* Title */}
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:21,fontWeight:800,color:"#E8D5FF",textTransform:"uppercase",lineHeight:1.1,marginBottom:4,letterSpacing:.5}}>108-Day Mantra<br/>Discipline</div>
-          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"rgba(200,170,255,.65)",marginBottom:16}}>महामृत्युञ्जय मंत्र · प्रतिदिन एक जाप</div>
+          {/* New heading — Hindi, big bold */}
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:24,fontWeight:800,color:"#E8D5FF",lineHeight:1.2,marginBottom:6}}>महामृत्युञ्जय मंत्र</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,color:"rgba(200,170,255,.6)",marginBottom:18}}>प्रतिदिन एक जाप</div>
 
           {/* Mantra text */}
           <div style={{background:"rgba(255,255,255,.05)",borderRadius:18,padding:"16px",border:"1px solid rgba(167,139,250,.2)",textAlign:"center",marginBottom:14}}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.55)",marginBottom:8}}>Maha Mrityunjaya Mantra</div>
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontWeight:700,color:"#E8D5FF",lineHeight:2}}>
               {["ॐ त्र्यम्बकं यजामहे","सुगन्धिं पुष्टिवर्धनम्।","उर्वारुकमिव बन्धनान्","मृत्योर्मुक्षीय माऽमृतात्॥"].map((line,i)=>(
                 <div key={i} style={{whiteSpace:"nowrap",overflow:"hidden",textOverflow:"clip",fontSize:"clamp(15px,5.2vw,21px)"}}>{line}</div>
@@ -1811,6 +1812,12 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ── HOW TO CHANT — moved here, below mantra card ── */}
+        <div style={{margin:"10px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(167,139,250,.15)"}}>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.6)",marginBottom:10}}>⚡ How to Chant</div>
+          <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:"rgba(220,200,255,.85)",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार पूरे भाव से महामृत्युञ्जय मंत्र का जाप करें। मंत्र पूर्ण होने पर ✓ दबाएं।</p>
         </div>
 
         {/* ── MANUAL TICK CARD ── */}
@@ -1859,12 +1866,6 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
             </div>
           </div>
         )}
-
-        {/* How to chant */}
-        <div style={{margin:"10px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"14px 16px",border:"1px solid rgba(167,139,250,.12)"}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.6)",marginBottom:8}}>⚡ How to Chant</div>
-          <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,fontWeight:500,color:"rgba(220,200,255,.75)",lineHeight:1.8}}>शांत मन से बैठें, आँखें बंद करें। एक बार पूरे भाव से महामृत्युञ्जय मंत्र का जाप करें। मंत्र पूर्ण होने पर ✓ दबाएं।</p>
-        </div>
 
         {/* ── COMING SOON JOURNEYS ── */}
         <div style={{padding:"16px 16px 0"}}>
