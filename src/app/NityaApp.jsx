@@ -1926,9 +1926,8 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
               </div>
             ))}
           </div>
-          </div>
-
-        {/* ── MANUAL TICK CARD ── */}
+          </div>{/* end progress+stats zIndex div */}
+        </div>{/* end main mantra card */}
         <div style={{margin:"12px 16px 0",background:"white",borderRadius:22,overflow:"hidden",boxShadow:"0 4px 18px rgba(124,58,237,.12)",border:"1.5px solid rgba(124,58,237,.15)"}}>
           {/* Main row */}
           <div style={{padding:"14px 16px",display:"flex",alignItems:"center",gap:12}}>
