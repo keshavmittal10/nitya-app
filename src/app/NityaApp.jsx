@@ -1800,16 +1800,14 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
             </svg>
           </div>
 
-          {/* Large damru — bottom right, shifted up/left to not overlap OM */}
-          <div style={{position:"absolute",right:60,bottom:30,opacity:.07,pointerEvents:"none",zIndex:0,transform:"rotate(20deg)"}}>
-            <svg width="90" height="110" viewBox="0 0 80 100" fill="none">
-              <polygon points="10,8 70,8 40,50" fill="#C4B5FD"/>
-              <polygon points="10,92 70,92 40,50" fill="#C4B5FD"/>
-              <rect x="36" y="8" width="8" height="84" rx="4" fill="#A78BFA"/>
+          {/* Small damru — top right */}
+          <div style={{position:"absolute",top:10,right:14,opacity:.08,pointerEvents:"none",zIndex:0,transform:"rotate(10deg)"}}>
+            <svg width="44" height="50" viewBox="0 0 80 100" fill="none">
+              <polygon points="10,8 70,8 40,50" fill="#E8D5FF"/>
+              <polygon points="10,92 70,92 40,50" fill="#E8D5FF"/>
+              <rect x="36" y="8" width="8" height="84" rx="4" fill="#C4B5FD"/>
               <circle cx="4" cy="50" r="7" fill="#fef08a"/>
               <circle cx="76" cy="50" r="7" fill="#fef08a"/>
-              <line x1="4" y1="50" x2="20" y2="42" stroke="#fef08a" strokeWidth="2.5"/>
-              <line x1="76" y1="50" x2="60" y2="42" stroke="#fef08a" strokeWidth="2.5"/>
             </svg>
           </div>
 
