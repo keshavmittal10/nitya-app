@@ -1520,18 +1520,6 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           </div>
         )}
 
-        {/* ── SIGNED IN BADGE ── */}
-        {user&&(
-          <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,rgba(34,197,94,.1),rgba(34,197,94,.05))",borderRadius:18,padding:"11px 16px",border:"1px solid rgba(34,197,94,.25)",display:"flex",alignItems:"center",gap:10}}>
-            <div style={{width:32,height:32,borderRadius:10,background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flexShrink:0,boxShadow:"0 3px 10px rgba(34,197,94,.35)"}}>✓</div>
-            <div style={{flex:1}}>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"#166534",letterSpacing:.5,textTransform:"uppercase"}}>Progress Saving On</div>
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:500,color:"rgba(22,101,52,.65)",marginTop:1,fontStyle:"italic"}}>Signed in as +91 {user.phone}</div>
-            </div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(22,101,52,.5)"}}>🔐 Saved</div>
-          </div>
-        )}
-
         {/* ── KARMA CARD — starts at 0 ── */}
         <div style={{margin:"14px 18px 0",background:"linear-gradient(135deg,#3D2000,#5C3200)",borderRadius:26,padding:"20px 22px",position:"relative",overflow:"hidden",boxShadow:"0 12px 36px rgba(93,50,0,.3)"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",borderRadius:"26px 26px 0 0"}}/>
