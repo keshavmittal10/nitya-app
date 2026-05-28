@@ -1813,17 +1813,6 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
             </svg>
           </div>
 
-          {/* Small damru — top right */}
-          <div style={{position:"absolute",top:10,right:14,opacity:.08,pointerEvents:"none",zIndex:0,transform:"rotate(10deg)"}}>
-            <svg width="44" height="50" viewBox="0 0 80 100" fill="none">
-              <polygon points="10,8 70,8 40,50" fill="#E8D5FF"/>
-              <polygon points="10,92 70,92 40,50" fill="#E8D5FF"/>
-              <rect x="36" y="8" width="8" height="84" rx="4" fill="#C4B5FD"/>
-              <circle cx="4" cy="50" r="7" fill="#fef08a"/>
-              <circle cx="76" cy="50" r="7" fill="#fef08a"/>
-            </svg>
-          </div>
-
           {/* Starry glow dots scattered */}
           <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
             <svg width="100%" height="100%" viewBox="0 0 340 320" preserveAspectRatio="xMidYMid slice" fill="none">
