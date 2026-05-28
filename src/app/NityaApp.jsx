@@ -1800,8 +1800,8 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
             </svg>
           </div>
 
-          {/* Large damru — bottom right background */}
-          <div style={{position:"absolute",right:-12,bottom:-8,opacity:.07,pointerEvents:"none",zIndex:0,transform:"rotate(20deg)"}}>
+          {/* Large damru — bottom right, shifted up/left to not overlap OM */}
+          <div style={{position:"absolute",right:60,bottom:30,opacity:.07,pointerEvents:"none",zIndex:0,transform:"rotate(20deg)"}}>
             <svg width="90" height="110" viewBox="0 0 80 100" fill="none">
               <polygon points="10,8 70,8 40,50" fill="#C4B5FD"/>
               <polygon points="10,92 70,92 40,50" fill="#C4B5FD"/>
@@ -1827,26 +1827,35 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           {/* Starry glow dots scattered */}
           <div style={{position:"absolute",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
             <svg width="100%" height="100%" viewBox="0 0 340 320" preserveAspectRatio="xMidYMid slice" fill="none">
-              {/* Glowing stars of various sizes */}
-              <circle cx="30"  cy="30"  r="1.5" fill="#fef08a" opacity=".5"/>
-              <circle cx="30"  cy="30"  r="5"   fill="#fef08a" opacity=".07"/>
-              <circle cx="310" cy="25"  r="1.5" fill="#fef08a" opacity=".45"/>
-              <circle cx="310" cy="25"  r="6"   fill="#fef08a" opacity=".06"/>
-              <circle cx="160" cy="18"  r="1"   fill="white"   opacity=".5"/>
-              <circle cx="160" cy="18"  r="4"   fill="white"   opacity=".06"/>
-              <circle cx="60"  cy="200" r="1.5" fill="#C4B5FD" opacity=".5"/>
-              <circle cx="60"  cy="200" r="5"   fill="#C4B5FD" opacity=".07"/>
-              <circle cx="290" cy="180" r="1"   fill="#fef08a" opacity=".4"/>
-              <circle cx="290" cy="180" r="4"   fill="#fef08a" opacity=".06"/>
-              <circle cx="200" cy="290" r="1.5" fill="white"   opacity=".4"/>
-              <circle cx="200" cy="290" r="5"   fill="white"   opacity=".05"/>
-              <circle cx="100" cy="260" r="1"   fill="#C4B5FD" opacity=".45"/>
-              <circle cx="320" cy="280" r="1.5" fill="#fef08a" opacity=".4"/>
-              <circle cx="320" cy="280" r="5"   fill="#fef08a" opacity=".06"/>
+              {/* Gold stars */}
+              <circle cx="30"  cy="30"  r="1.5" fill="#fef08a" opacity=".55"/><circle cx="30"  cy="30"  r="6"   fill="#fef08a" opacity=".07"/>
+              <circle cx="310" cy="25"  r="1.5" fill="#fef08a" opacity=".5"/> <circle cx="310" cy="25"  r="7"   fill="#fef08a" opacity=".06"/>
+              <circle cx="290" cy="180" r="1.5" fill="#fef08a" opacity=".5"/> <circle cx="290" cy="180" r="5"   fill="#fef08a" opacity=".07"/>
+              <circle cx="320" cy="280" r="1.5" fill="#fef08a" opacity=".45"/><circle cx="320" cy="280" r="6"   fill="#fef08a" opacity=".06"/>
+              <circle cx="140" cy="60"  r="1.2" fill="#fef08a" opacity=".4"/> <circle cx="140" cy="60"  r="4"   fill="#fef08a" opacity=".06"/>
+              <circle cx="230" cy="100" r="1"   fill="#fef08a" opacity=".4"/>
+              <circle cx="50"  cy="140" r="1.2" fill="#fef08a" opacity=".4"/> <circle cx="50"  cy="140" r="4"   fill="#fef08a" opacity=".05"/>
+              <circle cx="190" cy="240" r="1.5" fill="#fef08a" opacity=".45"/><circle cx="190" cy="240" r="5"   fill="#fef08a" opacity=".06"/>
+              {/* White stars */}
+              <circle cx="160" cy="18"  r="1.2" fill="white"   opacity=".55"/><circle cx="160" cy="18"  r="5"   fill="white"   opacity=".06"/>
+              <circle cx="200" cy="290" r="1.5" fill="white"   opacity=".45"/><circle cx="200" cy="290" r="6"   fill="white"   opacity=".05"/>
+              <circle cx="270" cy="70"  r="1"   fill="white"   opacity=".45"/>
+              <circle cx="80"  cy="80"  r="1"   fill="white"   opacity=".4"/>
+              <circle cx="330" cy="150" r="1.2" fill="white"   opacity=".4"/>
+              <circle cx="110" cy="300" r="1"   fill="white"   opacity=".4"/>
+              {/* Purple stars */}
+              <circle cx="60"  cy="200" r="1.5" fill="#C4B5FD" opacity=".55"/><circle cx="60"  cy="200" r="6"   fill="#C4B5FD" opacity=".07"/>
+              <circle cx="100" cy="260" r="1.2" fill="#C4B5FD" opacity=".5"/> <circle cx="100" cy="260" r="4"   fill="#C4B5FD" opacity=".06"/>
+              <circle cx="240" cy="40"  r="1"   fill="#C4B5FD" opacity=".45"/>
+              <circle cx="20"  cy="280" r="1.2" fill="#C4B5FD" opacity=".4"/>
+              <circle cx="170" cy="150" r="1"   fill="#C4B5FD" opacity=".35"/>
               {/* 4-point star shapes */}
-              <path d="M260 60 L262 55 L264 60 L269 62 L264 64 L262 69 L260 64 L255 62 Z" fill="#fef08a" opacity=".18"/>
-              <path d="M80 120 L81.5 116 L83 120 L87 121.5 L83 123 L81.5 127 L80 123 L76 121.5 Z" fill="#C4B5FD" opacity=".2"/>
-              <path d="M300 130 L301.5 126 L303 130 L307 131.5 L303 133 L301.5 137 L300 133 L296 131.5 Z" fill="white" opacity=".15"/>
+              <path d="M260 60 L262 55 L264 60 L269 62 L264 64 L262 69 L260 64 L255 62 Z" fill="#fef08a" opacity=".2"/>
+              <path d="M80  120 L81.5 116 L83 120 L87 121.5 L83 123 L81.5 127 L80 123 L76 121.5 Z" fill="#C4B5FD" opacity=".22"/>
+              <path d="M300 130 L302 126 L304 130 L308 131.5 L304 133 L302 137 L300 133 L296 131.5 Z" fill="white" opacity=".17"/>
+              <path d="M180 280 L181.5 276 L183 280 L187 281.5 L183 283 L181.5 287 L180 283 L176 281.5 Z" fill="#fef08a" opacity=".18"/>
+              <path d="M40  60  L41.5 56 L43 60 L47 61.5 L43 63 L41.5 67 L40 63 L36 61.5 Z" fill="white" opacity=".15"/>
+              <path d="M320 210 L321.5 206 L323 210 L327 211.5 L323 213 L321.5 217 L320 213 L316 211.5 Z" fill="#C4B5FD" opacity=".18"/>
             </svg>
           </div>
 
