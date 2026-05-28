@@ -1787,7 +1787,7 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
           {/* Heading — centered, Hindi, big bold, yellow */}
           <div style={{textAlign:"center",marginBottom:4}}>
             <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:30,fontWeight:800,color:"#fef08a",lineHeight:1.2}}>महामृत्युञ्जय मंत्र</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,color:"rgba(200,170,255,.6)",marginTop:4}}>प्रतिदिन एक जाप</div>
+            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:700,color:"rgba(255,255,255,.85)",marginTop:4}}>प्रतिदिन एक जाप</div>
           </div>
 
           {/* Mantra text — original style */}
