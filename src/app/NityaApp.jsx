@@ -624,13 +624,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           <div style={{height:3,width:60,background:"linear-gradient(90deg,#3B82F6,transparent)",borderRadius:4,marginTop:8}}/>
         </div>
 
-        {/* Theme badge row */}
-        <div style={{padding:"12px 20px 10px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:600,color:"rgba(40,80,200,.5)"}}>Today's lesson</div>
-          <div style={{background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",borderRadius:20,padding:"6px 14px",boxShadow:"0 4px 14px rgba(26,58,143,.35)"}}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,color:"white",letterSpacing:1}}>{todayLesson.theme}</div>
-            <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(180,210,255,.85)",marginTop:1}}>{todayLesson.hi}</div>
-          </div>
+        {/* Aaj ka gyaan label */}
+        <div style={{padding:"12px 20px 10px"}}>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:800,color:"#0D1F5C",letterSpacing:.3}}>आज का ज्ञान</div>
         </div>
 
         {/* Krishna image card */}
