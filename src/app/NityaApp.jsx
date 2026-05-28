@@ -149,8 +149,8 @@ const DAYS=[
 const NAV=[
   {id:"home",icon:"🏠",label:"VedPath"},
   {id:"prarthana",icon:"🙏",label:"Prarthana"},
-  {id:"sadhana",icon:"🌿",label:"Sadhana"},
   {id:"anushthan",icon:"🛤️",label:"Anushthan"},
+  {id:"sadhana",icon:"🌿",label:"Sadhana"},
   {id:"profile",icon:"👤",label:"Profile"},
 ];
 
