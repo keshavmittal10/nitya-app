@@ -1564,16 +1564,16 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
           <div style={{display:"flex",gap:4}}>
             {days.map(d=>{
               const c=d.s==="done"
-                ?{background:"linear-gradient(135deg,#FFD700,#E8A020)",boxShadow:"0 3px 10px rgba(232,160,32,.4)",color:"white",fontSize:14}
+                ?{background:"linear-gradient(135deg,#22C55E,#16A34A)",boxShadow:"0 3px 10px rgba(34,197,94,.4)",color:"white",fontSize:16}
                 :d.s==="today"
                 ?{background:"linear-gradient(135deg,#FF6B00,#CC4400)",boxShadow:"0 3px 14px rgba(255,100,0,.5)",color:"white",fontSize:14,animation:"todayPulse 2s ease-in-out infinite"}
                 :d.s==="missed"
-                ?{background:"rgba(93,50,0,.07)",border:"1.5px solid rgba(180,120,30,.18)",color:"rgba(180,120,30,.35)",fontSize:13}
+                ?{background:"rgba(220,50,50,.08)",border:"1.5px solid rgba(220,50,50,.25)",color:"rgba(200,50,50,.6)",fontSize:14}
                 :{background:"rgba(93,50,0,.04)",border:"1.5px dashed rgba(180,120,30,.15)",color:"rgba(180,120,30,.2)",fontSize:10};
               return(
                 <div key={d.l} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
                   <div style={{width:34,height:34,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Syne',sans-serif",fontWeight:700,...c}}>
-                    {d.s==="done"?"✓":d.s==="today"?"🔥":d.s==="missed"?"🌙":"·"}
+                    {d.s==="done"?"✓":d.s==="today"?"🔥":d.s==="missed"?"✗":"·"}
                   </div>
                   <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:".5px",textTransform:"uppercase",color:"#C4A882"}}>{d.l}</span>
                 </div>
