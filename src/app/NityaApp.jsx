@@ -629,6 +629,12 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:800,color:"#0D1F5C",letterSpacing:.3}}>आज का ज्ञान</div>
         </div>
 
+        {/* Shloka Sadhana instruction card */}
+        <div style={{margin:"0 16px 12px",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(100,150,255,.2)",boxShadow:"0 3px 14px rgba(26,58,143,.08)"}}>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:800,letterSpacing:.5,color:"rgba(40,80,200,.7)",marginBottom:10}}>🌸 श्लोक साधना</div>
+          <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:"#0D1F5C",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। इस श्लोक का धीरे-धीरे उच्चारण करें, और इसके भाव को अपने जीवन में अपनाने का संकल्प लें। पढ़ने के बाद ✓ दबाएं।</p>
+        </div>
+
         {/* Krishna image card */}
         <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(26,58,143,.25)",border:"1px solid rgba(100,150,255,.25)",position:"relative"}}>
           <div style={{height:3,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#1D4ED8,#3B82F6,#60A5FA)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
@@ -1228,7 +1234,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         </div>
         {/* Instruction card */}
         <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:`${day.color}99`,marginBottom:10}}>🙏 How to Pray</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:800,letterSpacing:.5,color:`${day.color}99`,marginBottom:10}}>🙏 आरती विधि</div>
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:day.darkText||"#2D1200",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार अपनी मधुर वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें। आरती पूर्ण होने पर ✓ दबाएं।</p>
         </div>
         {/* Section label */}
@@ -1761,7 +1767,7 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
 
         {/* ── HOW TO CHANT — above mantra card ── */}
         <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(167,139,250,.15)"}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"rgba(167,139,250,.6)",marginBottom:10}}>⚡ How to Chant</div>
+          <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:800,letterSpacing:.5,color:"rgba(167,139,250,.8)",marginBottom:10}}>⚡ मंत्र साधना</div>
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:"rgba(220,200,255,.85)",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार पूरे भाव से महामृत्युञ्जय मंत्र का जाप करें। मंत्र पूर्ण होने पर ✓ दबाएं।</p>
         </div>
 
