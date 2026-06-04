@@ -1885,10 +1885,10 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
   const pct=Math.round((daysDone/108)*100);
 
   const comingSoon=[
-    {n:"60-Day Gita Journey",     h:"गीता ज्ञान साधना",    ico:"🪷",c:"#F97316"},
-    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",ico:"🪔",c:"#EF4444"},
-    {n:"30-Day Upanishad Path",   h:"उपनिषद् ज्ञान · 30 दिन",ico:"🌿",c:"#22C55E"},
-    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",  ico:"☀️",c:"#F59E0B"},
+    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",   ico:"🪔",c:"#EF4444"},
+    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना · 108 दिन",ico:"☀️",c:"#F59E0B"},
+    {n:"51-Day Lakshmi Aradhana", h:"लक्ष्मी आराधना · 51 दिन",  ico:"🌸",c:"#EC4899"},
+    {n:"27-Day Gayatri Sadhana",  h:"गायत्री उपासना · 27 दिन",  ico:"🕉️",c:"#A78BFA"},
   ];
 
   return(
@@ -2116,7 +2116,7 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
 
         {/* ── COMING SOON JOURNEYS ── */}
         <div style={{padding:"16px 16px 0"}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:"rgba(167,139,250,.45)",marginBottom:10}}>More Journeys — Coming Soon</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:"rgba(167,139,250,.45)",marginBottom:10}}>Upcoming Mantra Jaap</div>
           {comingSoon.map(j=>(
             <div key={j.n} style={{background:"rgba(255,255,255,.025)",borderRadius:20,padding:"13px 15px",display:"flex",alignItems:"center",gap:12,border:"1px solid rgba(255,255,255,.05)",marginBottom:8,opacity:.5}}>
               <div style={{width:44,height:44,borderRadius:14,background:`${j.c}14`,border:`1px solid ${j.c}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{j.ico}</div>
