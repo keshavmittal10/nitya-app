@@ -734,13 +734,13 @@ const GITA_JOURNEY = [  {day:1,theme:"Ego",hi:"अहंकार",ref:"Gita · 
    english:"Those whose sins have been destroyed, whose doubts have been dispelled, whose minds are disciplined, and who are engaged in the welfare of all beings — they attain liberation in the Supreme."},
 ];
 
-function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount}){
+function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount,joinDate}){
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
 
-  // 21-day journey: starts from May 26 2026, day 1 = first day
-  const JOURNEY_START = new Date("2026-05-26").getTime();
+  // Journey starts from user's personal joinDate (Day 1 = their signup day)
+  const JOURNEY_START = joinDate ? new Date(joinDate).getTime() : Date.now();
   const daysSinceStart = Math.max(0, Math.floor((Date.now() - JOURNEY_START) / 86400000));
   const journeyDayIdx = Math.min(daysSinceStart, 59);
   const todayLesson = GITA_JOURNEY[journeyDayIdx];
@@ -2491,6 +2491,7 @@ export default function App(){
   const [favorites,setFavorites]=useState([]);
   const [karma,setKarma]=useState(0);
   const [user,setUser]=useState(null);
+  const [joinDate,setJoinDate]=useState(null);
   const [userName,setUserName]=useState("");
   const [tapasyaDays,setTapasyaDays]=useState(0);
   const [completedDates,setCompletedDates]=useState([]); // array of date strings like "2026-05-21"
@@ -2581,6 +2582,9 @@ export default function App(){
             if(data.completedDates){ setCompletedDates(data.completedDates); }
             if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
             if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
+            // Load or set joinDate
+            if(data.joinDate){ setJoinDate(data.joinDate); }
+            else { persist(firebaseUser.uid,{joinDate:today}); setJoinDate(today); }
             // Reset mantaDone if it's a new day
             if(data.mantaDoneDate === today && data.mantaDone){ setMantaDone(true); }
             else { setMantaDone(false); }
@@ -2597,7 +2601,9 @@ export default function App(){
             // Go to home if they have a name, else name screen
             setScreen(data.userName ? "home" : "name");
           } else {
-            // New user — go to name screen
+            // New user — save joinDate and go to name screen
+            persist(firebaseUser.uid,{joinDate:today});
+            setJoinDate(today);
             setScreen("name");
           }
         } catch(e){
@@ -2646,7 +2652,7 @@ export default function App(){
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
-          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave}/>}
+          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave} joinDate={joinDate}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
@@ -2658,7 +2664,7 @@ export default function App(){
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
             mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
             mantaDone={mantaDone} setMantaDone={setMantaDoneSave}
-            tasksDone={tasksDone} setTasksDone={setTasksDoneSave}/>}
+            tasksDone={tasksDone} setTasksDone={setTasksDoneSave} joinDate={joinDate}/>}
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
             mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
