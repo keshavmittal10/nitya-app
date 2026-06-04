@@ -1649,7 +1649,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#4A2800",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>My Sadhana</span>
-        {(()=>{const sl=LEVELS.find(l=>karma>=l.min&&karma<=l.max)||LEVELS[0];const si=LEVELS.indexOf(sl);return(<div style={{background:`linear-gradient(135deg,${sl.color}DD,${sl.color})`,color:"#FFF8E8",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:"1.5px",textTransform:"uppercase",padding:"7px 14px",borderRadius:20,boxShadow:`0 4px 14px ${sl.color}66`}}>Lv.{si+1} · {sl.label}</div>);})()}
+        {(()=>{const sl=LEVELS.find(l=>karma>=l.min&&karma<=l.max)||LEVELS[0];const si=LEVELS.indexOf(sl);return(<div style={{background:`linear-gradient(135deg,${sl.color}DD,${sl.color})`,color:"#FFF8E8",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:"1.5px",textTransform:"uppercase",padding:"7px 14px",borderRadius:20,boxShadow:`0 4px 14px ${sl.color}66`}}>Lv.{si+1}</div>);})()}
       </div>
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
