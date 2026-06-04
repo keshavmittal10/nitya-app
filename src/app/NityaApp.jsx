@@ -748,7 +748,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
   const isFav=favorites.some(f=>f.id===todayLesson.day);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
-  const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{...todayLesson,id:todayLesson.day}]);showToast("Added to favourites ❤️");}};
+  const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{id:todayLesson.day,hindi:todayLesson.hindi,ref:todayLesson.ref,theme:todayLesson.theme,hi:todayLesson.hi}]);showToast("Added to favourites ❤️");}};
 
   return(
     <div style={{width:"100%",height:"100%",background:"linear-gradient(170deg,#EEF4FF 0%,#DCE9FF 55%,#C8DBFF 100%)",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
@@ -1179,8 +1179,13 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                 ?<div style={{padding:"16px",textAlign:"center",fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"#C4A882"}}>कोई पसंदीदा नहीं। ❤️ से जोड़ें।</div>
                 :favorites.map((f,i)=>(
                   <div key={f.id} style={{padding:"12px 16px",borderTop:i>0?"1px solid rgba(255,165,0,.08)":"none"}}>
-                    <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010",marginBottom:4}}>{f.grantha} · {f.chapter}</div>
-                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,fontWeight:600,color:"#3E1800",lineHeight:1.7,whiteSpace:"pre-line"}}>{f.sanskrit}</div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010"}}>Bhagavad Gita</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,color:"rgba(196,112,16,.4)"}}>·</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010"}}>{f.ref?.replace("Gita · ","")}</span>
+                      {f.hi&&<><span style={{fontFamily:"'Syne',sans-serif",fontSize:9,color:"rgba(196,112,16,.4)"}}>·</span><span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(196,112,16,.7)"}}>{f.hi}</span></>}
+                    </div>
+                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#3E1800",lineHeight:1.8}}>{f.hindi}</div>
                     <button onClick={()=>{setFavorites(fv=>fv.filter(x=>x.id!==f.id));showToast("Removed ✓");}} style={{marginTop:6,background:"rgba(255,100,100,.08)",border:"1px solid rgba(255,100,100,.18)",borderRadius:10,padding:"3px 10px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#EF4444"}}>Remove</button>
                   </div>
                 ))
