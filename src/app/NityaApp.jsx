@@ -1106,14 +1106,19 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                       y+=10;divider(y);y+=32;
                       ctx.font="bold 28px serif";ctx.fillStyle="#4ade80";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText("NITYA",PAD,y+16);
                       ctx.font="16px sans-serif";ctx.fillStyle="rgba(134,239,172,.5)";ctx.fillText("Daily Sadhana · nitya.app",PAD,y+38);
-                      canvas.toBlob(async(blob)=>{
-                        if(!blob){showToast("Unable to create card");return;}
-                        const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
-                        try{
-                          if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:"Nitya · Daily Shlok",files:[file]});}
-                          else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();showToast("Card saved! 📥");}
-                        }catch(e){showToast("Sharing cancelled");}
-                      },"image/png");
+                      // toDataURL is synchronous — keeps us inside the user gesture for navigator.share
+                      const dataUrl=canvas.toDataURL("image/png");
+                      const res=await fetch(dataUrl);
+                      const blob=await res.blob();
+                      const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
+                      try{
+                        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+                          await navigator.share({title:"Nitya · Daily Shlok",files:[file]});
+                        } else {
+                          const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();
+                          showToast("Card saved! 📥");
+                        }
+                      }catch(e){if(e.name!=="AbortError") showToast("Unable to share");}
                     }catch(e){showToast("Unable to export card");}
                   }}
                   style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:16,padding:"13px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.5)"}}>
