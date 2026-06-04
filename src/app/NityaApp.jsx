@@ -738,6 +738,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
+  const [showShareCard,setShowShareCard]=useState(false);
 
   // Journey starts from user's personal joinDate (Day 1 = their signup day)
   const JOURNEY_START = joinDate ? new Date(joinDate).getTime() : Date.now();
@@ -984,121 +985,156 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
-        {/* ── HIDDEN SHARE CARD (rendered off-screen, captured as image) ── */}
+        {/* ── SHARE CARD MODAL ── */}
+        {showShareCard&&(
+          <div style={{position:"fixed",inset:0,zIndex:100,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(5,10,30,.85)",backdropFilter:"blur(12px)",padding:"0 16px"}} onClick={()=>setShowShareCard(false)}>
+            <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:400,animation:"fadeUp .3s cubic-bezier(.16,1,.3,1) both"}}>
+
+              {/* ── PREVIEW CARD ── */}
+              <div style={{background:"linear-gradient(160deg,#0a2a1a 0%,#0f3d20 45%,#122e14 100%)",borderRadius:28,overflow:"hidden",boxShadow:"0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(134,197,94,.2)",position:"relative"}}>
+                <div style={{height:4,background:"linear-gradient(90deg,transparent,#4ade80,#facc15,#4ade80,transparent)"}}/>
+                {/* Peacock feather */}
+                <div style={{position:"absolute",top:-6,right:-6,opacity:.13,pointerEvents:"none"}}>
+                  <svg width="90" height="110" viewBox="0 0 90 110" fill="none">
+                    <path d="M45 105 Q44 70 43 40 Q42 20 45 5" stroke="#facc15" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M44 80 Q30 74 18 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M43 68 Q28 60 14 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M43 56 Q30 46 20 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
+                    <path d="M43 44 Q34 34 28 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
+                    <path d="M46 80 Q60 74 72 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M46 68 Q62 60 76 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
+                    <path d="M46 56 Q60 46 70 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
+                    <path d="M46 44 Q56 34 62 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
+                    <ellipse cx="45" cy="18" rx="10" ry="13" fill="none" stroke="#facc15" strokeWidth="1.5"/>
+                    <ellipse cx="45" cy="18" rx="6" ry="8" fill="none" stroke="#4ade80" strokeWidth="1.2"/>
+                    <ellipse cx="45" cy="18" rx="3" ry="4" fill="#facc15" opacity=".6"/>
+                  </svg>
+                </div>
+                {/* OM watermark */}
+                <div style={{position:"absolute",bottom:-8,right:10,fontFamily:"'Noto Sans Devanagari',serif",fontSize:90,color:"rgba(100,150,100,.07)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
+
+                <div style={{padding:"24px 22px 20px",position:"relative",zIndex:1}}>
+                  {/* Ref pill */}
+                  <div style={{display:"flex",justifyContent:"center",marginBottom:18}}>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(250,204,21,.1)",border:"1px solid rgba(250,204,21,.28)",borderRadius:20,padding:"5px 16px"}}>
+                      <span style={{fontSize:10}}>🪷</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(250,204,21,.9)"}}>{todayLesson.ref} · {todayLesson.theme}</span>
+                    </div>
+                  </div>
+                  {/* Top divider */}
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
+                    <span style={{fontSize:11,color:"#facc15"}}>◆</span>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
+                  </div>
+                  {/* Sanskrit */}
+                  <div style={{textAlign:"center",marginBottom:14}}>
+                    {todayLesson.sanskrit.split("\n").map((line,i)=>(
+                      <div key={i} style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:"clamp(13px,4vw,17px)",fontWeight:700,color:i===0?"#E0ECFF":"rgba(180,210,255,.85)",lineHeight:1.85,letterSpacing:.3,textShadow:"0 0 20px rgba(96,165,250,.3)"}}>{line}</div>
+                    ))}
+                  </div>
+                  {/* Mid divider */}
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(74,222,128,.35))"}}/>
+                    <span style={{fontSize:11,color:"#4ade80"}}>✦</span>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(74,222,128,.35),transparent)"}}/>
+                  </div>
+                  {/* भावार्थ label */}
+                  <div style={{display:"flex",justifyContent:"center",marginBottom:10}}>
+                    <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(74,222,128,.08)",border:"1px solid rgba(74,222,128,.18)",borderRadius:20,padding:"3px 12px"}}>
+                      <span style={{fontSize:8}}>🎋</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(134,239,172,.8)"}}>भावार्थ</span>
+                    </div>
+                  </div>
+                  {/* Hindi */}
+                  <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"#fef08a",lineHeight:1.9,margin:"0 0 16px",textAlign:"center"}}>{todayLesson.hindi}</p>
+                  {/* Bottom divider */}
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
+                    <span style={{fontSize:11,color:"#facc15"}}>◆</span>
+                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
+                  </div>
+                  {/* Branding */}
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div>
+                      <div style={{fontFamily:"'Cinzel',serif",fontSize:15,fontWeight:700,color:"#4ade80",letterSpacing:2}}>NITYA</div>
+                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(134,239,172,.45)",marginTop:2}}>Daily Sadhana · nitya.app</div>
+                    </div>
+                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:34,color:"rgba(250,204,21,.18)",lineHeight:1}}>ॐ</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── ACTION BUTTONS ── */}
+              <div style={{display:"flex",gap:10,marginTop:14}}>
+                <button
+                  onClick={async()=>{
+                    try{
+                      showToast("Saving card... 🎨");
+                      const lesson=todayLesson;
+                      const W=800,PAD=60;
+                      const canvas=document.createElement("canvas");
+                      canvas.width=W;canvas.height=100;
+                      const ctx=canvas.getContext("2d");
+                      const wrap=(text,font,maxW)=>{ctx.font=font;const words=text.split(" ");const lines=[];let cur="";for(const w of words){const test=cur?cur+" "+w:w;if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}else cur=test;}if(cur)lines.push(cur);return lines;};
+                      const innerW=W-PAD*2;
+                      const SFONT="bold 26px sans-serif";
+                      const HFONT="bold 28px sans-serif";
+                      const sanskritLines=lesson.sanskrit.split("\n");
+                      const wrappedSanskrit=[];
+                      for(const sl of sanskritLines){wrap(sl,SFONT,innerW).forEach(l=>wrappedSanskrit.push(l));}
+                      const hindiLines=wrap(lesson.hindi,HFONT,innerW);
+                      const H=80+60+32+wrappedSanskrit.length*52+32+hindiLines.length*56+32+80;
+                      canvas.height=H;
+                      const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#0a2a1a");bg.addColorStop(.5,"#0f3d20");bg.addColorStop(1,"#0a2a1a");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+                      const bar=ctx.createLinearGradient(0,0,W,0);bar.addColorStop(0,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(1,"#4ade80");ctx.fillStyle=bar;ctx.fillRect(0,0,W,5);
+                      ctx.font="200px sans-serif";ctx.fillStyle="rgba(100,150,100,.05)";ctx.textAlign="right";ctx.textBaseline="bottom";ctx.fillText("ॐ",W-20,H-10);
+                      let y=60;
+                      const refLine=`${lesson.ref}  ·  ${lesson.theme}`;
+                      ctx.font="bold 20px sans-serif";ctx.fillStyle="rgba(250,204,21,0.12)";ctx.textAlign="center";
+                      const pillW=Math.min(ctx.measureText(refLine).width+60,innerW);
+                      ctx.fillRect(W/2-pillW/2,y,pillW,38);ctx.strokeStyle="rgba(250,204,21,0.32)";ctx.lineWidth=1.5;ctx.strokeRect(W/2-pillW/2,y,pillW,38);
+                      ctx.fillStyle="rgba(250,204,21,.88)";ctx.textBaseline="middle";ctx.fillText(refLine,W/2,y+19);y+=58;
+                      const divider=(yy,c1,c2)=>{ctx.strokeStyle=c1||"rgba(250,204,21,0.32)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();ctx.fillStyle=c2||"#facc15";ctx.font="18px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("◆",W/2,yy);};
+                      divider(y);y+=32;
+                      ctx.textAlign="center";ctx.textBaseline="top";
+                      for(let i=0;i<wrappedSanskrit.length;i++){ctx.font=SFONT;ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.85)";ctx.fillText(wrappedSanskrit[i],W/2,y);y+=52;}
+                      y+=10;divider(y,"rgba(74,222,128,.3)","#4ade80");y+=32;
+                      ctx.font="bold 18px sans-serif";ctx.fillStyle="rgba(134,239,172,.7)";ctx.textAlign="center";ctx.textBaseline="top";ctx.fillText("भावार्थ",W/2,y);y+=34;
+                      ctx.font=HFONT;ctx.fillStyle="#fef08a";ctx.textAlign="center";ctx.textBaseline="top";
+                      for(const line of hindiLines){ctx.fillText(line,W/2,y);y+=56;}
+                      y+=10;divider(y);y+=32;
+                      ctx.font="bold 28px serif";ctx.fillStyle="#4ade80";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText("NITYA",PAD,y+16);
+                      ctx.font="16px sans-serif";ctx.fillStyle="rgba(134,239,172,.5)";ctx.fillText("Daily Sadhana · nitya.app",PAD,y+38);
+                      canvas.toBlob(async(blob)=>{
+                        if(!blob){showToast("Unable to create card");return;}
+                        const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
+                        try{
+                          if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:"Nitya · Daily Shlok",files:[file]});}
+                          else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();showToast("Card saved! 📥");}
+                        }catch(e){showToast("Sharing cancelled");}
+                      },"image/png");
+                    }catch(e){showToast("Unable to export card");}
+                  }}
+                  style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:16,padding:"13px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.5)"}}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  </svg>
+                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:700,color:"white",letterSpacing:.5}}>Share</span>
+                </button>
+                <button onClick={()=>setShowShareCard(false)} style={{width:48,height:48,borderRadius:16,border:"1.5px solid rgba(255,255,255,.15)",cursor:"pointer",background:"rgba(255,255,255,.07)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:"rgba(255,255,255,.7)",flexShrink:0,fontFamily:"'Syne',sans-serif",fontWeight:700}}>✕</button>
+              </div>
+
+            </div>
+          </div>
+        )}
 
         {/* ── SHARE + FAVOURITE ROW ── */}
         <div style={{margin:"10px 16px 0",display:"flex",gap:10}}>
-          {/* Share */}
+          {/* Share — opens in-app preview card */}
           <button
-            onClick={async()=>{
-              try{
-                showToast("Creating card... 🎨");
-                const lesson=todayLesson;
-                const W=800,PAD=60;
-                const canvas=document.createElement("canvas");
-                canvas.width=W;canvas.height=100;// temp height, will resize
-                const ctx=canvas.getContext("2d");
-
-                // wrap helper
-                const wrap=(text,font,maxW)=>{
-                  ctx.font=font;
-                  const words=text.split(" ");
-                  const lines=[];let cur="";
-                  for(const w of words){
-                    const test=cur?cur+" "+w:w;
-                    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
-                    else cur=test;
-                  }
-                  if(cur)lines.push(cur);
-                  return lines;
-                };
-
-                const innerW=W-PAD*2;
-                const SFONT="bold 24px sans-serif";
-                const HFONT="bold 26px sans-serif";
-
-                // split sanskrit on actual newline
-                const sanskritLines=lesson.sanskrit.split("\n");
-                // also wrap each sanskrit line in case it's too long
-                const wrappedSanskrit=[];
-                for(const sl of sanskritLines){
-                  const wl=wrap(sl,SFONT,innerW);
-                  wl.forEach(l=>wrappedSanskrit.push(l));
-                }
-                const hindiLines=wrap(lesson.hindi,HFONT,innerW);
-                const refLine=`${lesson.ref}  ·  ${lesson.theme}`;
-
-                // calculate total height
-                const H=60+50+28+wrappedSanskrit.length*46+28+hindiLines.length*50+28+80;
-                canvas.height=H;
-
-                // background
-                const bg=ctx.createLinearGradient(0,0,0,H);
-                bg.addColorStop(0,"#0a2a1a");bg.addColorStop(.5,"#0f3d20");bg.addColorStop(1,"#0a2a1a");
-                ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-
-                // top colour bar
-                const bar=ctx.createLinearGradient(0,0,W,0);
-                bar.addColorStop(0,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(1,"#4ade80");
-                ctx.fillStyle=bar;ctx.fillRect(0,0,W,5);
-
-                let y=50;
-
-                // ref pill
-                ctx.font="bold 20px sans-serif";ctx.fillStyle="rgba(250,204,21,0.13)";
-                const pillW=Math.min(ctx.measureText(refLine).width+60,innerW);
-                ctx.fillRect(PAD,y,pillW,38);
-                ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1.5;ctx.strokeRect(PAD,y,pillW,38);
-                ctx.fillStyle="#facc15";ctx.textBaseline="middle";ctx.textAlign="left";
-                ctx.fillText(refLine,PAD+16,y+19);
-                y+=58;
-
-                // divider
-                const divider=(yy)=>{
-                  ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1;
-                  ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();
-                  ctx.fillStyle="#facc15";ctx.font="18px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
-                  ctx.fillText("◆",W/2,yy);
-                };
-
-                divider(y);y+=28;
-
-                // sanskrit lines
-                ctx.font=SFONT;ctx.textAlign="center";ctx.textBaseline="top";
-                for(let i=0;i<wrappedSanskrit.length;i++){
-                  ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.85)";
-                  ctx.fillText(wrappedSanskrit[i],W/2,y);y+=46;
-                }
-                y+=10;divider(y);y+=28;
-
-                // hindi lines
-                ctx.font=HFONT;ctx.fillStyle="#fef08a";ctx.textAlign="left";ctx.textBaseline="top";
-                for(const line of hindiLines){ctx.fillText(line,PAD,y);y+=50;}
-                y+=10;divider(y);y+=28;
-
-                // branding
-                ctx.font="bold 22px sans-serif";ctx.fillStyle="#4ade80";ctx.textAlign="left";ctx.textBaseline="middle";
-                ctx.fillText("NITYA",PAD,y+16);
-                ctx.font="15px sans-serif";ctx.fillStyle="rgba(134,239,172,0.55)";
-                ctx.fillText("nitya.app  ·  Daily Sadhana",PAD,y+38);
-                ctx.font="52px sans-serif";ctx.fillStyle="rgba(250,204,21,0.14)";ctx.textAlign="right";
-                ctx.fillText("ॐ",W-PAD,y+28);
-
-                // share
-                canvas.toBlob(async(blob)=>{
-                  if(!blob){showToast("Unable to create card");return;}
-                  const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
-                  try{
-                    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-                      await navigator.share({title:"Nitya · Daily Shlok",files:[file]});
-                    } else {
-                      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();
-                      showToast("Card saved! 📥");
-                    }
-                  }catch(e){showToast("Sharing cancelled");}
-                },"image/png");
-              }catch(e){showToast("Unable to create card");}
-            }}
+            onClick={()=>setShowShareCard(true)}
             style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:18,padding:"13px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.35)",transition:"transform .15s"}}
             onMouseDown={e=>e.currentTarget.style.transform="scale(.97)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
