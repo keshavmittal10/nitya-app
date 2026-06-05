@@ -1118,18 +1118,14 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
                 <div style={{width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,.15)",border:"2px solid rgba(255,255,255,.28)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0,boxShadow:`0 0 20px ${pr.color}55`,animation:"floatUp 4s ease-in-out infinite"}}>{pr.icon}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.5)",marginBottom:2}}>🌙 Evening Prayer · 6:00 – 7:30 PM</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.5)",marginBottom:2}}>🙏 Daily Prayer</div>
                   <div style={{fontFamily:"'Syne',sans-serif",fontSize:17,fontWeight:800,color:"white",textTransform:"uppercase",letterSpacing:.5,lineHeight:1.1}}>{pr.deity}</div>
-                  <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:600,color:"rgba(255,255,255,.8)",marginTop:2}}>{pr.hi}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:14,fontWeight:600,color:"rgba(255,255,255,.8)",marginTop:2}}>{pr.hi}</div>
                 </div>
               </div>
 
-              {/* Time window pill */}
+              {/* Sub pill */}
               <div style={{display:"flex",gap:8,marginBottom:14,flexWrap:"wrap"}}>
-                <div style={{background:"rgba(0,0,0,.22)",backdropFilter:"blur(8px)",borderRadius:20,padding:"6px 12px",display:"flex",alignItems:"center",gap:5,border:"1px solid rgba(255,255,255,.12)"}}>
-                  <span style={{fontSize:12}}>⏰</span>
-                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,255,255,.7)"}}>6:00 – 7:30 PM</span>
-                </div>
                 <div style={{background:"rgba(0,0,0,.22)",backdropFilter:"blur(8px)",borderRadius:20,padding:"6px 12px",display:"flex",alignItems:"center",gap:5,border:"1px solid rgba(255,255,255,.12)"}}>
                   <span style={{fontSize:12}}>📿</span>
                   <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,255,255,.7)"}}>{pr.sub}</span>
@@ -1139,7 +1135,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               {/* Aarti name box */}
               <div style={{background:"rgba(255,255,255,.1)",backdropFilter:"blur(10px)",borderRadius:18,padding:"14px 16px",border:"1px solid rgba(255,255,255,.15)",marginBottom:14,textAlign:"center"}}>
                 <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,255,255,.5)",marginBottom:6}}>Today's Aarti</div>
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:700,color:"white",lineHeight:1.6}}>{pr.name}</div>
+                <div style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:700,color:"white",lineHeight:1.6}}>{pr.name}</div>
               </div>
 
               {/* CTA button */}
