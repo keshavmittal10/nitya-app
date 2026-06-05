@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import html2canvas from "html2canvas";
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
@@ -503,7 +502,7 @@ const GITA_JOURNEY = [  {day:1,theme:"Ego",hi:"अहंकार",ref:"Gita · 
    english:"All actions are performed by the modes of nature. One whose mind is deluded by ego thinks 'I am the doer.'"},
   {day:2,theme:"Remembrance",hi:"स्मरण",ref:"Gita · 8.6",
    sanskrit:"यं यं वापि स्मरन्भावं त्यजत्यन्ते कलेवरम्।\nतं तमेवैति कौन्तेय सदा तद्भावभावितः॥",
-   hindi:"जीवनभर जो विचार तुम्हारे मन में रहे, मृत्यु के वक्त वही उठेगा। यह कोई संयोग नहीं — यह प्रकृति का नियम है। इसीलिए अभी से अपने मन को उस भाव में रंगो जो तुम बनना चाहते हो। मृत्यु की तैयारी कल नहीं, आज से होती है।",
+   hindi:"जीवनभर जो विचार तुम्हारे मन में रहे, मृत्यु के वक्त वही उठेगा। यह कोई संयोग नहीं — यह प्रकृति का नियम है। इसीलिए अभी से अपने मन को उस भाव में रंगो जो तुम बनना चाहते हो।",
    english:"Whatever state of being one remembers when leaving the body at death — that alone will one attain, being ever absorbed in that thought."},
   {day:3,theme:"Self-Reliance",hi:"आत्मनिर्भरता",ref:"Gita · 6.5",
    sanskrit:"उद्धरेदात्मनात्मानं नात्मानमवसादयेत्।\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः॥",
@@ -739,8 +738,6 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
-  const [showShareCard,setShowShareCard]=useState(false);
-  const shareCardRef=useRef(null);
 
   // Journey starts from user's personal joinDate (Day 1 = their signup day)
   const JOURNEY_START = joinDate ? new Date(joinDate).getTime() : Date.now();
@@ -751,7 +748,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
   const isFav=favorites.some(f=>f.id===todayLesson.day);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2200);};
-  const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{id:todayLesson.day,hindi:todayLesson.hindi,ref:todayLesson.ref,theme:todayLesson.theme,hi:todayLesson.hi}]);showToast("Added to favourites ❤️");}};
+  const toggleFav=()=>{if(isFav){setFavorites(f=>f.filter(x=>x.id!==todayLesson.day));showToast("Removed from favourites");}else{setFavorites(f=>[...f,{...todayLesson,id:todayLesson.day}]);showToast("Added to favourites ❤️");}};
 
   return(
     <div style={{width:"100%",height:"100%",background:"linear-gradient(170deg,#EEF4FF 0%,#DCE9FF 55%,#C8DBFF 100%)",display:"flex",flexDirection:"column",position:"relative",overflow:"hidden"}}>
@@ -987,129 +984,121 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
           </div>
         </div>
 
-        {/* ── SHARE CARD MODAL ── */}
-        {showShareCard&&(
-          <div style={{position:"fixed",inset:0,zIndex:100,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"rgba(5,10,30,.85)",backdropFilter:"blur(12px)",padding:"0 16px"}} onClick={()=>setShowShareCard(false)}>
-            <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:400,animation:"fadeUp .3s cubic-bezier(.16,1,.3,1) both"}}>
-
-              {/* ── PREVIEW CARD ── */}
-              <div ref={shareCardRef} style={{background:"linear-gradient(160deg,#0a2a1a 0%,#0f3d20 45%,#122e14 100%)",borderRadius:28,overflow:"hidden",boxShadow:"0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(134,197,94,.2)",position:"relative"}}>
-                <div style={{height:4,background:"linear-gradient(90deg,transparent,#4ade80,#facc15,#4ade80,transparent)"}}/>
-                {/* Peacock feather */}
-                <div style={{position:"absolute",top:-6,right:-6,opacity:.13,pointerEvents:"none"}}>
-                  <svg width="90" height="110" viewBox="0 0 90 110" fill="none">
-                    <path d="M45 105 Q44 70 43 40 Q42 20 45 5" stroke="#facc15" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M44 80 Q30 74 18 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M43 68 Q28 60 14 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M43 56 Q30 46 20 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
-                    <path d="M43 44 Q34 34 28 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
-                    <path d="M46 80 Q60 74 72 72" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M46 68 Q62 60 76 55" stroke="#4ade80" strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M46 56 Q60 46 70 38" stroke="#86efac" strokeWidth="1.1" strokeLinecap="round"/>
-                    <path d="M46 44 Q56 34 62 24" stroke="#86efac" strokeWidth="1" strokeLinecap="round"/>
-                    <ellipse cx="45" cy="18" rx="10" ry="13" fill="none" stroke="#facc15" strokeWidth="1.5"/>
-                    <ellipse cx="45" cy="18" rx="6" ry="8" fill="none" stroke="#4ade80" strokeWidth="1.2"/>
-                    <ellipse cx="45" cy="18" rx="3" ry="4" fill="#facc15" opacity=".6"/>
-                  </svg>
-                </div>
-                {/* OM watermark */}
-                <div style={{position:"absolute",bottom:-8,right:10,fontFamily:"'Noto Sans Devanagari',serif",fontSize:90,color:"rgba(100,150,100,.07)",pointerEvents:"none",lineHeight:1}}>ॐ</div>
-
-                <div style={{padding:"24px 22px 20px",position:"relative",zIndex:1}}>
-                  {/* Ref pill */}
-                  <div style={{display:"flex",justifyContent:"center",marginBottom:18}}>
-                    <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(250,204,21,.1)",border:"1px solid rgba(250,204,21,.28)",borderRadius:20,padding:"5px 16px"}}>
-                      <span style={{fontSize:10}}>🪷</span>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(250,204,21,.9)"}}>{todayLesson.ref} · {todayLesson.theme}</span>
-                    </div>
-                  </div>
-                  {/* Top divider */}
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
-                    <span style={{fontSize:11,color:"#facc15"}}>◆</span>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
-                  </div>
-                  {/* Sanskrit */}
-                  <div style={{textAlign:"center",marginBottom:14}}>
-                    {todayLesson.sanskrit.split("\n").map((line,i)=>(
-                      <div key={i} style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:"clamp(13px,4vw,17px)",fontWeight:700,color:i===0?"#E0ECFF":"rgba(180,210,255,.85)",lineHeight:1.85,letterSpacing:.3,textShadow:"0 0 20px rgba(96,165,250,.3)"}}>{line}</div>
-                    ))}
-                  </div>
-                  {/* Mid divider */}
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(74,222,128,.35))"}}/>
-                    <span style={{fontSize:11,color:"#4ade80"}}>✦</span>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(74,222,128,.35),transparent)"}}/>
-                  </div>
-                  {/* भावार्थ label */}
-                  <div style={{display:"flex",justifyContent:"center",marginBottom:10}}>
-                    <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(74,222,128,.08)",border:"1px solid rgba(74,222,128,.18)",borderRadius:20,padding:"3px 12px"}}>
-                      <span style={{fontSize:8}}>🎋</span>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(134,239,172,.8)"}}>भावार्थ</span>
-                    </div>
-                  </div>
-                  {/* Hindi */}
-                  <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:700,color:"#fef08a",lineHeight:1.9,margin:"0 0 16px",textAlign:"center"}}>{todayLesson.hindi}</p>
-                  {/* Bottom divider */}
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,transparent,rgba(250,204,21,.4))"}}/>
-                    <span style={{fontSize:11,color:"#facc15"}}>◆</span>
-                    <div style={{flex:1,height:1,background:"linear-gradient(90deg,rgba(250,204,21,.4),transparent)"}}/>
-                  </div>
-                  {/* Branding */}
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div>
-                      <div style={{fontFamily:"'Cinzel',serif",fontSize:15,fontWeight:700,color:"#4ade80",letterSpacing:2}}>NITYA</div>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",color:"rgba(134,239,172,.45)",marginTop:2}}>Daily Sadhana · nitya.app</div>
-                    </div>
-                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:34,color:"rgba(250,204,21,.18)",lineHeight:1}}>ॐ</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── ACTION BUTTONS ── */}
-              <div style={{display:"flex",gap:10,marginTop:14}}>
-                <button
-                  onClick={async()=>{
-                    try{
-                      showToast("Creating card... 🎨");
-                      const canvas=await html2canvas(shareCardRef.current,{
-                        scale:3,
-                        useCORS:true,
-                        backgroundColor:null,
-                        logging:false,
-                      });
-                      const blob=await new Promise(res=>canvas.toBlob(res,"image/png"));
-                      if(!blob){showToast("Unable to create card");return;}
-                      const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
-                      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-                        await navigator.share({title:"Nitya · Daily Shlok",text:"आज का श्लोक 🙏",files:[file]});
-                      } else {
-                        const url=URL.createObjectURL(blob);
-                        const a=document.createElement("a");a.href=url;a.download="nitya-shlok.png";document.body.appendChild(a);a.click();document.body.removeChild(a);
-                        showToast("Saved to device! 📥");
-                      }
-                    }catch(e){if(e.name!=="AbortError") showToast("Unable to share");}
-                  }}
-                  style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:16,padding:"13px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.5)"}}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                  </svg>
-                  <span style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:700,color:"white",letterSpacing:.5}}>Share</span>
-                </button>
-                <button onClick={()=>setShowShareCard(false)} style={{width:48,height:48,borderRadius:16,border:"1.5px solid rgba(255,255,255,.15)",cursor:"pointer",background:"rgba(255,255,255,.07)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,color:"rgba(255,255,255,.7)",flexShrink:0,fontFamily:"'Syne',sans-serif",fontWeight:700}}>✕</button>
-              </div>
-
-            </div>
-          </div>
-        )}
+        {/* ── HIDDEN SHARE CARD (rendered off-screen, captured as image) ── */}
 
         {/* ── SHARE + FAVOURITE ROW ── */}
         <div style={{margin:"10px 16px 0",display:"flex",gap:10}}>
-          {/* Share — opens in-app preview card */}
+          {/* Share */}
           <button
-            onClick={()=>setShowShareCard(true)}
+            onClick={async()=>{
+              try{
+                showToast("Creating card... 🎨");
+                const lesson=todayLesson;
+                const W=800,PAD=60;
+                const canvas=document.createElement("canvas");
+                canvas.width=W;canvas.height=100;// temp height, will resize
+                const ctx=canvas.getContext("2d");
+
+                // wrap helper
+                const wrap=(text,font,maxW)=>{
+                  ctx.font=font;
+                  const words=text.split(" ");
+                  const lines=[];let cur="";
+                  for(const w of words){
+                    const test=cur?cur+" "+w:w;
+                    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
+                    else cur=test;
+                  }
+                  if(cur)lines.push(cur);
+                  return lines;
+                };
+
+                const innerW=W-PAD*2;
+                const SFONT="bold 24px sans-serif";
+                const HFONT="bold 26px sans-serif";
+
+                // split sanskrit on actual newline
+                const sanskritLines=lesson.sanskrit.split("\n");
+                // also wrap each sanskrit line in case it's too long
+                const wrappedSanskrit=[];
+                for(const sl of sanskritLines){
+                  const wl=wrap(sl,SFONT,innerW);
+                  wl.forEach(l=>wrappedSanskrit.push(l));
+                }
+                const hindiLines=wrap(lesson.hindi,HFONT,innerW);
+                const refLine=`${lesson.ref}  ·  ${lesson.theme}`;
+
+                // calculate total height
+                const H=60+50+28+wrappedSanskrit.length*46+28+hindiLines.length*50+28+80;
+                canvas.height=H;
+
+                // background
+                const bg=ctx.createLinearGradient(0,0,0,H);
+                bg.addColorStop(0,"#0a2a1a");bg.addColorStop(.5,"#0f3d20");bg.addColorStop(1,"#0a2a1a");
+                ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+                // top colour bar
+                const bar=ctx.createLinearGradient(0,0,W,0);
+                bar.addColorStop(0,"#4ade80");bar.addColorStop(.5,"#facc15");bar.addColorStop(1,"#4ade80");
+                ctx.fillStyle=bar;ctx.fillRect(0,0,W,5);
+
+                let y=50;
+
+                // ref pill
+                ctx.font="bold 20px sans-serif";ctx.fillStyle="rgba(250,204,21,0.13)";
+                const pillW=Math.min(ctx.measureText(refLine).width+60,innerW);
+                ctx.fillRect(PAD,y,pillW,38);
+                ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1.5;ctx.strokeRect(PAD,y,pillW,38);
+                ctx.fillStyle="#facc15";ctx.textBaseline="middle";ctx.textAlign="left";
+                ctx.fillText(refLine,PAD+16,y+19);
+                y+=58;
+
+                // divider
+                const divider=(yy)=>{
+                  ctx.strokeStyle="rgba(250,204,21,0.35)";ctx.lineWidth=1;
+                  ctx.beginPath();ctx.moveTo(PAD,yy);ctx.lineTo(W-PAD,yy);ctx.stroke();
+                  ctx.fillStyle="#facc15";ctx.font="18px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
+                  ctx.fillText("◆",W/2,yy);
+                };
+
+                divider(y);y+=28;
+
+                // sanskrit lines
+                ctx.font=SFONT;ctx.textAlign="center";ctx.textBaseline="top";
+                for(let i=0;i<wrappedSanskrit.length;i++){
+                  ctx.fillStyle=i===0?"#E0ECFF":"rgba(180,210,255,0.85)";
+                  ctx.fillText(wrappedSanskrit[i],W/2,y);y+=46;
+                }
+                y+=10;divider(y);y+=28;
+
+                // hindi lines
+                ctx.font=HFONT;ctx.fillStyle="#fef08a";ctx.textAlign="left";ctx.textBaseline="top";
+                for(const line of hindiLines){ctx.fillText(line,PAD,y);y+=50;}
+                y+=10;divider(y);y+=28;
+
+                // branding
+                ctx.font="bold 22px sans-serif";ctx.fillStyle="#4ade80";ctx.textAlign="left";ctx.textBaseline="middle";
+                ctx.fillText("NITYA",PAD,y+16);
+                ctx.font="15px sans-serif";ctx.fillStyle="rgba(134,239,172,0.55)";
+                ctx.fillText("nitya.app  ·  Daily Sadhana",PAD,y+38);
+                ctx.font="52px sans-serif";ctx.fillStyle="rgba(250,204,21,0.14)";ctx.textAlign="right";
+                ctx.fillText("ॐ",W-PAD,y+28);
+
+                // share
+                canvas.toBlob(async(blob)=>{
+                  if(!blob){showToast("Unable to create card");return;}
+                  const file=new File([blob],"nitya-shlok.png",{type:"image/png"});
+                  try{
+                    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+                      await navigator.share({title:"Nitya · Daily Shlok",files:[file]});
+                    } else {
+                      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nitya-shlok.png";a.click();
+                      showToast("Card saved! 📥");
+                    }
+                  }catch(e){showToast("Sharing cancelled");}
+                },"image/png");
+              }catch(e){showToast("Unable to create card");}
+            }}
             style={{flex:1,background:"linear-gradient(135deg,#1A3A8F,#2D5BE3)",border:"none",borderRadius:18,padding:"13px 10px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,boxShadow:"0 4px 16px rgba(26,58,143,.35)",transition:"transform .15s"}}
             onMouseDown={e=>e.currentTarget.style.transform="scale(.97)"} onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1190,13 +1179,8 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                 ?<div style={{padding:"16px",textAlign:"center",fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,color:"#C4A882"}}>कोई पसंदीदा नहीं। ❤️ से जोड़ें।</div>
                 :favorites.map((f,i)=>(
                   <div key={f.id} style={{padding:"12px 16px",borderTop:i>0?"1px solid rgba(255,165,0,.08)":"none"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010"}}>Bhagavad Gita</span>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,color:"rgba(196,112,16,.4)"}}>·</span>
-                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010"}}>{f.ref?.replace("Gita · ","")}</span>
-                      {f.hi&&<><span style={{fontFamily:"'Syne',sans-serif",fontSize:9,color:"rgba(196,112,16,.4)"}}>·</span><span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:10,fontWeight:600,color:"rgba(196,112,16,.7)"}}>{f.hi}</span></>}
-                    </div>
-                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#3E1800",lineHeight:1.8}}>{f.hindi}</div>
+                    <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#C47010",marginBottom:4}}>{f.grantha} · {f.chapter}</div>
+                    <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:13,fontWeight:600,color:"#3E1800",lineHeight:1.7,whiteSpace:"pre-line"}}>{f.sanskrit}</div>
                     <button onClick={()=>{setFavorites(fv=>fv.filter(x=>x.id!==f.id));showToast("Removed ✓");}} style={{marginTop:6,background:"rgba(255,100,100,.08)",border:"1px solid rgba(255,100,100,.18)",borderRadius:10,padding:"3px 10px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:8,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"#EF4444"}}>Remove</button>
                   </div>
                 ))
@@ -1665,7 +1649,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#4A2800",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>My Sadhana</span>
-        {(()=>{const sl=LEVELS.find(l=>karma>=l.min&&karma<=l.max)||LEVELS[0];const si=LEVELS.indexOf(sl);return(<div style={{background:`linear-gradient(135deg,${sl.color}DD,${sl.color})`,color:"#FFF8E8",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:"1.5px",textTransform:"uppercase",padding:"7px 14px",borderRadius:20,boxShadow:`0 4px 14px ${sl.color}66`}}>Lv.{si+1}</div>);})()}
+        {(()=>{const sl=LEVELS.find(l=>karma>=l.min&&karma<=l.max)||LEVELS[0];const si=LEVELS.indexOf(sl);return(<div style={{background:`linear-gradient(135deg,${sl.color}DD,${sl.color})`,color:"#FFF8E8",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:800,letterSpacing:"1.5px",textTransform:"uppercase",padding:"7px 14px",borderRadius:20,boxShadow:`0 4px 14px ${sl.color}66`}}>Lv.{si+1} · {sl.label}</div>);})()}
       </div>
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
@@ -1901,10 +1885,10 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
   const pct=Math.round((daysDone/108)*100);
 
   const comingSoon=[
-    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",   ico:"🪔",c:"#EF4444"},
-    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना · 108 दिन",ico:"☀️",c:"#F59E0B"},
-    {n:"51-Day Lakshmi Aradhana", h:"लक्ष्मी आराधना · 51 दिन",  ico:"🌸",c:"#EC4899"},
-    {n:"27-Day Gayatri Sadhana",  h:"गायत्री उपासना · 27 दिन",  ico:"🕉️",c:"#A78BFA"},
+    {n:"60-Day Gita Journey",     h:"गीता ज्ञान साधना",    ico:"🪷",c:"#F97316"},
+    {n:"40-Day Hanuman Sadhana",  h:"हनुमान भक्ति · 40 दिन",ico:"🪔",c:"#EF4444"},
+    {n:"30-Day Upanishad Path",   h:"उपनिषद् ज्ञान · 30 दिन",ico:"🌿",c:"#22C55E"},
+    {n:"108-Day Surya Namaskar",  h:"सूर्य नमस्कार साधना",  ico:"☀️",c:"#F59E0B"},
   ];
 
   return(
@@ -2132,7 +2116,7 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
 
         {/* ── COMING SOON JOURNEYS ── */}
         <div style={{padding:"16px 16px 0"}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:"rgba(167,139,250,.45)",marginBottom:10}}>Upcoming Mantra Jaap</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:800,letterSpacing:3,textTransform:"uppercase",color:"rgba(167,139,250,.45)",marginBottom:10}}>More Journeys — Coming Soon</div>
           {comingSoon.map(j=>(
             <div key={j.n} style={{background:"rgba(255,255,255,.025)",borderRadius:20,padding:"13px 15px",display:"flex",alignItems:"center",gap:12,border:"1px solid rgba(255,255,255,.05)",marginBottom:8,opacity:.5}}>
               <div style={{width:44,height:44,borderRadius:14,background:`${j.c}14`,border:`1px solid ${j.c}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{j.ico}</div>
