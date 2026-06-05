@@ -76,6 +76,7 @@ const css = `
   @keyframes todayPulse{0%,100%{box-shadow:0 3px 14px rgba(255,100,0,.4)}50%{box-shadow:0 3px 22px rgba(255,100,0,.75)}}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   @keyframes gradShift{from{background-position:0% 0%}to{background-position:200% 0%}}
+  @keyframes glassShimmer{0%{left:-40%}50%{left:140%}100%{left:140%}}
   @keyframes soundBar0{from{height:3px}to{height:8px}}
   @keyframes soundBar1{from{height:6px}to{height:12px}}
   @keyframes soundBar2{from{height:4px}to{height:10px}}
@@ -829,46 +830,78 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               <div style={{fontFamily:"'Cinzel',serif",fontSize:28,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:2}}>{todayLesson.theme}</div>
               <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(180,210,255,.8)",marginBottom:14}}>{todayLesson.hi}</div>
 
-              {/* ── MUSIC PLAYER ── */}
-              <div style={{background:"rgba(5,15,50,.6)",backdropFilter:"blur(16px)",borderRadius:20,padding:"10px 14px",border:"1px solid rgba(100,150,255,.25)"}}>
-                <div style={{display:"flex",alignItems:"center",gap:12}}>
-                  {/* Play/Pause button */}
+              {/* ── LIQUID GLASS MUSIC PLAYER ── */}
+              <div style={{
+                background:"linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.14) 100%)",
+                backdropFilter:"blur(40px) saturate(180%)",
+                WebkitBackdropFilter:"blur(40px) saturate(180%)",
+                borderRadius:24,
+                padding:"12px 16px",
+                border:"1px solid rgba(255,255,255,.25)",
+                boxShadow:"0 8px 32px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(0,0,0,.1)",
+                position:"relative",
+                overflow:"hidden",
+              }}>
+                {/* Inner light refraction top-left */}
+                <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)",pointerEvents:"none"}}/>
+                {/* Inner shimmer */}
+                <div style={{position:"absolute",top:0,left:"-40%",width:"40%",height:"100%",background:"linear-gradient(105deg,transparent,rgba(255,255,255,.08),transparent)",pointerEvents:"none",animation:playing?"glassShimmer 3s ease-in-out infinite":"none"}}/>
+
+                <div style={{display:"flex",alignItems:"center",gap:12,position:"relative",zIndex:1}}>
+                  {/* Play/Pause — liquid glass button */}
                   <button onClick={()=>{
                     const a=audioRef.current;
                     if(!a)return;
                     if(playing){a.pause();setPlaying(false);}
                     else{a.play();setPlaying(true);}
-                  }} style={{width:40,height:40,borderRadius:"50%",border:"none",cursor:"pointer",flexShrink:0,
-                    background:"linear-gradient(135deg,#3B82F6,#1D4ED8)",
-                    boxShadow:playing?"0 0 20px rgba(59,130,246,.7)":"0 4px 14px rgba(59,130,246,.4)",
+                  }} style={{
+                    width:44,height:44,borderRadius:"50%",border:"none",cursor:"pointer",flexShrink:0,
+                    background:"linear-gradient(145deg,rgba(255,255,255,.35),rgba(255,255,255,.1))",
+                    backdropFilter:"blur(20px)",
+                    boxShadow:playing
+                      ?"0 0 0 1px rgba(255,255,255,.4), 0 4px 20px rgba(59,130,246,.5), inset 0 1px 0 rgba(255,255,255,.5)"
+                      :"0 0 0 1px rgba(255,255,255,.3), 0 4px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.4)",
                     display:"flex",alignItems:"center",justifyContent:"center",
-                    transition:"all .2s",transform:playing?"scale(1.05)":"scale(1)"}}>
+                    transition:"all .2s",transform:playing?"scale(1.08)":"scale(1)"}}>
                     {playing
-                      ? <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="2" y="1" width="4" height="12" rx="1.5"/><rect x="8" y="1" width="4" height="12" rx="1.5"/></svg>
-                      : <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><path d="M3 1.5L13 7L3 12.5V1.5Z"/></svg>
+                      ?<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><rect x="1.5" y="1" width="3.5" height="11" rx="1.5"/><rect x="8" y="1" width="3.5" height="11" rx="1.5"/></svg>
+                      :<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><path d="M3 1L12 6.5L3 12V1Z"/></svg>
                     }
                   </button>
+
                   {/* Track info + progress */}
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:5}}>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(180,210,255,.9)",letterSpacing:.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>🎵 Hare Krishna Bhajan</div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(255,255,255,.92)",letterSpacing:.5}}>Hare Krishna Bhajan</div>
                       {playing&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
-                        {[4,7,5,8,4].map((h,i)=>(
-                          <div key={i} style={{width:2,borderRadius:2,background:"#60A5FA",
-                            height:h,animation:`soundBar${i} .8s ease-in-out infinite alternate`,
-                            animationDelay:`${i*0.15}s`}}/>
+                        {[0,1,2,3,4].map(i=>(
+                          <div key={i} style={{width:2.5,borderRadius:2,background:"rgba(255,255,255,.75)",
+                            animation:`soundBar${i} .7s ease-in-out infinite alternate`,
+                            animationDelay:`${i*0.12}s`}}/>
                         ))}
                       </div>}
                     </div>
-                    {/* Progress bar */}
-                    <div style={{height:3,background:"rgba(100,150,255,.2)",borderRadius:4,overflow:"hidden",cursor:"pointer"}}
+                    {/* Progress track */}
+                    <div style={{position:"relative",height:4,borderRadius:4,
+                      background:"rgba(255,255,255,.15)",
+                      boxShadow:"inset 0 1px 2px rgba(0,0,0,.2)",
+                      cursor:"pointer"}}
                       onClick={e=>{
                         const rect=e.currentTarget.getBoundingClientRect();
                         const pct=(e.clientX-rect.left)/rect.width;
                         const a=audioRef.current;
                         if(a){a.currentTime=Math.min(pct*316,316);setProgress(pct*100);}
                       }}>
-                      <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#60A5FA,#93C5FD)",borderRadius:4,transition:"width .3s linear"}}/>
+                      <div style={{height:"100%",width:`${progress}%`,borderRadius:4,
+                        background:"linear-gradient(90deg,rgba(255,255,255,.85),rgba(255,255,255,.6))",
+                        boxShadow:"0 0 6px rgba(255,255,255,.4)",
+                        transition:"width .3s linear",position:"relative"}}>
+                        {/* Thumb dot */}
+                        <div style={{position:"absolute",right:-4,top:"50%",transform:"translateY(-50%)",
+                          width:8,height:8,borderRadius:"50%",
+                          background:"white",
+                          boxShadow:"0 1px 4px rgba(0,0,0,.3)"}}/>
+                      </div>
                     </div>
                   </div>
                 </div>
