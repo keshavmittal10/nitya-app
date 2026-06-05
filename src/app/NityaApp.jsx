@@ -76,6 +76,11 @@ const css = `
   @keyframes todayPulse{0%,100%{box-shadow:0 3px 14px rgba(255,100,0,.4)}50%{box-shadow:0 3px 22px rgba(255,100,0,.75)}}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   @keyframes gradShift{from{background-position:0% 0%}to{background-position:200% 0%}}
+  @keyframes soundBar0{from{height:3px}to{height:8px}}
+  @keyframes soundBar1{from{height:6px}to{height:12px}}
+  @keyframes soundBar2{from{height:4px}to{height:10px}}
+  @keyframes soundBar3{from{height:7px}to{height:14px}}
+  @keyframes soundBar4{from{height:3px}to{height:8px}}
   @keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
   @keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.1);opacity:1}}
   @keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -741,6 +746,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
   const [toast,setToast]=useState("");
   const [showShareCard,setShowShareCard]=useState(false);
   const shareCardRef=useRef(null);
+  const [playing,setPlaying]=useState(false);
+  const [progress,setProgress]=useState(0);
+  const audioRef=useRef(null);
 
   // Journey starts from user's personal joinDate (Day 1 = their signup day)
   const JOURNEY_START = joinDate ? new Date(joinDate).getTime() : Date.now();
@@ -792,6 +800,10 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
         {/* Krishna image card */}
         <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(26,58,143,.25)",border:"1px solid rgba(100,150,255,.25)",position:"relative"}}>
+          {/* Hidden audio element */}
+          <audio ref={audioRef} src="/hare-krishna.mp3" loop
+            onTimeUpdate={()=>{const a=audioRef.current;if(a&&a.duration)setProgress(a.currentTime/a.duration*100);}}
+            onEnded={()=>setPlaying(false)}/>
           <div style={{height:3,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#1D4ED8,#3B82F6,#60A5FA)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
           <div style={{position:"relative",width:"100%"}}>
             <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",height:380,objectPosition:"center top"}}/>
@@ -808,9 +820,54 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
               </div>
             </div>
             {/* Theme overlay at bottom */}
-            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"22px 22px 26px",textAlign:"center"}}>
-              <div style={{fontFamily:"'Cinzel',serif",fontSize:28,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:4}}>{todayLesson.theme}</div>
-              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(180,210,255,.8)"}}>{todayLesson.hi}</div>
+            <div style={{position:"absolute",bottom:0,left:0,right:0,padding:"16px 22px 20px",textAlign:"center"}}>
+              <div style={{fontFamily:"'Cinzel',serif",fontSize:28,fontWeight:700,color:"#BAD4FF",lineHeight:1.1,textShadow:"0 2px 20px rgba(59,130,246,.5)",marginBottom:2}}>{todayLesson.theme}</div>
+              <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:18,fontWeight:600,color:"rgba(180,210,255,.8)",marginBottom:14}}>{todayLesson.hi}</div>
+
+              {/* ── MUSIC PLAYER ── */}
+              <div style={{background:"rgba(5,15,50,.6)",backdropFilter:"blur(16px)",borderRadius:20,padding:"10px 14px",border:"1px solid rgba(100,150,255,.25)"}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}>
+                  {/* Play/Pause button */}
+                  <button onClick={()=>{
+                    const a=audioRef.current;
+                    if(!a)return;
+                    if(playing){a.pause();setPlaying(false);}
+                    else{a.play();setPlaying(true);}
+                  }} style={{width:40,height:40,borderRadius:"50%",border:"none",cursor:"pointer",flexShrink:0,
+                    background:"linear-gradient(135deg,#3B82F6,#1D4ED8)",
+                    boxShadow:playing?"0 0 20px rgba(59,130,246,.7)":"0 4px 14px rgba(59,130,246,.4)",
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    transition:"all .2s",transform:playing?"scale(1.05)":"scale(1)"}}>
+                    {playing
+                      ? <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><rect x="2" y="1" width="4" height="12" rx="1.5"/><rect x="8" y="1" width="4" height="12" rx="1.5"/></svg>
+                      : <svg width="14" height="14" viewBox="0 0 14 14" fill="white"><path d="M3 1.5L13 7L3 12.5V1.5Z"/></svg>
+                    }
+                  </button>
+                  {/* Track info + progress */}
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:5}}>
+                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(180,210,255,.9)",letterSpacing:.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>🎵 Hare Krishna Bhajan</div>
+                      {playing&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
+                        {[4,7,5,8,4].map((h,i)=>(
+                          <div key={i} style={{width:2,borderRadius:2,background:"#60A5FA",
+                            height:h,animation:`soundBar${i} .8s ease-in-out infinite alternate`,
+                            animationDelay:`${i*0.15}s`}}/>
+                        ))}
+                      </div>}
+                    </div>
+                    {/* Progress bar */}
+                    <div style={{height:3,background:"rgba(100,150,255,.2)",borderRadius:4,overflow:"hidden",cursor:"pointer"}}
+                      onClick={e=>{
+                        const rect=e.currentTarget.getBoundingClientRect();
+                        const pct=(e.clientX-rect.left)/rect.width;
+                        const a=audioRef.current;
+                        if(a&&a.duration){a.currentTime=pct*a.duration;setProgress(pct*100);}
+                      }}>
+                      <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#60A5FA,#93C5FD)",borderRadius:4,transition:"width .3s linear"}}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
