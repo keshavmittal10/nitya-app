@@ -801,9 +801,14 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
         {/* Krishna image card */}
         <div style={{margin:"0 16px",borderRadius:26,overflow:"hidden",boxShadow:"0 16px 48px rgba(26,58,143,.25)",border:"1px solid rgba(100,150,255,.25)",position:"relative"}}>
           {/* Hidden audio element */}
-          <audio ref={audioRef} src="/hare-krishna.mp3" loop
-            onTimeUpdate={()=>{const a=audioRef.current;if(a&&a.duration)setProgress(a.currentTime/a.duration*100);}}
-            onEnded={()=>setPlaying(false)}/>
+          <audio ref={audioRef} src="/hare-krishna.mp3"
+            onTimeUpdate={()=>{
+              const a=audioRef.current;
+              if(!a)return;
+              if(a.currentTime>=316){a.pause();a.currentTime=0;setPlaying(false);setProgress(0);return;}
+              if(a.duration)setProgress(a.currentTime/316*100);
+            }}
+            onEnded={()=>{setPlaying(false);setProgress(0);}}/>
           <div style={{height:3,background:"linear-gradient(90deg,#60A5FA,#3B82F6,#1D4ED8,#3B82F6,#60A5FA)",backgroundSize:"200% 100%",animation:"gradShift 4s linear infinite"}}/>
           <div style={{position:"relative",width:"100%"}}>
             <img src="/krishna-vishwarup.jpg" alt="Shri Krishna" style={{width:"100%",display:"block",objectFit:"cover",height:380,objectPosition:"center top"}}/>
@@ -861,7 +866,7 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
                         const rect=e.currentTarget.getBoundingClientRect();
                         const pct=(e.clientX-rect.left)/rect.width;
                         const a=audioRef.current;
-                        if(a&&a.duration){a.currentTime=pct*a.duration;setProgress(pct*100);}
+                        if(a){a.currentTime=Math.min(pct*316,316);setProgress(pct*100);}
                       }}>
                       <div style={{height:"100%",width:`${progress}%`,background:"linear-gradient(90deg,#60A5FA,#93C5FD)",borderRadius:4,transition:"width .3s linear"}}/>
                     </div>
