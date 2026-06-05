@@ -2423,40 +2423,16 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
     color:"#F97316",glow:"rgba(249,115,22,.35)",
   }));
 
-  // 2. Om Chanter — single badge, 108 mantra days
-  const omChanter=[{
-    ico:"🕉",n:"Om Chanter",
-    desc:"108-day Maha Mrityunjaya",
-    e:mantaDays>=108,
+  // 2. Om Chanter — 9-day level cards up to 108
+  const omChanter=Array.from({length:12},(_,i)=>i+1).map(n=>({
+    ico:"🕉",n:`Om Chanter${n===1?"":`-${n}`}`,
+    desc:`${n*9} mantra days`,
+    e:mantaDays>=(n*9),
     color:"#A78BFA",glow:"rgba(167,139,250,.35)",
-  }];
-
-  // 3. Maharishi — single badge, 10000 karma
-  const maharishiBadge=[{
-    ico:"👑",n:"Maharishi",
-    desc:"10,000 Karma Points",
-    e:karma>=10000,
-    color:"#DC2626",glow:"rgba(220,38,38,.35)",
-  }];
-
-  // 4. Night Yogi — single badge, evening prayer 7 days
-  const nightYogi=[{
-    ico:"🌙",n:"Night Yogi",
-    desc:"Evening prayer 7 days",
-    e:nightPrayerDays>=7,
-    color:"#2563EB",glow:"rgba(37,99,235,.35)",
-  }];
-
-  // 5. Tapasvi series — 1–12 months regular completion
-  const tapasviSeries=Array.from({length:12},(_,i)=>i+1).map(m=>({
-    ico:"✨",n:`Tapasvi-${m}`,
-    desc:`${m} month${m>1?"s":""} regular`,
-    e:bhaktDays>=(m*30),
-    color:"#7C3AED",glow:"rgba(124,58,237,.35)",
   }));
 
-  // 6. Gyani series — 1,50,100,150…500 shlokas
-  const gyaniThresholds=[1,...Array.from({length:10},(_,i)=>(i+1)*50)];
+  // 3. Gyani series — 1,10,20...100 shlokas
+  const gyaniThresholds=[1,...Array.from({length:10},(_,i)=>(i+1)*10)];
   const gyaniSeries=gyaniThresholds.map(s=>({
     ico:"📖",n:s===1?"Gyani-1":`Gyani-${s}`,
     desc:`${s} shloka${s>1?"s":""} read`,
@@ -2464,22 +2440,19 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
     color:"#059669",glow:"rgba(5,150,105,.35)",
   }));
 
-  // 7. Bhakt — single badge, 60 day regular completion
-  const bhaktBadge=[{
-    ico:"🙏",n:"Bhakt",
-    desc:"60 days regular",
-    e:bhaktDays>=60,
+  // 4. Bhakt — 3-day series up to 60 days (20 levels)
+  const bhaktSeries=Array.from({length:20},(_,i)=>i+1).map(n=>({
+    ico:"🙏",n:`Bhakti-${n}`,
+    desc:`${n*3} days of prayer`,
+    e:bhaktDays>=(n*3),
     color:"#DB2777",glow:"rgba(219,39,119,.35)",
-  }];
+  }));
 
   const BADGE_GROUPS=[
     {title:"🔥 Tapasya",sub:"Daily streak milestones",badges:tapasyaSeries},
     {title:"🕉 Om Chanter",sub:"108-day mantra journey",badges:omChanter},
-    {title:"👑 Maharishi",sub:"10,000 karma points",badges:maharishiBadge},
-    {title:"🌙 Night Yogi",sub:"Evening prayer discipline",badges:nightYogi},
-    {title:"✨ Tapasvi",sub:"Monthly commitment",badges:tapasviSeries},
     {title:"📖 Gyani",sub:"Shloka reading milestones",badges:gyaniSeries},
-    {title:"🙏 Bhakt",sub:"60 days of devotion",badges:bhaktBadge},
+    {title:"🙏 Bhakti",sub:"Days of regular prayer",badges:bhaktSeries},
   ];
 
   return(
@@ -2586,7 +2559,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
               return(
                 <div key={i} style={{
                   flexShrink:0,
-                  width:72,
+                  width:80,
                   borderRadius:18,
                   padding:"12px 6px",
                   display:"flex",
@@ -2606,7 +2579,7 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
                   {/* current pulse ring */}
                   {isCurrent&&<div style={{position:"absolute",inset:0,borderRadius:18,border:`2px solid ${l.color}`,animation:"pulse 2s ease-in-out infinite",pointerEvents:"none"}}/>}
                   <div style={{fontSize:18}}>{unlocked?emoji:"🔒"}</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:7.5,fontWeight:800,letterSpacing:.4,textTransform:"uppercase",textAlign:"center",color:isCurrent?"white":unlocked?l.color:"#C4B8A8",lineHeight:1.25}}>{l.label}</div>
+                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:7,fontWeight:800,letterSpacing:.3,textTransform:"uppercase",textAlign:"center",color:isCurrent?"white":unlocked?l.color:"#C4B8A8",lineHeight:1.3,wordBreak:"break-word",width:"100%",padding:"0 2px"}}>{l.label}</div>
                   <div style={{fontFamily:"'Cinzel',serif",fontSize:9,fontWeight:700,color:isCurrent?"rgba(255,255,255,.8)":unlocked?l.color+"99":"rgba(180,140,80,.35)",letterSpacing:.5}}>Lv.{i+1}</div>
                   {isCurrent&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:6.5,fontWeight:700,letterSpacing:.5,textTransform:"uppercase",color:"rgba(255,255,255,.85)",background:"rgba(255,255,255,.2)",borderRadius:8,padding:"2px 6px",marginTop:1}}>Current</div>}
                 </div>
