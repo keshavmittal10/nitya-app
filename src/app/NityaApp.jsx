@@ -871,8 +871,8 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
 
                   {/* Track info + progress */}
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(255,255,255,.92)",letterSpacing:.5}}>Hare Krishna Bhajan</div>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                      <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,color:"rgba(255,255,255,.92)",letterSpacing:.5}}>Hare Krishna Mantra</div>
                       {playing&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
                         {[0,1,2,3,4].map(i=>(
                           <div key={i} style={{width:2.5,borderRadius:2,background:"rgba(255,255,255,.75)",
