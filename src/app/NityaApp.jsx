@@ -1425,6 +1425,9 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
   const [sel,setSel]=useState(todayIdx);
   const [tathastu,setTathastu]=useState(false);
   const [toast,setToast]=useState("");
+  const [pPlaying,setPPlaying]=useState(false);
+  const [pProgress,setPProgress]=useState(0);
+  const pAudioRef=useRef(null);
   const day=FULL_DAYS[sel];
   const pick=(i)=>{setSel(i);};
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
@@ -1475,6 +1478,73 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:`1px solid ${day.color}22`,boxShadow:`0 3px 14px ${day.color}12`}}>
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:800,letterSpacing:.5,color:`${day.color}99`,marginBottom:10}}>🙏 आरती विधि</div>
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:day.darkText||"#2D1200",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार अपनी मधुर वाणी से श्रद्धापूर्वक इस आरती का उच्चारण करें। आरती पूर्ण होने पर ✓ दबाएं।</p>
+        </div>
+
+        {/* ── BHAJAN AUDIO PLAYER ── */}
+        <audio ref={pAudioRef} src="/hare-krishna-prarthana.mp3"
+          onTimeUpdate={()=>{const a=pAudioRef.current;if(a&&a.duration)setPProgress(a.currentTime/a.duration*100);}}
+          onEnded={()=>{setPPlaying(false);setPProgress(0);}}/>
+        <div style={{margin:"10px 16px 0",
+          background:`linear-gradient(135deg,${day.color}22 0%,${day.color}0a 50%,${day.color}18 100%)`,
+          backdropFilter:"blur(40px) saturate(180%)",
+          WebkitBackdropFilter:"blur(40px) saturate(180%)",
+          borderRadius:22,padding:"13px 16px",
+          border:`1px solid ${day.color}44`,
+          boxShadow:`0 8px 32px ${day.color}22, inset 0 1px 0 rgba(255,255,255,.35), inset 0 -1px 0 rgba(0,0,0,.06)`,
+          position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent)",pointerEvents:"none"}}/>
+          <div style={{position:"absolute",top:0,left:"-40%",width:"40%",height:"100%",background:"linear-gradient(105deg,transparent,rgba(255,255,255,.08),transparent)",pointerEvents:"none",animation:pPlaying?"glassShimmer 3s ease-in-out infinite":"none"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:12,position:"relative",zIndex:1}}>
+            {/* Play/Pause */}
+            <button onClick={()=>{
+              const a=pAudioRef.current;if(!a)return;
+              if(pPlaying){a.pause();setPPlaying(false);}
+              else{a.play();setPPlaying(true);}
+            }} style={{width:44,height:44,borderRadius:"50%",border:"none",cursor:"pointer",flexShrink:0,
+              background:`linear-gradient(145deg,${day.color}55,${day.color}22)`,
+              backdropFilter:"blur(20px)",
+              boxShadow:pPlaying
+                ?`0 0 0 1px ${day.color}88, 0 4px 20px ${day.color}55, inset 0 1px 0 rgba(255,255,255,.4)`
+                :`0 0 0 1px ${day.color}44, 0 4px 12px ${day.color}33, inset 0 1px 0 rgba(255,255,255,.3)`,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              transition:"all .2s",transform:pPlaying?"scale(1.08)":"scale(1)"}}>
+              {pPlaying
+                ?<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><rect x="1.5" y="1" width="3.5" height="11" rx="1.5"/><rect x="8" y="1" width="3.5" height="11" rx="1.5"/></svg>
+                :<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><path d="M3 1L12 6.5L3 12V1Z"/></svg>
+              }
+            </button>
+            {/* Info + progress */}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:11,fontWeight:700,color:day.darkText||"#2D1200",letterSpacing:.3}}>🎵 हरे कृष्ण भजन</div>
+                {pPlaying&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
+                  {[0,1,2,3,4].map(i=>(
+                    <div key={i} style={{width:2.5,borderRadius:2,background:day.color,opacity:.7,
+                      animation:`soundBar${i} .7s ease-in-out infinite alternate`,
+                      animationDelay:`${i*0.12}s`}}/>
+                  ))}
+                </div>}
+              </div>
+              <div style={{position:"relative",height:4,borderRadius:4,
+                background:`${day.color}22`,
+                boxShadow:"inset 0 1px 2px rgba(0,0,0,.1)",cursor:"pointer"}}
+                onClick={e=>{
+                  const rect=e.currentTarget.getBoundingClientRect();
+                  const pct=(e.clientX-rect.left)/rect.width;
+                  const a=pAudioRef.current;
+                  if(a&&a.duration){a.currentTime=pct*a.duration;setPProgress(pct*100);}
+                }}>
+                <div style={{height:"100%",width:`${pProgress}%`,borderRadius:4,
+                  background:`linear-gradient(90deg,${day.color},${day.color}99)`,
+                  boxShadow:`0 0 6px ${day.color}66`,
+                  transition:"width .3s linear",position:"relative"}}>
+                  <div style={{position:"absolute",right:-4,top:"50%",transform:"translateY(-50%)",
+                    width:8,height:8,borderRadius:"50%",background:day.color,
+                    boxShadow:`0 1px 4px ${day.color}88`}}/>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         {/* Section label */}
         <div style={{padding:"14px 22px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
