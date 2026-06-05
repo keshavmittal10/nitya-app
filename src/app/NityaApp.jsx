@@ -1956,6 +1956,9 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
 /* ── ANUSHTHAN ── */
 function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone=false,setMantaDone,tasksDone={shlok:false,aarti:false,mantra:false},setTasksDone}){
   const [toast,setToast]=useState("");
+  const [mPlaying,setMPlaying]=useState(false);
+  const [mProgress,setMProgress]=useState(0);
+  const mAudioRef=useRef(null);
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
   const daysDone=mantaDays;
 
@@ -2009,6 +2012,76 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
         <div style={{margin:"14px 16px 0",background:"rgba(255,255,255,.04)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(167,139,250,.15)"}}>
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:14,fontWeight:800,letterSpacing:.5,color:"rgba(167,139,250,.8)",marginBottom:10}}>⚡ मंत्र साधना</div>
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:16,fontWeight:500,color:"rgba(220,200,255,.85)",lineHeight:1.9,margin:0}}>शांत मन से बैठें, आँखें बंद करें। एक बार पूरे भाव से महामृत्युञ्जय मंत्र का जाप करें। मंत्र पूर्ण होने पर ✓ दबाएं।</p>
+        </div>
+
+        {/* ── MANTRA AUDIO PLAYER ── */}
+        <audio ref={mAudioRef} src="/mahamrityunjaya.mp3"
+          onTimeUpdate={()=>{const a=mAudioRef.current;if(a&&a.duration)setMProgress(a.currentTime/a.duration*100);}}
+          onEnded={()=>{setMPlaying(false);setMProgress(0);}}/>
+        <div style={{margin:"10px 16px 0",
+          background:"linear-gradient(135deg,rgba(167,139,250,.18) 0%,rgba(124,58,237,.08) 50%,rgba(167,139,250,.14) 100%)",
+          backdropFilter:"blur(40px) saturate(180%)",
+          WebkitBackdropFilter:"blur(40px) saturate(180%)",
+          borderRadius:22,padding:"13px 16px",
+          border:"1px solid rgba(167,139,250,.35)",
+          boxShadow:"0 8px 32px rgba(124,58,237,.2), inset 0 1px 0 rgba(255,255,255,.2), inset 0 -1px 0 rgba(0,0,0,.1)",
+          position:"relative",overflow:"hidden"}}>
+          {/* Top highlight */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)",pointerEvents:"none"}}/>
+          {/* Shimmer */}
+          <div style={{position:"absolute",top:0,left:"-40%",width:"40%",height:"100%",background:"linear-gradient(105deg,transparent,rgba(255,255,255,.07),transparent)",pointerEvents:"none",animation:mPlaying?"glassShimmer 3s ease-in-out infinite":"none"}}/>
+          <div style={{display:"flex",alignItems:"center",gap:12,position:"relative",zIndex:1}}>
+            {/* Play/Pause */}
+            <button onClick={()=>{
+              const a=mAudioRef.current;if(!a)return;
+              if(mPlaying){a.pause();setMPlaying(false);}
+              else{a.play();setMPlaying(true);}
+            }} style={{width:44,height:44,borderRadius:"50%",border:"none",cursor:"pointer",flexShrink:0,
+              background:"linear-gradient(145deg,rgba(167,139,250,.45),rgba(124,58,237,.25))",
+              backdropFilter:"blur(20px)",
+              boxShadow:mPlaying
+                ?"0 0 0 1px rgba(167,139,250,.6), 0 4px 20px rgba(124,58,237,.5), inset 0 1px 0 rgba(255,255,255,.4)"
+                :"0 0 0 1px rgba(167,139,250,.35), 0 4px 12px rgba(124,58,237,.3), inset 0 1px 0 rgba(255,255,255,.3)",
+              display:"flex",alignItems:"center",justifyContent:"center",
+              transition:"all .2s",transform:mPlaying?"scale(1.08)":"scale(1)"}}>
+              {mPlaying
+                ?<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><rect x="1.5" y="1" width="3.5" height="11" rx="1.5"/><rect x="8" y="1" width="3.5" height="11" rx="1.5"/></svg>
+                :<svg width="13" height="13" viewBox="0 0 13 13" fill="rgba(255,255,255,.95)"><path d="M3 1L12 6.5L3 12V1Z"/></svg>
+              }
+            </button>
+            {/* Info + progress */}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:11,fontWeight:700,color:"rgba(220,200,255,.95)",letterSpacing:.3}}>महामृत्युञ्जय मंत्र</div>
+                {mPlaying&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
+                  {[0,1,2,3,4].map(i=>(
+                    <div key={i} style={{width:2.5,borderRadius:2,background:"rgba(196,181,253,.85)",
+                      animation:`soundBar${i} .7s ease-in-out infinite alternate`,
+                      animationDelay:`${i*0.12}s`}}/>
+                  ))}
+                </div>}
+              </div>
+              {/* Progress */}
+              <div style={{position:"relative",height:4,borderRadius:4,
+                background:"rgba(167,139,250,.2)",
+                boxShadow:"inset 0 1px 2px rgba(0,0,0,.2)",cursor:"pointer"}}
+                onClick={e=>{
+                  const rect=e.currentTarget.getBoundingClientRect();
+                  const pct=(e.clientX-rect.left)/rect.width;
+                  const a=mAudioRef.current;
+                  if(a&&a.duration){a.currentTime=pct*a.duration;setMProgress(pct*100);}
+                }}>
+                <div style={{height:"100%",width:`${mProgress}%`,borderRadius:4,
+                  background:"linear-gradient(90deg,#A78BFA,#C4B5FD)",
+                  boxShadow:"0 0 6px rgba(167,139,250,.5)",
+                  transition:"width .3s linear",position:"relative"}}>
+                  <div style={{position:"absolute",right:-4,top:"50%",transform:"translateY(-50%)",
+                    width:8,height:8,borderRadius:"50%",background:"#E9D5FF",
+                    boxShadow:"0 1px 4px rgba(124,58,237,.4)"}}/>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── MAIN MANTRA CARD ── */}
