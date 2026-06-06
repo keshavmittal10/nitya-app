@@ -1445,6 +1445,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
     5:"लक्ष्मी कृपा प्रार्थना",
     6:"शनि देव शरण",
   };
+  const DAY_AUDIO={
     0:"/Surya_Dev_Chant.mp3",
     1:"/Sharan_Mein_Lo_Mahadev.mp3",
     2:"/Hanuman_Bal_Aur_Raksha_Chant.mp3",
