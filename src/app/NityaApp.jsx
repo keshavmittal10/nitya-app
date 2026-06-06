@@ -1436,7 +1436,15 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
   };
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
-  const DAY_AUDIO={
+  const DAY_SONG_TITLE={
+    0:"सूर्य देव प्रार्थना",
+    1:"शरण में लो महादेव",
+    2:"हनुमान बल और रक्षा",
+    3:"गणपति बप्पा मोरया",
+    4:"हरे का सहारा",
+    5:"लक्ष्मी कृपा प्रार्थना",
+    6:"शनि देव शरण",
+  };
     0:"/Surya_Dev_Chant.mp3",
     1:"/Sharan_Mein_Lo_Mahadev.mp3",
     2:"/Hanuman_Bal_Aur_Raksha_Chant.mp3",
@@ -1529,7 +1537,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
             {/* Info + progress */}
             <div style={{flex:1,minWidth:0}}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:11,fontWeight:700,color:day.darkText||"#2D1200",letterSpacing:.3}}>🎵 हरे कृष्ण भजन</div>
+                <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:11,fontWeight:700,color:day.darkText||"#2D1200",letterSpacing:.3}}>🎵 {DAY_SONG_TITLE[sel]||"भजन"}</div>
                 {pPlaying&&<div style={{display:"flex",gap:2,alignItems:"flex-end",flexShrink:0}}>
                   {[0,1,2,3,4].map(i=>(
                     <div key={i} style={{width:2.5,borderRadius:2,background:day.color,opacity:.7,
