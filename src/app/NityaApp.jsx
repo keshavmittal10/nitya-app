@@ -2627,23 +2627,21 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
                     <div key={bi} style={{
                       flexShrink:0,
                       width:total===1?320:80,
-                      background:"white",
+                      background:b.e?`${b.color}12`:"rgba(200,160,80,.04)",
                       borderRadius:18,
                       padding:total===1?"14px 18px":"14px 8px",
                       display:"flex",
                       flexDirection:total===1?"row":"column",
                       alignItems:"center",
                       gap:total===1?14:5,
-                      boxShadow:b.e?`0 4px 16px ${b.color}22`:"0 2px 8px rgba(180,80,0,.05)",
-                      border:`1.5px solid ${b.e?b.color+"35":"rgba(200,160,80,.08)"}`,
-                      opacity:b.e?1:.3,
+                      boxShadow:b.e?`0 4px 16px ${b.color}18`:"none",
+                      border:`1.5px solid ${b.e?b.color+"40":"rgba(200,160,80,.08)"}`,
+                      opacity:b.e?1:.35,
                       position:"relative",overflow:"hidden",
                       transition:"all .2s",
                     }}>
                       {/* earned top bar */}
-                      {b.e&&<div style={{position:"absolute",top:0,left:0,right:0,height:2.5,background:`linear-gradient(90deg,${b.color},${b.color}88)`}}/>}
-                      {/* glow for earned */}
-                      {b.e&&<div style={{position:"absolute",top:-20,left:"50%",transform:"translateX(-50%)",width:60,height:60,background:`radial-gradient(circle,${b.glow} 0%,transparent 70%)`,pointerEvents:"none"}}/>}
+                      {b.e&&<div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${b.color}cc,${b.color}55,${b.color}cc)`}}/>}
                       <div style={{fontSize:total===1?28:22,flexShrink:0}}>{b.ico}</div>
                       <div style={{flex:total===1?1:undefined}}>
                         <div style={{fontFamily:"'Syne',sans-serif",fontSize:total===1?11:8,fontWeight:800,letterSpacing:.5,textAlign:total===1?"left":"center",textTransform:"uppercase",color:b.e?b.color:"#C4B8A8",lineHeight:1.2}}>{b.n}</div>
