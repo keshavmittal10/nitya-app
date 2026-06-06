@@ -1429,10 +1429,22 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
   const [pProgress,setPProgress]=useState(0);
   const pAudioRef=useRef(null);
   const day=FULL_DAYS[sel];
-  const pick=(i)=>{setSel(i);};
+  const pick=(i)=>{
+    setSel(i);
+    if(pAudioRef.current){pAudioRef.current.pause();pAudioRef.current.currentTime=0;}
+    setPPlaying(false);setPProgress(0);
+  };
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
-  const completeAarti=()=>{
+  const DAY_AUDIO={
+    0:"/Surya_Dev_Chant.m4a",
+    1:"/Sharan_Mein_Lo_Mahadev.m4a",
+    2:"/Hanuman_Bal_Aur_Raksha_Chant.m4a",
+    3:"/Ganpati_Bappa_Morya.m4a",
+    4:"/Hare_Ka_Sahara.m4a",
+    5:"/Lakshmi_Kripa_Prarthana.m4a",
+    6:"/Shani_Dev_Sharan_Chant.m4a",
+  };
     if(tasksDone.aarti) return;
     if(setTasksDone) setTasksDone({...tasksDone,aarti:true});
     if(setKarma) setKarma(k=>k+30);
@@ -1481,7 +1493,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         </div>
 
         {/* ── BHAJAN AUDIO PLAYER ── */}
-        <audio ref={pAudioRef} src="/hare-krishna-prarthana.mp3"
+        <audio ref={pAudioRef} src={DAY_AUDIO[sel]||"/Surya_Dev_Chant.m4a"}
           onTimeUpdate={()=>{const a=pAudioRef.current;if(a&&a.duration)setPProgress(a.currentTime/a.duration*100);}}
           onEnded={()=>{setPPlaying(false);setPProgress(0);}}/>
         <div style={{margin:"10px 16px 0",
@@ -1739,6 +1751,14 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   ];
   const tasks=TASK_DEFS.map(t=>({...t,done:!!tasksDone[t.id]}));
 
+  // Helper: get local date string YYYY-MM-DD (avoids UTC timezone issues for IST)
+  const getLocalDateStr = (d=new Date()) => {
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  };
+
   // Real week tracking using actual completion dates
   const todayDate = new Date();
   const todayDayJS = todayDate.getDay(); // 0=Sun,1=Mon..6=Sat
@@ -1758,10 +1778,10 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
   const weekDates = Array.from({length:7},(_,i)=>{
     const d = new Date(monday);
     d.setDate(monday.getDate()+i);
-    return d.toISOString().split("T")[0];
+    return getLocalDateStr(d);
   });
 
-  const todayStr = todayDate.toISOString().split("T")[0];
+  const todayStr = getLocalDateStr();
   const todayAllDone = tasksDone.shlok && tasksDone.aarti && tasksDone.mantra;
 
   const days=[{l:"Mon"},{l:"Tue"},{l:"Wed"},{l:"Thu"},{l:"Fri"},{l:"Sat"},{l:"Sun"}].map((d,i)=>{
@@ -1788,10 +1808,12 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
     if(id==="mantra"&&setMantaDone) setMantaDone(true);
     const allDone=TASK_DEFS.every(t=>nextDone[t.id]);
     const wasDone=TASK_DEFS.every(t=>tasksDone[t.id]);
-    if(allDone&&!wasDone){
+    const todayStr=getLocalDateStr();
+    const alreadyCounted=completedDates.includes(todayStr);
+    if(allDone&&!wasDone&&!alreadyCounted){
       if(setTapasyaDays) setTapasyaDays(d=>d+1);
       if(setBhaktDays) setBhaktDays(d=>d+1);
-      if(addCompletedDate) addCompletedDate(new Date().toISOString().split("T")[0]);
+      if(addCompletedDate) addCompletedDate(todayStr);
       showToast("🎉 Sadhana Complete! +15 Streak");
     }
     if(!user) showToast("🔐 Sign in to save your progress!");
@@ -1856,7 +1878,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
         {/* ── STATS — Tapasya replaces Streak ── */}
         <div style={{display:"flex",gap:10,padding:"12px 18px 0"}}>
           {[
-            {ico:"🔥",val:String(tapasyaDays),lbl:"Tapasya"},
+            {ico:"🔥",val:String(completedDates.length),lbl:"Tapasya"},
             {ico:"📖",val:String(shlokaCount),lbl:"Shlokas Read"},
           ].map(s=>(
             <div key={s.lbl} style={{flex:1,background:"white",borderRadius:20,padding:"14px 8px",display:"flex",flexDirection:"column",alignItems:"center",gap:5,boxShadow:"0 4px 16px rgba(93,50,0,.08)",border:"1.5px solid rgba(255,165,0,.12)"}}>
