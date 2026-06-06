@@ -1437,13 +1437,13 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
   const showToast=(m)=>{setToast(m);setTimeout(()=>setToast(""),2800);};
 
   const DAY_AUDIO={
-    0:"/Surya_Dev_Chant.m4a",
-    1:"/Sharan_Mein_Lo_Mahadev.m4a",
-    2:"/Hanuman_Bal_Aur_Raksha_Chant.m4a",
-    3:"/Ganpati_Bappa_Morya.m4a",
-    4:"/Hare_Ka_Sahara.m4a",
-    5:"/Lakshmi_Kripa_Prarthana.m4a",
-    6:"/Shani_Dev_Sharan_Chant.m4a",
+    0:"/Surya_Dev_Chant.mp3",
+    1:"/Sharan_Mein_Lo_Mahadev.mp3",
+    2:"/Hanuman_Bal_Aur_Raksha_Chant.mp3",
+    3:"/Ganpati_Bappa_Morya.mp3",
+    4:"/Hare_Ka_Sahara.mp3",
+    5:"/Lakshmi_Kripa_Prarthana.mp3",
+    6:"/Shani_Dev_Sharan_Chant.mp3",
   };
   const completeAarti=()=>{
     if(tasksDone.aarti) return;
@@ -1494,7 +1494,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         </div>
 
         {/* ── BHAJAN AUDIO PLAYER ── */}
-        <audio ref={pAudioRef} src={DAY_AUDIO[sel]||"/Surya_Dev_Chant.m4a"}
+        <audio ref={pAudioRef} src={DAY_AUDIO[sel]||"/Surya_Dev_Chant.mp3"}
           onTimeUpdate={()=>{const a=pAudioRef.current;if(a&&a.duration)setPProgress(a.currentTime/a.duration*100);}}
           onEnded={()=>{setPPlaying(false);setPProgress(0);}}/>
         <div style={{margin:"10px 16px 0",
