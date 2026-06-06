@@ -1445,6 +1445,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
     5:"/Lakshmi_Kripa_Prarthana.m4a",
     6:"/Shani_Dev_Sharan_Chant.m4a",
   };
+  const completeAarti=()=>{
     if(tasksDone.aarti) return;
     if(setTasksDone) setTasksDone({...tasksDone,aarti:true});
     if(setKarma) setKarma(k=>k+30);
