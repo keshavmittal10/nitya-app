@@ -321,9 +321,15 @@ function Splash({onEnter,onLogin,startMode="splash"}){
 
   const [confirmResult, setConfirmResult] = useState(null);
 
+  const [sending,setSending]=useState(false);
+
   const sendOtp=async()=>{
     if(phone.length!==10){setErr("Valid 10-digit number required");return;}
     setErr("");
+    setSending(true);
+    // Switch to OTP screen immediately for instant feel
+    setMode("otp");
+    setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
     try {
       if(window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
       const old=document.getElementById("recaptcha-container");
@@ -336,12 +342,13 @@ function Splash({onEnter,onLogin,startMode="splash"}){
       await window.recaptchaVerifier.render();
       const result=await signInWithPhoneNumber(auth,"+91"+phone,window.recaptchaVerifier);
       setConfirmResult(result);
-      setMode("otp");
-      setTimeout(()=>refs[0].current&&refs[0].current.focus(),120);
     } catch(e) {
       console.error("OTP Error:",e);
-      setErr("Error: "+e.code+" - "+e.message);
+      setErr("Error sending OTP. Try again.");
+      setMode("login");
       if(window.recaptchaVerifier){window.recaptchaVerifier.clear();window.recaptchaVerifier=null;}
+    } finally {
+      setSending(false);
     }
   };
   const handleDigit=(val,i)=>{
@@ -466,16 +473,19 @@ function Splash({onEnter,onLogin,startMode="splash"}){
             </div>
             {err&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"#FF8080",marginTop:5,letterSpacing:.5}}>{err}</div>}
           </div>
-          <button onClick={sendOtp} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"14px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 6px 24px rgba(180,80,0,.45)",marginBottom:10,position:"relative",overflow:"hidden"}}>
+          <button onClick={sendOtp} disabled={sending} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"14px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 6px 24px rgba(180,80,0,.45)",marginBottom:10,position:"relative",overflow:"hidden",opacity:sending?.7:1}}>
             <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"ctaShimmer 3s ease-in-out infinite"}}/>
-            Send OTP →
+            {sending?"Sending OTP...":"Send OTP →"}
           </button>
           <button onClick={()=>setMode("splash")} style={{width:"100%",background:"transparent",border:"none",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:600,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,200,80,.35)",padding:"6px"}}>← Back</button>
         </>)}
 
         {/* OTP MODE */}
         {mode==="otp"&&(<>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"rgba(255,200,80,.5)",marginBottom:14,letterSpacing:.5,textAlign:"center"}}>OTP sent to +91 {phone}</div>
+          <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"rgba(255,200,80,.5)",marginBottom:4,letterSpacing:.5,textAlign:"center"}}>
+            {sending?"Sending OTP to +91 "+phone+" ...":`OTP sent to +91 ${phone}`}
+          </div>
+          {sending&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:9,color:"rgba(255,200,80,.35)",marginBottom:10,textAlign:"center",fontStyle:"italic"}}>Please wait while we send your OTP</div>}
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:14}}>
             {otp.map((d,i)=>(
               <input key={i} ref={refs[i]} value={d} onChange={e=>handleDigit(e.target.value,i)} onKeyDown={e=>handleKey(e,i)} maxLength={1} type="tel"
@@ -2888,9 +2898,8 @@ export default function App(){
   };
 
   if(screen==="loading") return(
-    <div style={{width:"100vw",height:"100dvh",background:"linear-gradient(175deg,#1E0C00,#2C1400,#1A0A00)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:16}}>
-      <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:52,color:"rgba(255,200,80,.8)",animation:"pulse 2s infinite"}}>ॐ</div>
-      <div style={{fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:"rgba(255,200,80,.4)"}}>Loading...</div>
+    <div style={{width:"100vw",height:"100dvh",background:"linear-gradient(175deg,#1E0C00,#2C1400,#1A0A00)",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
+      <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:72,color:"rgba(255,200,80,.85)",animation:"pulse 2s infinite"}}>ॐ</div>
     </div>
   );
 
