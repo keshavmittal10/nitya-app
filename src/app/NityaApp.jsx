@@ -741,7 +741,30 @@ const GITA_JOURNEY = [  {day:1,theme:"Ego",hi:"अहंकार",ref:"Gita · 
    english:"Those whose sins have been destroyed, whose doubts have been dispelled, whose minds are disciplined, and who are engaged in the welfare of all beings — they attain liberation in the Supreme."},
 ];
 
-function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount,joinDate}){
+/* ── GUEST BANNER ── */
+function GuestBanner({onGoLogin}){
+  return(
+    <div style={{margin:"14px 18px 0",borderRadius:22,overflow:"hidden",boxShadow:"0 6px 24px rgba(180,80,0,.15)",border:"1.5px solid rgba(255,165,0,.25)",animation:"fadeUp .4s ease both"}}>
+      <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
+      <div style={{background:"linear-gradient(135deg,#FFF8EE,#FFF2D6)",padding:"16px 18px"}}>
+        <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
+          <div style={{width:42,height:42,borderRadius:14,background:"linear-gradient(135deg,#E8A020,#C47010)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,boxShadow:"0 4px 12px rgba(200,120,16,.35)"}}>🔐</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:"#4A2800",letterSpacing:.5,textTransform:"uppercase",marginBottom:3}}>Save Your Progress</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:500,color:"#9B7A40",lineHeight:1.5,fontStyle:"italic"}}>You're browsing as a guest. Sign in to save your Karma Points, Tapasya streak and daily progress.</div>
+          </div>
+        </div>
+        <button onClick={onGoLogin} style={{width:"100%",marginTop:14,background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:16,padding:"12px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 5px 18px rgba(180,80,0,.4)",position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"shimmer 3s ease-in-out infinite"}}/>
+          Sign In to Save Progress →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── HOME / VEDPATH ── */
+function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone,setKarma,setShlokaCount,joinDate,user,onGoLogin}){
   const [tab,setTab]=useState("hindi");
   const [favOpen,setFavOpen]=useState(false);
   const [toast,setToast]=useState("");
@@ -792,6 +815,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
         <div style={{padding:"12px 20px 10px"}}>
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:800,color:"#0D1F5C",letterSpacing:.3}}>आज का ज्ञान</div>
         </div>
+
+        {/* ── GUEST SIGN-IN BANNER ── */}
+        {!user&&<GuestBanner onGoLogin={onGoLogin}/>}
 
         {/* Shloka Sadhana instruction card */}
         <div style={{margin:"0 16px 12px",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(100,150,255,.2)",boxShadow:"0 3px 14px rgba(26,58,143,.08)"}}>
@@ -1420,7 +1446,7 @@ const FULL_DAYS=[
    ]},
 ];
 
-function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays,userName=""}){
+function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKarma,setBhaktDays,userName="",user,onGoLogin}){
   const todayIdx=new Date().getDay();
   const [sel,setSel]=useState(todayIdx);
   const [tathastu,setTathastu]=useState(false);
@@ -1470,6 +1496,8 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:`${day.color}77`,marginBottom:2}}>🙏 Daily Prayer</div>
         <div style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"#1A0800",letterSpacing:.5,textTransform:"uppercase",lineHeight:1}}>Prarthana</div>
       </div>
+      {/* ── GUEST SIGN-IN BANNER ── */}
+      {!user&&<div style={{padding:"14px 16px 0"}}><GuestBanner onGoLogin={onGoLogin}/></div>}
       {/* Day tabs */}
       <div style={{padding:"12px 16px 0",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.55)",borderRadius:22,padding:"5px",backdropFilter:"blur(16px)",border:`1px solid ${day.color}25`,boxShadow:`0 4px 18px ${day.color}14`}}>
@@ -1845,25 +1873,7 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
 
         {/* ── GUEST SIGN-IN BANNER ── */}
         {!user&&(
-          <div style={{margin:"14px 18px 0",borderRadius:22,overflow:"hidden",boxShadow:"0 6px 24px rgba(180,80,0,.15)",border:"1.5px solid rgba(255,165,0,.25)",animation:"fadeUp .4s ease both"}}>
-            {/* Top strip */}
-            <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
-            <div style={{background:"linear-gradient(135deg,#FFF8EE,#FFF2D6)",padding:"16px 18px"}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
-                <div style={{width:42,height:42,borderRadius:14,background:"linear-gradient(135deg,#E8A020,#C47010)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,boxShadow:"0 4px 12px rgba(200,120,16,.35)"}}>🔐</div>
-                <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:"#4A2800",letterSpacing:.5,textTransform:"uppercase",marginBottom:3}}>Save Your Progress</div>
-                  <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:500,color:"#9B7A40",lineHeight:1.5,fontStyle:"italic"}}>You're browsing as a guest. Sign in to save your Karma Points, Tapasya streak and daily progress.</div>
-                </div>
-              </div>
-              <button
-                onClick={onGoLogin}
-                style={{width:"100%",marginTop:14,background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:16,padding:"12px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 5px 18px rgba(180,80,0,.4)",position:"relative",overflow:"hidden"}}>
-                <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"shimmer 3s ease-in-out infinite"}}/>
-                Sign In to Save Progress →
-              </button>
-            </div>
-          </div>
+          <GuestBanner onGoLogin={onGoLogin}/>
         )}
 
         {/* ── KARMA CARD — starts at 0 ── */}
@@ -2102,6 +2112,9 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
       </div>
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
+
+        {/* ── GUEST SIGN-IN BANNER ── */}
+        {!user&&<GuestBanner onGoLogin={()=>onNav("login")}/>}
 
         {/* ── 108-DAY MANTRA DISCIPLINE — outside heading ── */}
         <div style={{padding:"16px 20px 0"}}>
@@ -2435,7 +2448,7 @@ function NameScreen({onDone}){
 }
 
 /* ── PROFILE ── */
-function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName,onSignOut}){
+function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPrayerDays=0,bhaktDays=0,userName="",setUserName,onSignOut,user,onGoLogin}){
   const [name,setName]=useState(userName||"Seeker");
   useEffect(()=>{if(userName)setName(userName);},[userName]);
   const [editName,setEditName]=useState(false);
@@ -2496,7 +2509,6 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#4A2800",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>My Journey</span>
-        <div style={{width:34,height:34,borderRadius:12,background:"rgba(180,80,0,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer"}}>⚙️</div>
       </div>
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
@@ -2708,7 +2720,10 @@ function Profile({onNav,karma,tapasyaDays=0,shlokaCount=0,mantaDays=0,nightPraye
 
         {/* Sign out */}
         <div style={{padding:"14px 16px 0"}}>
-          <button onClick={onSignOut} style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
+          {user
+            ?<button onClick={onSignOut} style={{width:"100%",background:"rgba(255,100,80,.08)",border:"1.5px solid rgba(255,100,80,.2)",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"#EF4444",cursor:"pointer"}}>Sign Out</button>
+            :<button onClick={onGoLogin} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"14px",fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,textTransform:"uppercase",color:"white",cursor:"pointer",boxShadow:"0 5px 18px rgba(180,80,0,.4)"}}>🔐 Sign In to Save Progress</button>
+          }
         </div>
 
         <div style={{height:16}}/>
@@ -2885,8 +2900,8 @@ export default function App(){
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
           {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
-          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave} joinDate={joinDate}/>}
-          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName}/>}
+          {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave} joinDate={joinDate} user={user} onGoLogin={()=>setScreen("login")}/>}
+          {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
             tapasyaDays={tapasyaDays} setTapasyaDays={setTapasyaDaysSave}
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
@@ -2901,7 +2916,7 @@ export default function App(){
           {screen==="profile"   &&<Profile  onNav={setScreen} karma={karma}
             tapasyaDays={tapasyaDays} shlokaCount={shlokaCount}
             mantaDays={mantaDays} nightPrayerDays={nightPrayerDays} bhaktDays={bhaktDays}
-            userName={userName} setUserName={setUserNameSave} onSignOut={handleSignOut}/>}
+            userName={userName} setUserName={setUserNameSave} onSignOut={handleSignOut} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="name" && <NameScreen onDone={(n)=>{setUserNameSave(n);setScreen("home");}}/>}
         </div>
       </div>
