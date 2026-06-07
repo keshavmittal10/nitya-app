@@ -1881,10 +1881,11 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
     const todayStr=getLocalDateStr();
     const alreadyCounted=completedDates.includes(todayStr);
     if(allDone&&!wasDone&&!alreadyCounted){
-      if(setTapasyaDays) setTapasyaDays(d=>d+1);
+      const newDates=[...completedDates,todayStr];
+      if(setTapasyaDays) setTapasyaDays(newDates.length);
       if(setBhaktDays) setBhaktDays(d=>d+1);
       if(addCompletedDate) addCompletedDate(todayStr);
-      showToast("🎉 Sadhana Complete! +15 Streak");
+      showToast("🎉 Sadhana Complete! Tapasya: Day "+(newDates.length));
     }
     if(!user) showToast("🔐 Sign in to save your progress!");
   };
@@ -2800,7 +2801,7 @@ export default function App(){
   const addCompletedDate = (dateStr) => {
     setCompletedDates(prev => {
       const next = prev.includes(dateStr) ? prev : [...prev, dateStr];
-      if(user?.uid) persist(user.uid, {completedDates:next});
+      if(user?.uid) persist(user.uid, {completedDates:next, tapasyaDays:next.length});
       return next;
     });
   };
