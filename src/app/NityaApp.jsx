@@ -742,19 +742,19 @@ const GITA_JOURNEY = [  {day:1,theme:"Ego",hi:"अहंकार",ref:"Gita · 
 ];
 
 /* ── GUEST BANNER ── */
-function GuestBanner({onGoLogin}){
+function GuestBanner({onGoLogin,accent="#E07800",accentDark="#B85000",bg1="#FFF8EE",bg2="#FFF2D6",barColor="linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",iconBg="linear-gradient(135deg,#E8A020,#C47010)",textColor="#4A2800",subColor="#9B7A40"}){
   return(
-    <div style={{margin:"14px 18px 0",borderRadius:22,overflow:"hidden",boxShadow:"0 6px 24px rgba(180,80,0,.15)",border:"1.5px solid rgba(255,165,0,.25)",animation:"fadeUp .4s ease both"}}>
-      <div style={{height:3,background:"linear-gradient(90deg,#FFD700,#FF8C00,#FFD700)",backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
-      <div style={{background:"linear-gradient(135deg,#FFF8EE,#FFF2D6)",padding:"16px 18px"}}>
+    <div style={{margin:"14px 18px 0",borderRadius:22,overflow:"hidden",boxShadow:`0 6px 24px ${accent}25`,border:`1.5px solid ${accent}40`,animation:"fadeUp .4s ease both"}}>
+      <div style={{height:3,background:barColor,backgroundSize:"200% 100%",animation:"gradShift 3s linear infinite"}}/>
+      <div style={{background:`linear-gradient(135deg,${bg1},${bg2})`,padding:"16px 18px"}}>
         <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
-          <div style={{width:42,height:42,borderRadius:14,background:"linear-gradient(135deg,#E8A020,#C47010)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,boxShadow:"0 4px 12px rgba(200,120,16,.35)"}}>🔐</div>
+          <div style={{width:42,height:42,borderRadius:14,background:iconBg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,boxShadow:`0 4px 12px ${accent}55`}}>🔐</div>
           <div style={{flex:1}}>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:"#4A2800",letterSpacing:.5,textTransform:"uppercase",marginBottom:3}}>Save Your Progress</div>
-            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:500,color:"#9B7A40",lineHeight:1.5,fontStyle:"italic"}}>You're browsing as a guest. Sign in to save your Karma Points, Tapasya streak and daily progress.</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:12,fontWeight:800,color:textColor,letterSpacing:.5,textTransform:"uppercase",marginBottom:3}}>Save Your Progress</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:500,color:subColor,lineHeight:1.5,fontStyle:"italic"}}>You're browsing as a guest. Sign in to save your Karma Points, Tapasya streak and daily progress.</div>
           </div>
         </div>
-        <button onClick={onGoLogin} style={{width:"100%",marginTop:14,background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:16,padding:"12px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 5px 18px rgba(180,80,0,.4)",position:"relative",overflow:"hidden"}}>
+        <button onClick={onGoLogin} style={{width:"100%",marginTop:14,background:`linear-gradient(135deg,${accent},${accentDark})`,border:"none",borderRadius:16,padding:"12px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:`0 5px 18px ${accent}66`,position:"relative",overflow:"hidden"}}>
           <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"shimmer 3s ease-in-out infinite"}}/>
           Sign In to Save Progress →
         </button>
@@ -802,6 +802,9 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
       </div>
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
+        {/* ── GUEST SIGN-IN BANNER — blue theme ── */}
+        {!user&&<GuestBanner onGoLogin={onGoLogin} accent="#2D5BE3" accentDark="#1A3A8F" bg1="#EEF4FF" bg2="#DCE9FF" barColor="linear-gradient(90deg,#60A5FA,#3B82F6,#60A5FA)" iconBg="linear-gradient(135deg,#3B82F6,#1D4ED8)" textColor="#0D1F5C" subColor="#4A6FA5"/>}
+
         {/* ── 21-DAY GITA JOURNEY SECTION ── */}
 
         {/* Big bold heading */}
@@ -815,9 +818,6 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
         <div style={{padding:"12px 20px 10px"}}>
           <div style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:22,fontWeight:800,color:"#0D1F5C",letterSpacing:.3}}>आज का ज्ञान</div>
         </div>
-
-        {/* ── GUEST SIGN-IN BANNER ── */}
-        {!user&&<GuestBanner onGoLogin={onGoLogin}/>}
 
         {/* Shloka Sadhana instruction card */}
         <div style={{margin:"0 16px 12px",background:"rgba(255,255,255,.55)",backdropFilter:"blur(12px)",borderRadius:20,padding:"18px 20px",border:"1px solid rgba(100,150,255,.2)",boxShadow:"0 3px 14px rgba(26,58,143,.08)"}}>
@@ -1496,8 +1496,8 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
         <div style={{fontFamily:"'Syne',sans-serif",fontSize:9,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:`${day.color}77`,marginBottom:2}}>🙏 Daily Prayer</div>
         <div style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800,color:"#1A0800",letterSpacing:.5,textTransform:"uppercase",lineHeight:1}}>Prarthana</div>
       </div>
-      {/* ── GUEST SIGN-IN BANNER ── */}
-      {!user&&<div style={{padding:"14px 16px 0"}}><GuestBanner onGoLogin={onGoLogin}/></div>}
+      {/* ── GUEST SIGN-IN BANNER — day theme ── */}
+      {!user&&<GuestBanner onGoLogin={onGoLogin} accent={day.color} accentDark={day.color} bg1="#FFFDF8" bg2="#FFF8F0" barColor={`linear-gradient(90deg,${day.color}88,${day.color},${day.color}88)`} iconBg={`linear-gradient(135deg,${day.color},${day.color}CC)`} textColor="#2D1200" subColor="#7A5A30"/>}
       {/* Day tabs */}
       <div style={{padding:"12px 16px 0",zIndex:10,flexShrink:0}}>
         <div style={{display:"flex",gap:4,background:"rgba(255,255,255,.55)",borderRadius:22,padding:"5px",backdropFilter:"blur(16px)",border:`1px solid ${day.color}25`,boxShadow:`0 4px 18px ${day.color}14`}}>
@@ -2113,8 +2113,8 @@ function Anushthan({onNav,karma,setKarma,mantaDays=0,setMantaDays,user,mantaDone
 
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
-        {/* ── GUEST SIGN-IN BANNER ── */}
-        {!user&&<GuestBanner onGoLogin={()=>onNav("login")}/>}
+        {/* ── GUEST SIGN-IN BANNER — purple theme ── */}
+        {!user&&<GuestBanner onGoLogin={()=>onNav("login")} accent="#7C3AED" accentDark="#5B21B6" bg1="#F5F0FF" bg2="#EDE9FE" barColor="linear-gradient(90deg,#A78BFA,#7C3AED,#A78BFA)" iconBg="linear-gradient(135deg,#7C3AED,#5B21B6)" textColor="#2E1065" subColor="#6D4FA8"/>}
 
         {/* ── 108-DAY MANTRA DISCIPLINE — outside heading ── */}
         <div style={{padding:"16px 20px 0"}}>
