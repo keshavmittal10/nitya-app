@@ -364,7 +364,7 @@ function Splash({onEnter,onLogin,startMode="splash"}){
   };
   const verify=async()=>{
     if(otp.join("").length!==6){setErr("Enter 6-digit OTP");return;}
-    if(!confirmResult){setErr("Please request OTP first");return;}
+    if(!confirmResult){setErr("OTP still sending, please wait a moment...");return;}
     setVerifying(true);
     try {
       await confirmResult.confirm(otp.join(""));
@@ -495,6 +495,8 @@ function Splash({onEnter,onLogin,startMode="splash"}){
           {err&&<div style={{fontFamily:"'Syne',sans-serif",fontSize:10,color:"#FF8080",marginBottom:8,letterSpacing:.5,textAlign:"center"}}>{err}</div>}
           {verifying
             ?<div style={{textAlign:"center",padding:"10px 0",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,color:"rgba(255,200,80,.5)",letterSpacing:1,textTransform:"uppercase"}}>Verifying...</div>
+            :sending
+            ?<div style={{textAlign:"center",padding:"10px 0",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,color:"rgba(255,200,80,.35)",letterSpacing:1,textTransform:"uppercase"}}>Sending OTP...</div>
             :<button onClick={verify} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:18,padding:"14px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:13,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",color:"white",boxShadow:"0 6px 24px rgba(180,80,0,.45)",marginBottom:10}}>
               Verify & Begin ✓
             </button>
