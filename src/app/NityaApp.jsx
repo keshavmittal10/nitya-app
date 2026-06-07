@@ -1812,7 +1812,7 @@ function Prarthana({onNav,tasksDone={shlok:false,aarti:false},setTasksDone,setKa
 }
 
 /* ── SADHANA ── */
-function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false,mantra:false},setTasksDone,setMantaDone,userName="",completedDates=[],addCompletedDate}){
+function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDays,shlokaCount=0,setShlokaCount,bhaktDays=0,setBhaktDays,tasksDone={shlok:false,aarti:false,mantra:false},setTasksDone,setMantaDone,setMantaDays,userName="",completedDates=[],addCompletedDate}){
   const today=new Date().getDay();
   const todayPrayer=PRAYERS[today]||PRAYERS[2];
 
@@ -1877,7 +1877,10 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
     const taskXp=TASK_DEFS.find(t=>t.id===id)?.xp||0;
     setKarma(k=>k+taskXp);
     if(id==="shlok"&&setShlokaCount) setShlokaCount(c=>c+1);
-    if(id==="mantra"&&setMantaDone) setMantaDone(true);
+    if(id==="mantra"){
+      if(setMantaDone) setMantaDone(true);
+      if(setMantaDays) setMantaDays(d=>d+1);
+    }
     const allDone=TASK_DEFS.every(t=>nextDone[t.id]);
     const wasDone=TASK_DEFS.every(t=>tasksDone[t.id]);
     const todayStr=getLocalDateStr();
@@ -2941,7 +2944,7 @@ export default function App(){
             shlokaCount={shlokaCount} setShlokaCount={setShlokaCountSave}
             bhaktDays={bhaktDays} setBhaktDays={setBhaktDaysSave}
             tasksDone={tasksDone} setTasksDone={setTasksDoneSave}
-            setMantaDone={setMantaDoneSave}
+            setMantaDone={setMantaDoneSave} setMantaDays={setMantaDaysSave}
             userName={userName} completedDates={completedDates} addCompletedDate={addCompletedDate}/>}
           {screen==="anushthan" &&<Anushthan onNav={setScreen} karma={karma} setKarma={setKarmaSave}
             mantaDays={mantaDays} setMantaDays={setMantaDaysSave} user={user}
