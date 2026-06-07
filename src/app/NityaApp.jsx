@@ -808,7 +808,29 @@ function Home({onNav,favorites,setFavorites,tasksDone={shlok:false},setTasksDone
       <SB/>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 22px 0",zIndex:10,flexShrink:0}}>
         <span style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:800,color:"#0D1F5C",letterSpacing:".5px",textTransform:"uppercase",lineHeight:1}}>VedPath</span>
-        <div style={{width:34,height:34,borderRadius:12,background:"rgba(26,58,143,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer"}}>🔔</div>
+        <div onClick={()=>{
+          try{
+            const ctx=new(window.AudioContext||window.webkitAudioContext)();
+            // Bell fundamental + harmonics
+            const play=(freq,gain,decay)=>{
+              const o=ctx.createOscillator();
+              const g=ctx.createGain();
+              o.connect(g);g.connect(ctx.destination);
+              o.frequency.value=freq;
+              o.type="sine";
+              g.gain.setValueAtTime(gain,ctx.currentTime);
+              g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+decay);
+              o.start(ctx.currentTime);
+              o.stop(ctx.currentTime+decay);
+            };
+            play(830,0.4,2.5);   // fundamental
+            play(1661,0.2,1.8);  // 2nd harmonic
+            play(2491,0.1,1.2);  // 3rd harmonic
+            play(415,0.15,3.0);  // sub tone
+          }catch(e){}
+        }} style={{width:34,height:34,borderRadius:12,background:"rgba(26,58,143,.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer",transition:"transform .15s"}}
+          onMouseDown={e=>e.currentTarget.style.transform="scale(.88)"}
+          onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}>🔔</div>
       </div>
       <div style={{flex:1,overflowY:"auto",paddingBottom:82,zIndex:5}}>
 
