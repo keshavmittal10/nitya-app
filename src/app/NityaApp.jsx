@@ -50,31 +50,14 @@ const firebaseConfig = {
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
-if (typeof window !== "undefined") {
-  import("firebase/auth").then(({ setPersistence, browserLocalPersistence }) => {
-    setPersistence(auth, browserLocalPersistence).catch(()=>{});
-  });
-}
 const db = getFirestore(app);
 
 async function saveUser(uid, data) {
   await setDoc(doc(db, "users", uid), data, { merge: true });
 }
 async function loadUser(uid) {
-  try {
-    const snap = await getDoc(doc(db, "users", uid));
-    if(snap.exists()) return snap.data();
-  } catch(e) {
-    console.error("loadUser error",e);
-  }
-  // Fallback to local backup if Firestore is unreachable or doc missing
-  if(typeof window!=="undefined"){
-    try{
-      const cached=localStorage.getItem("nitya_backup_"+uid);
-      if(cached) return JSON.parse(cached);
-    }catch(e2){}
-  }
-  return null;
+  const snap = await getDoc(doc(db, "users", uid));
+  return snap.exists() ? snap.data() : null;
 }
 
 const css = `
@@ -2809,21 +2792,7 @@ export default function App(){
 
   // Save all state to Firestore
   const persist = async(uid, patch) => {
-    try {
-      await saveUser(uid, patch);
-      if(typeof window!=="undefined"){
-        try{
-          const cached=JSON.parse(localStorage.getItem("nitya_backup_"+uid)||"{}");
-          localStorage.setItem("nitya_backup_"+uid, JSON.stringify({...cached, ...patch}));
-        }catch(e2){}
-      }
-    } catch(e) {
-      console.error("Save error",e);
-      // Retry once after a short delay
-      setTimeout(async()=>{
-        try{ await saveUser(uid, patch); }catch(e3){ console.error("Save retry failed",e3); }
-      }, 1500);
-    }
+    try { await saveUser(uid, patch); } catch(e) { console.error("Save error",e); }
   };
 
   // Wrapped setters that also save to Firestore
@@ -2887,13 +2856,11 @@ export default function App(){
   // Listen to Firebase auth state — this is what keeps user logged in
   useEffect(()=>{
     const unsub = onAuthStateChanged(auth, async(firebaseUser)=>{
-      console.log("[Nitya Debug] Auth state changed. firebaseUser:", firebaseUser?.uid||"null (not logged in)");
       if(firebaseUser){
         // User is logged in — load their data from Firestore
         setUser({uid:firebaseUser.uid, phone:firebaseUser.phoneNumber});
         try {
           const data = await loadUser(firebaseUser.uid);
-          console.log("[Nitya Debug] Loaded Firestore data:", data);
           if(data){
             if(data.userName){ setUserName(data.userName); }
             if(data.karma !== undefined){ setKarma(data.karma); }
