@@ -447,7 +447,7 @@ function Splash({onEnter,onLogin,startMode="splash"}){
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:400,color:"rgba(255,220,140,.75)",textAlign:"center",lineHeight:1.7,marginBottom:22}}>
             <strong style={{fontWeight:600,color:"rgba(255,235,170,.95)"}}>हर दिन श्लोक,</strong><br/>हर दिन शांति।
           </p>
-          <button onClick={()=>setMode("login")} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:22,padding:"16px 20px",cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 8px 28px rgba(180,80,0,.5)",marginBottom:10}}>
+          <button onClick={onEnter} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:22,padding:"16px 20px",cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 8px 28px rgba(180,80,0,.5)",marginBottom:10}}>
             <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"ctaShimmer 3s ease-in-out infinite"}}/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
               <span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#FFF5E0"}}>आज की साधना शुरू करें</span>
@@ -455,9 +455,9 @@ function Splash({onEnter,onLogin,startMode="splash"}){
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,230,160,.5)"}}>Begin</span>
             </div>
           </button>
-          <p style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:600,letterSpacing:.5,color:"rgba(255,200,80,.35)",textAlign:"center"}}>
-            🔐 Sign in with phone to save your progress
-          </p>
+          <button onClick={()=>setMode("login")} style={{width:"100%",background:"transparent",border:"1px solid rgba(255,200,80,.22)",borderRadius:22,padding:"13px 20px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,200,80,.6)"}}>
+            🔐 Sign In to Save Progress
+          </button>
         </>)}
 
         {/* LOGIN MODE */}
@@ -2795,11 +2795,20 @@ export default function App(){
     try { await saveUser(uid, patch); } catch(e) { console.error("Save error",e); }
   };
 
-  // Wrapped setters that also save to Firestore
+  // Save guest (not-logged-in) state to localStorage so it survives app close
+  const persistGuest = (patch) => {
+    if(typeof window==="undefined") return;
+    try{
+      const cur = JSON.parse(localStorage.getItem("nitya_guest")||"{}");
+      localStorage.setItem("nitya_guest", JSON.stringify({...cur, ...patch}));
+    }catch(e){}
+  };
+
+  // Wrapped setters that also save to Firestore (logged in) or localStorage (guest)
   const setKarmaSave = (v) => {
     setKarma(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {karma:next});
+      if(user?.uid) persist(user.uid, {karma:next}); else persistGuest({karma:next});
       return next;
     });
   };
@@ -2807,6 +2816,7 @@ export default function App(){
     setCompletedDates(prev => {
       const next = prev.includes(dateStr) ? prev : [...prev, dateStr];
       if(user?.uid) persist(user.uid, {completedDates:next, tapasyaDays:next.length});
+      else persistGuest({completedDates:next, tapasyaDays:next.length});
       return next;
     });
   };
@@ -2814,32 +2824,33 @@ export default function App(){
   const setMantaDaysSave = (v) => {
     setMantaDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {mantaDays:next});
+      if(user?.uid) persist(user.uid, {mantaDays:next}); else persistGuest({mantaDays:next});
       return next;
     });
   };
   const setMantaDoneSave = (v) => {
     setMantaDone(v);
     if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:today});
+    else persistGuest({mantaDone:v, mantaDoneDate:today});
   };
   const setTapasyaDaysSave = (v) => {
     setTapasyaDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {tapasyaDays:next});
+      if(user?.uid) persist(user.uid, {tapasyaDays:next}); else persistGuest({tapasyaDays:next});
       return next;
     });
   };
   const setShlokaCountSave = (v) => {
     setShlokaCount(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {shlokaCount:next});
+      if(user?.uid) persist(user.uid, {shlokaCount:next}); else persistGuest({shlokaCount:next});
       return next;
     });
   };
   const setBhaktDaysSave = (v) => {
     setBhaktDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {bhaktDays:next});
+      if(user?.uid) persist(user.uid, {bhaktDays:next}); else persistGuest({bhaktDays:next});
       return next;
     });
   };
@@ -2847,10 +2858,11 @@ export default function App(){
     const next = typeof v==="function" ? v(tasksDone) : v;
     setTasksDone(next);
     if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:today});
+    else persistGuest({tasksDone:next, lastTaskDate:today});
   };
   const setUserNameSave = (n) => {
     setUserName(n);
-    if(user?.uid) persist(user.uid, {userName:n});
+    if(user?.uid) persist(user.uid, {userName:n}); else persistGuest({userName:n, joinDate:joinDate||today});
   };
 
   // Listen to Firebase auth state — this is what keeps user logged in
@@ -2897,9 +2909,36 @@ export default function App(){
           setScreen("name");
         }
       } else {
-        // Not logged in
+        // Not logged in — check for guest progress saved locally
         setUser(null);
-        setScreen("splash");
+        if(typeof window!=="undefined"){
+          try{
+            const guestData = JSON.parse(localStorage.getItem("nitya_guest")||"null");
+            if(guestData){
+              if(guestData.userName){ setUserName(guestData.userName); }
+              if(guestData.karma !== undefined){ setKarma(guestData.karma); }
+              if(guestData.tapasyaDays !== undefined){ setTapasyaDays(guestData.tapasyaDays); }
+              if(guestData.completedDates){ setCompletedDates(guestData.completedDates); }
+              if(guestData.shlokaCount !== undefined){ setShlokaCount(guestData.shlokaCount); }
+              if(guestData.mantaDays !== undefined){ setMantaDays(guestData.mantaDays); }
+              if(guestData.joinDate){ setJoinDate(guestData.joinDate); } else { setJoinDate(today); }
+              if(guestData.bhaktDays !== undefined){ setBhaktDays(guestData.bhaktDays); }
+              if(guestData.favorites){ setFavorites(guestData.favorites); }
+              if(guestData.lastTaskDate !== today){
+                setTasksDone({shlok:false, aarti:false, mantra:false});
+                setMantaDone(false);
+              } else if(guestData.tasksDone){
+                setTasksDone(guestData.tasksDone);
+                if(guestData.mantaDoneDate===today && guestData.mantaDone){ setMantaDone(true); }
+              }
+              setScreen(guestData.userName ? "home" : "splash");
+            } else {
+              setScreen("splash");
+            }
+          }catch(e2){ setScreen("splash"); }
+        } else {
+          setScreen("splash");
+        }
       }
     });
     return ()=>unsub();
@@ -2908,6 +2947,7 @@ export default function App(){
   // Save favorites when they change
   useEffect(()=>{
     if(user?.uid) persist(user.uid, {favorites});
+    else persistGuest({favorites});
   },[favorites]);
 
   const handleSignOut = () => {
