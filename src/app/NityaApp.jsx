@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import { initializeApp, getApps } from "firebase/app";
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "firebase/auth";
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 
@@ -50,14 +50,22 @@ const firebaseConfig = {
 };
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
+if (typeof window !== "undefined") {
+  setPersistence(auth, browserLocalPersistence).catch((e)=>console.error("Persistence error",e));
+}
 const db = getFirestore(app);
 
 async function saveUser(uid, data) {
   await setDoc(doc(db, "users", uid), data, { merge: true });
 }
 async function loadUser(uid) {
-  const snap = await getDoc(doc(db, "users", uid));
-  return snap.exists() ? snap.data() : null;
+  try {
+    const snap = await getDoc(doc(db, "users", uid));
+    return snap.exists() ? snap.data() : null;
+  } catch(e) {
+    console.error("loadUser error", e);
+    throw e; // let caller decide — do NOT silently treat as "no data"
+  }
 }
 
 const css = `
@@ -2906,7 +2914,28 @@ export default function App(){
           }
         } catch(e){
           console.error("Load error",e);
-          setScreen("name");
+          // Don't treat a network/Firestore error as "new user" — retry once
+          try {
+            const data = await loadUser(firebaseUser.uid);
+            if(data){
+              if(data.userName){ setUserName(data.userName); }
+              if(data.karma !== undefined){ setKarma(data.karma); }
+              if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
+              if(data.completedDates){ setCompletedDates(data.completedDates); }
+              if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
+              if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
+              if(data.joinDate){ setJoinDate(data.joinDate); }
+              if(data.bhaktDays !== undefined){ setBhaktDays(data.bhaktDays); }
+              if(data.favorites){ setFavorites(data.favorites); }
+              if(data.tasksDone){ setTasksDone(data.tasksDone); }
+              setScreen(data.userName ? "home" : "name");
+            } else {
+              setScreen("name");
+            }
+          } catch(e2){
+            console.error("Load retry failed",e2);
+            setScreen("name"); // give up only after a second failure
+          }
         }
       } else {
         // Not logged in — check for guest progress saved locally
