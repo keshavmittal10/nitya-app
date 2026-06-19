@@ -464,7 +464,7 @@ function Splash({onEnter,onLogin,startMode="splash"}){
           <p style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:17,fontWeight:400,color:"rgba(255,220,140,.75)",textAlign:"center",lineHeight:1.7,marginBottom:22}}>
             <strong style={{fontWeight:600,color:"rgba(255,235,170,.95)"}}>हर दिन श्लोक,</strong><br/>हर दिन शांति।
           </p>
-          <button onClick={onEnter} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:22,padding:"16px 20px",cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 8px 28px rgba(180,80,0,.5)",marginBottom:10}}>
+          <button onClick={()=>setMode("login")} style={{width:"100%",background:"linear-gradient(135deg,#E07800,#B85000)",border:"none",borderRadius:22,padding:"16px 20px",cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 8px 28px rgba(180,80,0,.5)",marginBottom:10}}>
             <div style={{position:"absolute",top:0,left:"-80%",width:"50%",height:"100%",background:"linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)",animation:"ctaShimmer 3s ease-in-out infinite"}}/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:10}}>
               <span style={{fontFamily:"'Noto Sans Devanagari',serif",fontSize:15,fontWeight:600,color:"#FFF5E0"}}>आज की साधना शुरू करें</span>
@@ -472,9 +472,9 @@ function Splash({onEnter,onLogin,startMode="splash"}){
               <span style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:"rgba(255,230,160,.5)"}}>Begin</span>
             </div>
           </button>
-          <button onClick={()=>setMode("login")} style={{width:"100%",background:"transparent",border:"1px solid rgba(255,200,80,.22)",borderRadius:22,padding:"13px 20px",cursor:"pointer",fontFamily:"'Syne',sans-serif",fontSize:11,fontWeight:700,letterSpacing:1,textTransform:"uppercase",color:"rgba(255,200,80,.6)"}}>
-            🔐 Sign In to Save Progress
-          </button>
+          <p style={{fontFamily:"'Syne',sans-serif",fontSize:10,fontWeight:600,letterSpacing:.5,color:"rgba(255,200,80,.35)",textAlign:"center"}}>
+            🔐 Sign in with phone to save your progress
+          </p>
         </>)}
 
         {/* LOGIN MODE */}
@@ -2969,7 +2969,7 @@ export default function App(){
       <style>{css}</style>
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
+          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={()=>{/* onAuthStateChanged picks up the new session automatically */}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave} joinDate={joinDate} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
