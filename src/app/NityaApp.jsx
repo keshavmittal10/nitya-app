@@ -58,6 +58,14 @@ const db = getFirestore(app);
 async function saveUser(uid, data) {
   await setDoc(doc(db, "users", uid), data, { merge: true });
 }
+// Local date string YYYY-MM-DD (avoids UTC/IST timezone mismatch)
+function getLocalDateStr(d=new Date()) {
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,"0");
+  const day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+
 async function loadUser(uid) {
   for(let attempt=0; attempt<2; attempt++){
     try {
@@ -1907,18 +1915,10 @@ function Sadhana({onNav,karma,setKarma,user,onGoLogin,tapasyaDays=0,setTapasyaDa
       if(setMantaDone) setMantaDone(true);
       if(setMantaDays) setMantaDays(d=>d+1);
     }
-    const allDone=TASK_DEFS.every(t=>nextDone[t.id]);
-    const wasDone=TASK_DEFS.every(t=>tasksDone[t.id]);
-    const todayStr=getLocalDateStr();
-    const alreadyCounted=completedDates.includes(todayStr);
-    if(allDone&&!wasDone&&!alreadyCounted){
-      const newDates=[...completedDates,todayStr];
-      if(setTapasyaDays) setTapasyaDays(newDates.length);
-      if(setBhaktDays) setBhaktDays(d=>d+1);
-      if(addCompletedDate) addCompletedDate(todayStr);
-      showToast("🎉 Sadhana Complete! Tapasya: Day "+(newDates.length));
-    }
     if(!user) showToast("🔐 Sign in to save your progress!");
+    else if(TASK_DEFS.every(t=>nextDone[t.id]) && !TASK_DEFS.every(t=>tasksDone[t.id])){
+      showToast("🎉 Sadhana Complete! Tapasya day added 🔥");
+    }
   };
 
   return(
@@ -2894,10 +2894,20 @@ export default function App(){
   };
   const setTasksDoneSave = (v) => {
     const next = typeof v==="function" ? v(tasksDone) : v;
+    const wasAllDone = tasksDone.shlok && tasksDone.aarti && tasksDone.mantra;
+    const isAllDone = next.shlok && next.aarti && next.mantra;
     setTasksDone(next);
     const freshToday = new Date().toDateString();
     if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:freshToday});
     else console.warn("[Nitya Debug] ⚠️ Cannot save tasksDone — user is null! Progress will NOT persist.");
+
+    // Centralized tapasya completion check — fires regardless of which page completed the last task
+    if(isAllDone && !wasAllDone){
+      const todayStr = getLocalDateStr();
+      if(!completedDates.includes(todayStr)){
+        addCompletedDate(todayStr);
+      }
+    }
   };
   const setUserNameSave = (n) => {
     setUserName(n);
