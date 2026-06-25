@@ -51,7 +51,7 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
 if (typeof window !== "undefined") {
-  setPersistence(auth, browserLocalPersistence).catch((e)=>console.error("Persistence error",e));
+  setPersistence(auth, browserLocalPersistence).catch((e)=>console.error("[Nitya Debug] Persistence error:",e));
 }
 const db = getFirestore(app);
 
@@ -59,13 +59,31 @@ async function saveUser(uid, data) {
   await setDoc(doc(db, "users", uid), data, { merge: true });
 }
 async function loadUser(uid) {
-  try {
-    const snap = await getDoc(doc(db, "users", uid));
-    return snap.exists() ? snap.data() : null;
-  } catch(e) {
-    console.error("loadUser error", e);
-    throw e; // let caller decide — do NOT silently treat as "no data"
+  for(let attempt=0; attempt<2; attempt++){
+    try {
+      const snap = await getDoc(doc(db, "users", uid));
+      if(snap.exists()) return snap.data();
+      if(attempt===0){
+        console.log("[Nitya Debug] Firestore doc not found on attempt 1, retrying in 800ms...");
+        await new Promise(r=>setTimeout(r,800));
+        continue;
+      }
+    } catch(e) {
+      console.error("[Nitya Debug] loadUser error (attempt "+(attempt+1)+"):",e);
+      if(attempt===0){ await new Promise(r=>setTimeout(r,800)); continue; }
+    }
   }
+  // Fallback to local backup if Firestore is unreachable or doc missing
+  if(typeof window!=="undefined"){
+    try{
+      const cached=localStorage.getItem("nitya_backup_"+uid);
+      if(cached){
+        console.log("[Nitya Debug] Using localStorage backup for uid:", uid);
+        return JSON.parse(cached);
+      }
+    }catch(e2){}
+  }
+  return null;
 }
 
 const css = `
@@ -2800,23 +2818,35 @@ export default function App(){
 
   // Save all state to Firestore
   const persist = async(uid, patch) => {
-    try { await saveUser(uid, patch); } catch(e) { console.error("Save error",e); }
+    console.log("[Nitya Debug] Attempting to save:", uid, patch);
+    try {
+      await saveUser(uid, patch);
+      console.log("[Nitya Debug] ✅ Save SUCCESS:", patch);
+      if(typeof window!=="undefined"){
+        try{
+          const cached=JSON.parse(localStorage.getItem("nitya_backup_"+uid)||"{}");
+          localStorage.setItem("nitya_backup_"+uid, JSON.stringify({...cached, ...patch}));
+        }catch(e2){}
+      }
+    } catch(e) {
+      console.error("[Nitya Debug] ❌ Save FAILED:", e, "Patch was:", patch);
+      // Retry once after a short delay
+      setTimeout(async()=>{
+        try{
+          await saveUser(uid, patch);
+          console.log("[Nitya Debug] ✅ Retry SUCCESS:", patch);
+        }catch(e3){
+          console.error("[Nitya Debug] ❌ Retry FAILED:", e3);
+        }
+      }, 1500);
+    }
   };
 
-  // Save guest (not-logged-in) state to localStorage so it survives app close
-  const persistGuest = (patch) => {
-    if(typeof window==="undefined") return;
-    try{
-      const cur = JSON.parse(localStorage.getItem("nitya_guest")||"{}");
-      localStorage.setItem("nitya_guest", JSON.stringify({...cur, ...patch}));
-    }catch(e){}
-  };
-
-  // Wrapped setters that also save to Firestore (logged in) or localStorage (guest)
+  // Wrapped setters that also save to Firestore
   const setKarmaSave = (v) => {
     setKarma(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {karma:next}); else persistGuest({karma:next});
+      if(user?.uid) persist(user.uid, {karma:next});
       return next;
     });
   };
@@ -2824,7 +2854,6 @@ export default function App(){
     setCompletedDates(prev => {
       const next = prev.includes(dateStr) ? prev : [...prev, dateStr];
       if(user?.uid) persist(user.uid, {completedDates:next, tapasyaDays:next.length});
-      else persistGuest({completedDates:next, tapasyaDays:next.length});
       return next;
     });
   };
@@ -2832,33 +2861,32 @@ export default function App(){
   const setMantaDaysSave = (v) => {
     setMantaDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {mantaDays:next}); else persistGuest({mantaDays:next});
+      if(user?.uid) persist(user.uid, {mantaDays:next});
       return next;
     });
   };
   const setMantaDoneSave = (v) => {
     setMantaDone(v);
     if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:today});
-    else persistGuest({mantaDone:v, mantaDoneDate:today});
   };
   const setTapasyaDaysSave = (v) => {
     setTapasyaDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {tapasyaDays:next}); else persistGuest({tapasyaDays:next});
+      if(user?.uid) persist(user.uid, {tapasyaDays:next});
       return next;
     });
   };
   const setShlokaCountSave = (v) => {
     setShlokaCount(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {shlokaCount:next}); else persistGuest({shlokaCount:next});
+      if(user?.uid) persist(user.uid, {shlokaCount:next});
       return next;
     });
   };
   const setBhaktDaysSave = (v) => {
     setBhaktDays(prev => {
       const next = typeof v==="function" ? v(prev) : v;
-      if(user?.uid) persist(user.uid, {bhaktDays:next}); else persistGuest({bhaktDays:next});
+      if(user?.uid) persist(user.uid, {bhaktDays:next});
       return next;
     });
   };
@@ -2866,21 +2894,26 @@ export default function App(){
     const next = typeof v==="function" ? v(tasksDone) : v;
     setTasksDone(next);
     if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:today});
-    else persistGuest({tasksDone:next, lastTaskDate:today});
   };
   const setUserNameSave = (n) => {
     setUserName(n);
-    if(user?.uid) persist(user.uid, {userName:n}); else persistGuest({userName:n, joinDate:joinDate||today});
+    if(user?.uid) persist(user.uid, {userName:n});
   };
 
   // Listen to Firebase auth state — this is what keeps user logged in
   useEffect(()=>{
     const unsub = onAuthStateChanged(auth, async(firebaseUser)=>{
+      console.log("[Nitya Debug] Auth state changed. firebaseUser:", firebaseUser?.uid||"null (not logged in)");
       if(firebaseUser){
+        // Cache UID locally so we can detect session loss vs fresh install
+        if(typeof window!=="undefined"){
+          try{ localStorage.setItem("nitya_last_uid", firebaseUser.uid); }catch(e){}
+        }
         // User is logged in — load their data from Firestore
         setUser({uid:firebaseUser.uid, phone:firebaseUser.phoneNumber});
         try {
           const data = await loadUser(firebaseUser.uid);
+          console.log("[Nitya Debug] Loaded Firestore data:", data);
           if(data){
             if(data.userName){ setUserName(data.userName); }
             if(data.karma !== undefined){ setKarma(data.karma); }
@@ -2907,6 +2940,7 @@ export default function App(){
             // Go to home if they have a name, else name screen
             setScreen(data.userName ? "home" : "name");
           } else {
+            console.log("[Nitya Debug] No Firestore data found for uid:", firebaseUser.uid, "— treating as new user. If this is wrong, Firestore read failed silently.");
             // New user — save joinDate and go to name screen
             persist(firebaseUser.uid,{joinDate:today});
             setJoinDate(today);
@@ -2914,60 +2948,12 @@ export default function App(){
           }
         } catch(e){
           console.error("Load error",e);
-          // Don't treat a network/Firestore error as "new user" — retry once
-          try {
-            const data = await loadUser(firebaseUser.uid);
-            if(data){
-              if(data.userName){ setUserName(data.userName); }
-              if(data.karma !== undefined){ setKarma(data.karma); }
-              if(data.tapasyaDays !== undefined){ setTapasyaDays(data.tapasyaDays); }
-              if(data.completedDates){ setCompletedDates(data.completedDates); }
-              if(data.shlokaCount !== undefined){ setShlokaCount(data.shlokaCount); }
-              if(data.mantaDays !== undefined){ setMantaDays(data.mantaDays); }
-              if(data.joinDate){ setJoinDate(data.joinDate); }
-              if(data.bhaktDays !== undefined){ setBhaktDays(data.bhaktDays); }
-              if(data.favorites){ setFavorites(data.favorites); }
-              if(data.tasksDone){ setTasksDone(data.tasksDone); }
-              setScreen(data.userName ? "home" : "name");
-            } else {
-              setScreen("name");
-            }
-          } catch(e2){
-            console.error("Load retry failed",e2);
-            setScreen("name"); // give up only after a second failure
-          }
+          setScreen("name");
         }
       } else {
-        // Not logged in — check for guest progress saved locally
+        // Not logged in
         setUser(null);
-        if(typeof window!=="undefined"){
-          try{
-            const guestData = JSON.parse(localStorage.getItem("nitya_guest")||"null");
-            if(guestData){
-              if(guestData.userName){ setUserName(guestData.userName); }
-              if(guestData.karma !== undefined){ setKarma(guestData.karma); }
-              if(guestData.tapasyaDays !== undefined){ setTapasyaDays(guestData.tapasyaDays); }
-              if(guestData.completedDates){ setCompletedDates(guestData.completedDates); }
-              if(guestData.shlokaCount !== undefined){ setShlokaCount(guestData.shlokaCount); }
-              if(guestData.mantaDays !== undefined){ setMantaDays(guestData.mantaDays); }
-              if(guestData.joinDate){ setJoinDate(guestData.joinDate); } else { setJoinDate(today); }
-              if(guestData.bhaktDays !== undefined){ setBhaktDays(guestData.bhaktDays); }
-              if(guestData.favorites){ setFavorites(guestData.favorites); }
-              if(guestData.lastTaskDate !== today){
-                setTasksDone({shlok:false, aarti:false, mantra:false});
-                setMantaDone(false);
-              } else if(guestData.tasksDone){
-                setTasksDone(guestData.tasksDone);
-                if(guestData.mantaDoneDate===today && guestData.mantaDone){ setMantaDone(true); }
-              }
-              setScreen(guestData.userName ? "home" : "splash");
-            } else {
-              setScreen("splash");
-            }
-          }catch(e2){ setScreen("splash"); }
-        } else {
-          setScreen("splash");
-        }
+        setScreen("splash");
       }
     });
     return ()=>unsub();
@@ -2976,7 +2962,6 @@ export default function App(){
   // Save favorites when they change
   useEffect(()=>{
     if(user?.uid) persist(user.uid, {favorites});
-    else persistGuest({favorites});
   },[favorites]);
 
   const handleSignOut = () => {
@@ -3005,7 +2990,7 @@ export default function App(){
       <style>{css}</style>
       <div style={{minHeight:"100dvh",background:"#080410",display:"flex",alignItems:"center",justifyContent:"center"}}>
         <div style={{width:"min(100vw,430px)",height:"100dvh",borderRadius:0,overflow:"hidden",position:"relative",flexShrink:0,display:"flex",flexDirection:"column"}}>
-          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={()=>{/* onAuthStateChanged picks up the new session automatically */}}/>}
+          {(screen==="splash"||screen==="login")&&<Splash startMode={screen==="login"?"login":"splash"} onEnter={()=>setScreen("home")} onLogin={(phone)=>{}}/>}
           {screen==="home"      &&<Home     onNav={setScreen} favorites={favorites} setFavorites={setFavorites} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setShlokaCount={setShlokaCountSave} joinDate={joinDate} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="prarthana" &&<Prarthana onNav={setScreen} tasksDone={tasksDone} setTasksDone={setTasksDoneSave} setKarma={setKarmaSave} setBhaktDays={setBhaktDaysSave} userName={userName} user={user} onGoLogin={()=>setScreen("login")}/>}
           {screen==="sadhana"   &&<Sadhana  onNav={setScreen} karma={karma} setKarma={setKarmaSave} user={user} onGoLogin={()=>setScreen("login")}
