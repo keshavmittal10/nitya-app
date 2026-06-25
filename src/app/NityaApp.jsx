@@ -2867,7 +2867,9 @@ export default function App(){
   };
   const setMantaDoneSave = (v) => {
     setMantaDone(v);
-    if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:today});
+    const freshToday = new Date().toDateString();
+    if(user?.uid) persist(user.uid, {mantaDone:v, mantaDoneDate:freshToday});
+    else console.warn("[Nitya Debug] ⚠️ Cannot save mantaDone — user is null! Progress will NOT persist.");
   };
   const setTapasyaDaysSave = (v) => {
     setTapasyaDays(prev => {
@@ -2893,7 +2895,9 @@ export default function App(){
   const setTasksDoneSave = (v) => {
     const next = typeof v==="function" ? v(tasksDone) : v;
     setTasksDone(next);
-    if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:today});
+    const freshToday = new Date().toDateString();
+    if(user?.uid) persist(user.uid, {tasksDone:next, lastTaskDate:freshToday});
+    else console.warn("[Nitya Debug] ⚠️ Cannot save tasksDone — user is null! Progress will NOT persist.");
   };
   const setUserNameSave = (n) => {
     setUserName(n);
